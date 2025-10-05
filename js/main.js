@@ -1,4 +1,17 @@
-document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", () => {
+
+  /* kann rauß sobald veröffentlicht: von hier */
+  initClockApp();
+});
+
+function initClockApp() {
+  const sideMenu = document.getElementById("sideMenu");
+  if (!sideMenu) {
+    console.warn("⚠️ Seite noch nicht vollständig geladen – retry...");
+    setTimeout(initClockApp, 200);
+    return;
+  }
+  /* bisher */
   const sideMenu = document.getElementById("sideMenu");
   const menuToggle = document.getElementById("menuToggle");
   const closeMenu = document.getElementById("closeMenu");
