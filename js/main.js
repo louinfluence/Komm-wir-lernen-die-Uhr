@@ -49,7 +49,7 @@ function initClockApp() {
 
   /* -------- 12h / 24h -------- */
   displaySwitch.addEventListener("change", () => {
-    window.displayMode = displaySwitch.checked ? "24h" : "12h";
+    window.displayMode = displaySwitch.checked ? "12h" : "24h";
     toggleClockFace(window.displayMode);
     if (liveMode) startLiveClock();
   });
@@ -140,5 +140,5 @@ function initClockApp() {
   }
 
   /* -------- Init -------- */
-  setTime(3, 0);
+  setTime(6, 0);
 }
