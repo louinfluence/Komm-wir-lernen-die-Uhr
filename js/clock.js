@@ -2,13 +2,14 @@
 // CLOCK.JS – Uhrdarstellung
 // ----------------------------
 
-// interne Zustände der Zeiger
+// interne Zustände
 let hourAngle = 0;
 let minuteAngle = 0;
+let currentHours = 3;
+let currentMinutes = 0;
 
 /**
  * Dreht den Stundenzeiger um den angegebenen Winkel
- * @param {number} deg - Gradzahl (positiv = im Uhrzeigersinn)
  */
 function rotateHour(deg) {
   hourAngle = (hourAngle + deg) % 360;
@@ -17,26 +18,31 @@ function rotateHour(deg) {
 
 /**
  * Dreht den Minutenzeiger um den angegebenen Winkel
- * @param {number} deg - Gradzahl (positiv = im Uhrzeigersinn)
+ * und verschiebt den Stundenzeiger anteilig mit.
  */
 function rotateMinute(deg) {
   minuteAngle = (minuteAngle + deg) % 360;
+
+  // Stundenzeiger bewegt sich 1/12 so schnell wie Minutenzeiger
+  hourAngle = (hourAngle + deg / 12) % 360;
+
   updateClock();
 }
 
 /**
- * Setzt eine Uhrzeit direkt (z. B. setTime(3, 45))
- * @param {number} hours - Stunde (0–23)
- * @param {number} minutes - Minuten (0–59)
+ * Setzt eine Uhrzeit direkt (z. B. 3:45)
  */
 function setTime(hours, minutes) {
-  minuteAngle = minutes * 6;                   // 360° / 60 min
-  hourAngle = (hours % 12) * 30 + minutes * 0.5; // 360° / 12 h + Anteil der Minuten
+  currentHours = hours;
+  currentMinutes = minutes;
+
+  minuteAngle = minutes * 6; // 360° / 60 min
+  hourAngle = (hours % 12) * 30 + minutes * 0.5; // 30°/h + 0,5°/min
   updateClock();
 }
 
 /**
- * Aktualisiert die Anzeige der Uhr
+ * Aktualisiert die Anzeige
  */
 function updateClock() {
   const hourHand = document.getElementById("stundenzeiger");
@@ -48,7 +54,16 @@ function updateClock() {
   }
 }
 
-// Optional: kleine Startzeit anzeigen (z. B. 3:00)
+/**
+ * Liest Eingaben aus dem Interface aus und setzt Zeit
+ */
+function applyTime() {
+  const hours = parseInt(document.getElementById("hourInput").value) || 0;
+  const minutes = parseInt(document.getElementById("minuteInput").value) || 0;
+  setTime(hours, minutes);
+}
+
+// Startposition
 document.addEventListener("DOMContentLoaded", () => {
-  setTime(3, 0);
+  setTime(currentHours, currentMinutes);
 });
