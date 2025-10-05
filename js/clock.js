@@ -2,23 +2,34 @@
 window.displayMode = "12h"; // global sichtbar
 
 window.setTime = function(hours, minutes) {
-  // Drehrichtung weich halten: merken der letzten Winkelposition
-window.lastMinuteAngle ??= 0;
-let newAngle = minutes * 6;
+  // kontinuierlicher Minutenwinkel (keine Sprünge)
+  window.totalMinuteAngle ??= 0;
+  const targetAngle = minutes * 6;
+  const lastAngle = window.totalMinuteAngle % 360;
+  let delta = targetAngle - lastAngle;
 
-// Falls Sprung > 300° (z. B. 354 -> 0), korrigieren:
-if (Math.abs(newAngle - window.lastMinuteAngle) > 300) {
-  if (newAngle < window.lastMinuteAngle) {
-    newAngle += 360;
-  }
-}
+  // Sprünge über 180° korrigieren (z. B. 354° → 0° → +6°)
+  if (delta < -180) delta += 360;
+  if (delta > 180) delta -= 360;
 
-const minuteAngle = newAngle;
-window.lastMinuteAngle = newAngle % 360;
+  // neuen kumulierten Winkel aufaddieren
+  window.totalMinuteAngle += delta;
 
-  const hourAngle = (hours % 12) * 30 + minutes * 0.5;
+  const minuteAngle = window.totalMinuteAngle;
+  // kontinuierlicher Stundenwinkel
+window.totalHourAngle ??= 0;
+const targetHourAngle = (hours % 12) * 30 + minutes * 0.5;
+const lastHourAngle = window.totalHourAngle % 360;
+let deltaH = targetHourAngle - lastHourAngle;
 
-  // ⬇️ NEU: aktuelle Minuten global merken (0–1439)
+if (deltaH < -180) deltaH += 360;
+if (deltaH > 180) deltaH -= 360;
+
+window.totalHourAngle += deltaH;
+const hourAngle = window.totalHourAngle;
+
+
+  // aktuelle Minuten global merken (0–1439)
   window.currentTotalMinutes = (hours * 60 + minutes) % 1440;
 
   updateClock(hours, minutes, hourAngle, minuteAngle);
