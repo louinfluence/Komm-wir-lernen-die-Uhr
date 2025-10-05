@@ -11,8 +11,7 @@ function initClockApp() {
   const modeToggle = document.getElementById("modeToggle");
   const body       = document.body;
   const slider     = document.getElementById("timeSlider");
-  const timeDisplay= document.getElementById("timeDisplay");
-  const timeLabel  = document.getElementById("timeLabel"); // 👈 für Textausgabe
+  const timeLabel  = document.getElementById("timeLabel");
 
   const modeSwitch    = document.getElementById("modeSwitch");
   const displaySwitch = document.getElementById("displaySwitch");
@@ -23,8 +22,8 @@ function initClockApp() {
   let textTimeout = null;
 
   // 👉 Grob/Fein-Status
-  let fineMode = false;     // false = Grob (5 min), true = Fein (1 min)
-  let lpTimer  = null;      // Long-Press Timer
+  let fineMode = false;
+  let lpTimer  = null;
 
   /* -------- Menü -------- */
   menuToggle.addEventListener("click", () => sideMenu.classList.toggle("visible"));
@@ -40,7 +39,9 @@ function initClockApp() {
     body.classList.toggle("dark", themeSwitch.checked);
     localStorage.setItem("theme", themeSwitch.checked ? "dark" : "light");
   });
-  if (localStorage.getItem("theme") === "dark") { body.classList.add("dark"); themeSwitch.checked = true; }
+  if (localStorage.getItem("theme") === "dark") {
+    body.classList.add("dark"); themeSwitch.checked = true;
+  }
 
   /* -------- Echtzeit/Lern -------- */
   modeSwitch.addEventListener("change", () => {
@@ -62,20 +63,22 @@ function initClockApp() {
     if (liveMode) return;
 
     const val = parseInt(slider.value, 10);
-    const totalMinutes = fineMode ? val : val * 5;  // Fein=1min, Grob=5min
-    const h = Math.floor(totalMinutes / 60);
-    const m = totalMinutes % 60;
+    const totalMinutes = fineMode ? val : val * 5;
+
+    // 👉 Startzeit auf 6:00 verschieben
+    const adjustedMinutes = (totalMinutes + 360) % 1440;
+    const h = Math.floor(adjustedMinutes / 60);
+    const m = adjustedMinutes % 60;
 
     setTime(h, m);
 
-    // Text ausblenden beim Ziehen
-    timeDisplay.style.opacity = 0;
+    // Text sanft aktualisieren
     clearTimeout(textTimeout);
+    timeLabel.style.opacity = 0;
     textTimeout = setTimeout(() => {
-      timeDisplay.textContent = formatTime(h, m);
-      timeDisplay.style.opacity = 1;
-      updateTimeLabel(h, m); // 👈 Text aktualisieren
-    }, 1000);
+      updateTimeLabel(h, m);
+      timeLabel.style.opacity = 1;
+    }, 300);
   });
 
   // Long-Press → temporär Feinmodus
@@ -104,7 +107,7 @@ function initClockApp() {
   slider.addEventListener("touchcancel", onPointerUp);
 
   function setSliderMode(fine) {
-    const minutes = (window.currentTotalMinutes ?? 180);
+    const minutes = (window.currentTotalMinutes ?? 360);
     if (fine) {
       slider.min = 0; slider.max = 1439; slider.step = 1;
       slider.value = minutes;
@@ -147,26 +150,25 @@ function initClockApp() {
   }
 
   function updateTimeLabel(h, m) {
-  if (!timeLabel) return;
+    if (!timeLabel) return;
 
-  const hour = h;
-  const daytime = getDaytimeText(hour);
-  const formatted = `${hour.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+    const hour = h;
+    const daytime = getDaytimeText(hour);
+    const formatted = `${hour.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
 
-  let text = "";
-  if (hour >= 12) {
-    const alt = hour >= 12 ? hour - 12 : hour + 12;
-    text = `Es ist ${formatted} Uhr oder auch ${alt}:00 Uhr ${daytime}`;
-  } else {
-    text = `Es ist ${formatted} Uhr ${daytime}`;
+    let text = "";
+    if (hour >= 12) {
+      const alt = hour >= 12 ? hour - 12 : hour + 12;
+      text = `Es ist ${formatted} Uhr oder auch ${alt}:00 Uhr ${daytime}`;
+    } else {
+      text = `Es ist ${formatted} Uhr ${daytime}`;
+    }
+
+    // sanft einblenden + Farbe nach Tageszeit
+    timeLabel.className = "";
+    timeLabel.classList.add("fade-in", daytime);
+    timeLabel.textContent = text;
   }
-
-  // sanft einblenden
-  timeLabel.className = ""; // alte Klassen entfernen
-  timeLabel.classList.add("fade-in", daytime);
-  timeLabel.textContent = text;
-}
-
 
   /* -------- Init -------- */
   setTime(6, 0);
