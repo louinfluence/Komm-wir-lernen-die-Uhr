@@ -1,5 +1,5 @@
 // --- CLOCK CORE FUNCTIONS ---
-window.displayMode = "24h"; // global sichtbar
+window.displayMode = "12h"; // global sichtbar
 
 window.setTime = function(hours, minutes) {
   const minuteAngle = minutes * 6;
