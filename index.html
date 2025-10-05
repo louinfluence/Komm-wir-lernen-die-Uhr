@@ -9,21 +9,24 @@
 
 <body>
   <header class="app-header">
-    <button id="menuToggle" aria-label="Menü öffnen">☰</button>
+    <button id="menuToggle" aria-label="Menü öffnen oder schließen">☰</button>
     <h1>Komm wir lernen die Uhr</h1>
     <button id="modeToggle" aria-label="Darstellung umschalten">🌗</button>
   </header>
 
+  <!-- Seitenmenü -->
   <aside id="sideMenu" class="menu hidden">
     <h2>Menü</h2>
-    <ul>
-      <li><button onclick="setTime(3,0)">Beispiel: 3 Uhr</button></li>
-      <li><button onclick="setTime(7,30)">Beispiel: 7 : 30</button></li>
-      <li><button onclick="setTime(12,15)">Beispiel: 12 : 15</button></li>
-    </ul>
+
+    <section class="menu-section">
+      <h3>🕓 Anleitung</h3>
+      <p>Stelle die Uhr, indem du auf die Buttons unter der Uhr tippst oder eine Uhrzeit im Feld eingibst.</p>
+      <p>Mit dem 🌗-Symbol oben kannst du zwischen <strong>Hell-</strong> und <strong>Dunkelmodus</strong> wechseln.</p>
+    </section>
+
     <hr>
-    <p><strong>Darstellung:</strong></p>
-    <button onclick="toggleMode()">🌞 / 🌚 Umschalten</button>
+
+    <button id="closeMenu">✖ Menü schließen</button>
   </aside>
 
   <main>
