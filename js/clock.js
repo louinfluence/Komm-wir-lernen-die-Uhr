@@ -2,7 +2,20 @@
 window.displayMode = "12h"; // global sichtbar
 
 window.setTime = function(hours, minutes) {
-  const minuteAngle = minutes * 6;
+  // Drehrichtung weich halten: merken der letzten Winkelposition
+window.lastMinuteAngle ??= 0;
+let newAngle = minutes * 6;
+
+// Falls Sprung > 300° (z. B. 354 -> 0), korrigieren:
+if (Math.abs(newAngle - window.lastMinuteAngle) > 300) {
+  if (newAngle < window.lastMinuteAngle) {
+    newAngle += 360;
+  }
+}
+
+const minuteAngle = newAngle;
+window.lastMinuteAngle = newAngle % 360;
+
   const hourAngle = (hours % 12) * 30 + minutes * 0.5;
 
   // ⬇️ NEU: aktuelle Minuten global merken (0–1439)
