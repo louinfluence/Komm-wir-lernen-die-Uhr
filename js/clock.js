@@ -1,31 +1,54 @@
-// --------------------
-// CLOCK MODULE
-// --------------------
+// ----------------------------
+// CLOCK.JS – Uhrdarstellung
+// ----------------------------
 
+// interne Zustände der Zeiger
 let hourAngle = 0;
 let minuteAngle = 0;
 
-export function rotateHour(deg) {
+/**
+ * Dreht den Stundenzeiger um den angegebenen Winkel
+ * @param {number} deg - Gradzahl (positiv = im Uhrzeigersinn)
+ */
+function rotateHour(deg) {
   hourAngle = (hourAngle + deg) % 360;
-  document.getElementById("stundenzeiger").style.transform = `rotate(${hourAngle}deg)`;
+  updateClock();
 }
 
-export function rotateMinute(deg) {
+/**
+ * Dreht den Minutenzeiger um den angegebenen Winkel
+ * @param {number} deg - Gradzahl (positiv = im Uhrzeigersinn)
+ */
+function rotateMinute(deg) {
   minuteAngle = (minuteAngle + deg) % 360;
-  document.getElementById("minutenzeiger").style.transform = `rotate(${minuteAngle}deg)`;
+  updateClock();
 }
 
-// Beispiel: direkt Uhrzeit setzen
-export function setTime(hours, minutes) {
-  // Minuten → 6° pro Minute
-  const minuteDeg = minutes * 6;
-  // Stunden → 30° pro Stunde + Zusatz je nach Minuten
-  const hourDeg = (hours % 12) * 30 + minutes * 0.5;
-
-  minuteAngle = minuteDeg;
-  hourAngle = hourDeg;
-
-  document.getElementById("stundenzeiger").style.transform = `rotate(${hourDeg}deg)`;
-  document.getElementById("minutenzeiger").style.transform = `rotate(${minuteDeg}deg)`;
+/**
+ * Setzt eine Uhrzeit direkt (z. B. setTime(3, 45))
+ * @param {number} hours - Stunde (0–23)
+ * @param {number} minutes - Minuten (0–59)
+ */
+function setTime(hours, minutes) {
+  minuteAngle = minutes * 6;                   // 360° / 60 min
+  hourAngle = (hours % 12) * 30 + minutes * 0.5; // 360° / 12 h + Anteil der Minuten
+  updateClock();
 }
 
+/**
+ * Aktualisiert die Anzeige der Uhr
+ */
+function updateClock() {
+  const hourHand = document.getElementById("stundenzeiger");
+  const minuteHand = document.getElementById("minutenzeiger");
+
+  if (hourHand && minuteHand) {
+    hourHand.style.transform = `rotate(${hourAngle}deg)`;
+    minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
+  }
+}
+
+// Optional: kleine Startzeit anzeigen (z. B. 3:00)
+document.addEventListener("DOMContentLoaded", () => {
+  setTime(3, 0);
+});
