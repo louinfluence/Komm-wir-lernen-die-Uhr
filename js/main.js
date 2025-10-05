@@ -1,12 +1,25 @@
-// --------------------
-// MAIN GAME LOGIC
-// --------------------
-import { rotateHour, rotateMinute, setTime } from "./clock.js";
+// ----------------------------
+// MAIN.JS – Spiel- und Aufgabenlogik
+// ----------------------------
 
-window.rotateHour = rotateHour;
-window.rotateMinute = rotateMinute;
-window.setTime = setTime;
+/**
+ * Beispiel: Startfunktion (wird später beim Spielstart genutzt)
+ */
+function initGame() {
+  console.log("Uhr-Spiel gestartet!");
+  // Hier könnte später z. B. die erste Aufgabe geladen werden
+  // loadLevel(0);
+}
 
-// Beispiel-Testaufruf:
-setTime(3, 45); // zeigt 3:45
+/**
+ * Beispiel: Rückmeldung im Konsolen-Test
+ */
+document.addEventListener("DOMContentLoaded", () => {
+  initGame();
 
+  // Beispiel-Test: Uhr auf 7:30 stellen nach 2 Sekunden
+  setTimeout(() => {
+    setTime(7, 30);
+    console.log("Uhr auf 7:30 gestellt.");
+  }, 2000);
+});
