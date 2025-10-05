@@ -1,73 +1,70 @@
-// Menüsteuerung & Modi
-const sideMenu = document.getElementById("sideMenu");
-const menuToggle = document.getElementById("menuToggle");
-const closeMenu = document.getElementById("closeMenu");
-const modeToggle = document.getElementById("modeToggle");
-const slider = document.getElementById("timeSlider");
-const body = document.body;
+const sideMenu=document.getElementById("sideMenu");
+const menuToggle=document.getElementById("menuToggle");
+const closeMenu=document.getElementById("closeMenu");
+const modeToggle=document.getElementById("modeToggle");
+const body=document.body;
+const slider=document.getElementById("timeSlider");
 
-let liveMode = false;
+const modeSwitch=document.getElementById("modeSwitch");
+const displaySwitch=document.getElementById("displaySwitch");
+const themeSwitch=document.getElementById("themeSwitch");
 
-// --- Menü ---
-menuToggle.addEventListener("click", () => {
-  sideMenu.classList.toggle("visible");
+let liveMode=false;
+let displayMode="24h";
+let liveInterval=null;
+
+/* Menü öffnen/schließen */
+menuToggle.addEventListener("click",()=>sideMenu.classList.toggle("visible"));
+closeMenu.addEventListener("click",()=>sideMenu.classList.remove("visible"));
+
+/* Theme */
+themeSwitch.addEventListener("change",()=>{
+  body.classList.toggle("dark",themeSwitch.checked);
 });
-closeMenu.addEventListener("click", () => {
-  sideMenu.classList.remove("visible");
+
+/* Echtzeit vs Lernmodus */
+modeSwitch.addEventListener("change",()=>{
+  liveMode=modeSwitch.checked;
+  if(liveMode) startLiveClock(); else clearInterval(liveInterval);
 });
 
-// --- Dark/Light Mode ---
-modeToggle.addEventListener("click", () => {
-  const isDark = body.classList.toggle("dark");
-  localStorage.setItem("mode", isDark ? "dark" : "light");
+/* 12h / 24h */
+displaySwitch.addEventListener("change",()=>{
+  displayMode=displaySwitch.checked?"24h":"12h";
+  toggleClockFace(displayMode);
+  if(liveMode){ startLiveClock(); }
 });
-if (localStorage.getItem("mode") === "dark") body.classList.add("dark");
 
-// --- Slidersteuerung ---
-slider.addEventListener("input", () => {
-  if (!liveMode) {
-    const totalMinutes = parseInt(slider.value);
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    setTime(hours, minutes);
+/* Zeitanzeige über Slider */
+slider.addEventListener("input",()=>{
+  if(!liveMode){
+    const t=parseInt(slider.value);
+    const h=Math.floor(t/60);
+    const m=t%60;
+    setTime(h,m);
   }
 });
 
-// --- Radiobuttons ---
-document.querySelectorAll('input[name="mode"]').forEach((el) => {
-  el.addEventListener("change", () => {
-    liveMode = el.value === "live";
-    if (liveMode) startLiveClock();
-  });
-});
-
-document.querySelectorAll('input[name="display"]').forEach((el) => {
-  el.addEventListener("change", () => {
-    displayMode = el.value;
-    const now = new Date();
-    setTime(now.getHours(), now.getMinutes());
-  });
-});
-
-document.querySelectorAll('input[name="theme"]').forEach((el) => {
-  el.addEventListener("change", () => {
-    body.classList.toggle("dark", el.value === "dark");
-  });
-});
-
-// --- Echtzeitmodus ---
-let liveInterval = null;
-function startLiveClock() {
-  clearInterval(liveInterval);
-  function update() {
-    const now = new Date();
-    setTime(now.getHours(), now.getMinutes());
-  }
-  update();
-  liveInterval = setInterval(update, 10000);
+/* Uhr wechseln */
+function toggleClockFace(mode){
+  const z12=document.getElementById("ziffernblatt_12h");
+  const z24=document.getElementById("ziffernblatt_24h");
+  if(mode==="24h"){ z12.classList.add("hidden"); z24.classList.remove("hidden"); }
+  else { z24.classList.add("hidden"); z12.classList.remove("hidden"); }
 }
 
-// --- Initial ---
-document.addEventListener("DOMContentLoaded", () => {
-  setTime(3, 0);
+/* Echtzeitmodus */
+function startLiveClock(){
+  clearInterval(liveInterval);
+  function update(){
+    const now=new Date();
+    setTime(now.getHours(),now.getMinutes());
+  }
+  update();
+  liveInterval=setInterval(update,10000);
+}
+
+/* Initial */
+document.addEventListener("DOMContentLoaded",()=>{
+  setTime(3,0);
 });
