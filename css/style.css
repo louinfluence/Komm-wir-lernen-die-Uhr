@@ -136,6 +136,11 @@ main{
   transform:translate(-50%,-50%);
   pointer-events:none;
 }
+
+#ziffernblatt_24h {
+  transform: translate(-50%, -50%) scale(0.75);
+}
+
 #stundenzeiger,#minutenzeiger{transform-origin:50% 50%;}
 .hidden{display:none;}
 
