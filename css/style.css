@@ -130,6 +130,25 @@ main {
   transform-origin: 50% 50%;
 }
 
+.clock-container {
+  outline: 1px dashed red;
+}
+
+/*debug-tool grünerpunkt mitte */
+#debug-center {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: lime;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99;
+}
+
+
 /* Buttons & Eingaben */
 .controls, .time-input {
   margin-top: 15px;
