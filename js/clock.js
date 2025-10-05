@@ -1,5 +1,5 @@
 // --- CLOCK CORE FUNCTIONS ---
-window.displayMode = "12h"; // global sichtbar
+window.displayMode = "24h"; // global sichtbar
 
 window.setTime = function(hours, minutes) {
   // kontinuierlicher Minutenwinkel (keine Sprünge)
