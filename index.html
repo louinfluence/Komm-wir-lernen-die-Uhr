@@ -1,90 +1,95 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Komm wir lernen die Uhr</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Komm wir lernen die Uhr – Test</title>
+  <link rel="stylesheet" href="css/style.css" />
   <style>
+    /* Zentrierung und Layout */
     body {
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: #f0f0f0;
-    }
-.clock {
-  position: relative;
-  width: 400px;
-  height: 400px;
-}
-
-.clock img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1; /* Grundebene */
-}
-
-/* Zeiger */
-.hand {
-  position: absolute;
-  bottom: 50%;
-  left: 50%;
-  transform-origin: bottom center;
-  transform: translateX(-50%) rotate(0deg);
-  transition: transform 0.5s ease-in-out;
-  z-index: 2; /* höher = vorne */
-}
-
-.hand img {
-  width: 100%;
-  height: auto;
-}
-
-
-    .minute-hand {
-      width: 10px;
-      height: 50%;
+      background: #f4f4f4;
+      flex-direction: column;
+      font-family: sans-serif;
     }
 
-    .hour-hand {
-      width: 14px;
-      height: 35%;
+    .clock-container {
+      position: relative;
+      width: 400px;
+      height: 400px;
+    }
+
+    .clock-container img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform-origin: 50% 50%;
+      pointer-events: none; /* Zeiger sollen durch Buttons gesteuert werden */
+    }
+
+    #stundenzeiger {
+      transform-origin: 50% 80%; /* ggf. anpassen je nach Grafik */
+    }
+
+    #minutenzeiger {
+      transform-origin: 50% 90%; /* ggf. anpassen je nach Grafik */
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: #008CBA;
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background-color: #0074a1;
     }
   </style>
 </head>
+
 <body>
+  <div class="clock-container">
+    <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt" id="ziffernblatt" />
+    <img src="assets/images/Stundenzeiger.png" alt="Stundenzeiger" id="stundenzeiger" />
+    <img src="assets/images/Minutenzeiger.png" alt="Minutenzeiger" id="minutenzeiger" />
+  </div>
 
-  <div class="clock">
-    <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt">
-
-    <div class="hand hour-hand">
-      <img src="assets/images/Stundenzeiger.png" alt="Stundenzeiger">
-    </div>
-
-    <div class="hand minute-hand">
-      <img src="assets/images/Minutenzeiger.png" alt="Minutenzeiger">
-    </div>
+  <div class="controls">
+    <button onclick="rotateHour(-30)">◀ Stunde -</button>
+    <button onclick="rotateHour(30)">Stunde + ▶</button>
+    <button onclick="rotateMinute(-30)">◀ Minute -</button>
+    <button onclick="rotateMinute(30)">Minute + ▶</button>
   </div>
 
   <script>
-    // Beispielrotation: Uhrzeit einstellen
-    function setTime(hours, minutes) {
-      const hourHand = document.querySelector('.hour-hand');
-      const minuteHand = document.querySelector('.minute-hand');
+    let hourAngle = 0;
+    let minuteAngle = 0;
 
-      const hourDeg = (hours % 12) * 30 + minutes * 0.5;  // 360° / 12 + Minutenkorrektur
-      const minuteDeg = minutes * 6;                      // 360° / 60
-
-      hourHand.style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
-      minuteHand.style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
+    function rotateHour(deg) {
+      hourAngle = (hourAngle + deg) % 360;
+      document.getElementById("stundenzeiger").style.transform = `rotate(${hourAngle}deg)`;
     }
 
-    // Beispiel: Zeige 3:15 Uhr
-    setTime(3, 15);
+    function rotateMinute(deg) {
+      minuteAngle = (minuteAngle + deg) % 360;
+      document.getElementById("minutenzeiger").style.transform = `rotate(${minuteAngle}deg)`;
+    }
   </script>
 </body>
 </html>
