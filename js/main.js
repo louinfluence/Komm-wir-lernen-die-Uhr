@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Beispiel-Test: Uhr auf 7:30 stellen nach 2 Sekunden
   setTimeout(() => {
-    setTime(7, 30);
-    console.log("Uhr auf 7:30 gestellt.");
+    setTime(12, 00);
+    console.log("Uhr auf 12:00 gestellt.");
   }, 2000);
 });
