@@ -5,14 +5,18 @@
 const body = document.body;
 const sideMenu = document.getElementById("sideMenu");
 const menuToggle = document.getElementById("menuToggle");
+const closeMenu = document.getElementById("closeMenu");
 const modeToggle = document.getElementById("modeToggle");
 
-// Menü öffnen/schließen
-menuToggle.addEventListener("click", () => {
-  sideMenu.classList.toggle("visible");
-});
+// --- Menü öffnen/schließen ---
+menuToggle.addEventListener("click", toggleMenu);
+closeMenu.addEventListener("click", toggleMenu);
 
-// Dark-/Light-Mode umschalten
+function toggleMenu() {
+  sideMenu.classList.toggle("visible");
+}
+
+// --- Dark-/Light-Mode ---
 modeToggle.addEventListener("click", toggleMode);
 
 function toggleMode() {
@@ -20,7 +24,7 @@ function toggleMode() {
   localStorage.setItem("mode", isDark ? "dark" : "light");
 }
 
-// beim Laden gespeicherten Modus aktivieren
+// --- Modus beim Laden aktivieren ---
 document.addEventListener("DOMContentLoaded", () => {
   const savedMode = localStorage.getItem("mode");
   if (savedMode === "dark") body.classList.add("dark");
