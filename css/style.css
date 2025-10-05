@@ -81,4 +81,36 @@ button:hover {
     width: 300px;
     height: 300px;
   }
+
+  .time-input {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.time-input input {
+  width: 60px;
+  padding: 6px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.time-input button {
+  padding: 8px 14px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.time-input button:hover {
+  background-color: #45a049;
+}
+
 }
