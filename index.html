@@ -3,62 +3,90 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Komm wir lernen die Uhr – Test</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <title>Komm wir lernen die Uhr – Zeiger-Test</title>
   <style>
-    /* Zentrierung und Layout */
+    /* Grundlayout */
     body {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: #f4f4f4;
-      flex-direction: column;
-      font-family: sans-serif;
+      margin: 0;
+      background: #f5f5f5;
+      font-family: system-ui, sans-serif;
     }
 
+    /* Uhr-Container */
     .clock-container {
       position: relative;
       width: 400px;
       height: 400px;
     }
 
+    /* Bilder übereinander stapeln */
     .clock-container img {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      transform-origin: 50% 50%;
-      pointer-events: none; /* Zeiger sollen durch Buttons gesteuert werden */
+      pointer-events: none;
     }
 
+    /* Drehpunkte der Zeiger – bitte feinjustieren */
     #stundenzeiger {
-      transform-origin: 50% 80%; /* ggf. anpassen je nach Grafik */
+      transform-origin: 50% 85%; /* ggf. anpassen */
     }
 
     #minutenzeiger {
-      transform-origin: 50% 90%; /* ggf. anpassen je nach Grafik */
+      transform-origin: 50% 95%; /* ggf. anpassen */
     }
 
+    /* Debug-Kreis (zeigt Uhrmittelpunkt) */
+    #debug-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      background: red;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.7;
+      z-index: 10;
+    }
+
+    /* Buttons */
     .controls {
       margin-top: 20px;
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     button {
-      padding: 8px 16px;
+      padding: 10px 16px;
       border: none;
       border-radius: 6px;
-      background-color: #008CBA;
-      color: white;
-      cursor: pointer;
+      background-color: #008cba;
+      color: #fff;
       font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
     }
 
     button:hover {
       background-color: #0074a1;
+    }
+
+    /* Responsive kleiner */
+    @media (max-width: 600px) {
+      .clock-container {
+        width: 300px;
+        height: 300px;
+      }
     }
   </style>
 </head>
@@ -68,6 +96,7 @@
     <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt" id="ziffernblatt" />
     <img src="assets/images/Stundenzeiger.png" alt="Stundenzeiger" id="stundenzeiger" />
     <img src="assets/images/Minutenzeiger.png" alt="Minutenzeiger" id="minutenzeiger" />
+    <div id="debug-center"></div> <!-- Mittelpunktanzeige -->
   </div>
 
   <div class="controls">
