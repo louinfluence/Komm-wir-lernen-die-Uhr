@@ -21,6 +21,19 @@
     <button onclick="rotateMinute(30)">Minute + ▶</button>
   </div>
 
+  <div class="time-input">
+  <label>
+    Stunde:
+    <input type="number" id="hourInput" min="0" max="23" value="3" />
+  </label>
+  <label>
+    Minute:
+    <input type="number" id="minuteInput" min="0" max="59" value="0" />
+  </label>
+  <button onclick="applyTime()">⏱ Uhrzeit setzen</button>
+</div>
+
+
   <!-- JavaScript -->
   <script src="js/clock.js"></script>
   <script src="js/main.js"></script>
