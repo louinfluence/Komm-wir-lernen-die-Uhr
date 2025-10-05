@@ -59,27 +59,20 @@ function initClockApp() {
   /* ===== Slider: Grob/Fein ===== */
   setSliderMode(false);
 
-  slider.addEventListener("input", () => {
-    if (liveMode) return;
+ slider.addEventListener("input", () => {
+  if (liveMode) return;
 
-    const val = parseInt(slider.value, 10);
-    const totalMinutes = fineMode ? val : val * 5;
+  const val = parseInt(slider.value, 10);
+  const totalMinutes = fineMode ? val : val * 5;
 
-    // 👉 Startzeit auf 6:00 verschieben
-    const adjustedMinutes = (totalMinutes + 360) % 1440;
-    const h = Math.floor(adjustedMinutes / 60);
-    const m = adjustedMinutes % 60;
+  // Startzeit auf 6:00 verschieben
+  const adjustedMinutes = (totalMinutes + 360) % 1440;
+  const h = Math.floor(adjustedMinutes / 60);
+  const m = adjustedMinutes % 60;
 
-    setTime(h, m);
-
-    // Text sanft aktualisieren
-    clearTimeout(textTimeout);
-    timeLabel.style.opacity = 0;
-    textTimeout = setTimeout(() => {
-      updateTimeLabel(h, m);
-      timeLabel.style.opacity = 1;
-    }, 300);
-  });
+  setTime(h, m);
+  updateTimeLabel(h, m); // 👈 direkt live aktualisieren, ohne Timeout
+});
 
   // Long-Press → temporär Feinmodus
   const enableFine = (on) => {
@@ -153,26 +146,51 @@ function initClockApp() {
     return "nachts";
   }
 
-  function updateTimeLabel(h, m) {
-    if (!timeLabel) return;
+function updateTimeLabel(h, m) {
+  if (!timeLabel) return;
 
-    const hour = h;
-    const daytime = getDaytimeText(hour);
-    const formatted = `${hour.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+  const hour = h;
+  const minute = m;
+  const daytime = getDaytimeText(hour);
+  const formatted = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
 
-    let text = "";
-    if (hour >= 12) {
-      const alt = hour >= 12 ? hour - 12 : hour + 12;
-      text = `Es ist ${formatted} Uhr oder auch ${alt}:00 Uhr ${daytime}`;
-    } else {
-      text = `Es ist ${formatted} Uhr ${daytime}`;
-    }
+  // Alternativzeit (12 h-Format mit Minuten)
+  let altHour = hour >= 12 ? hour - 12 : hour + 12;
+  if (altHour >= 24) altHour -= 24;
+  const altFormatted = `${altHour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
 
-    // sanft einblenden + Farbe nach Tageszeit
-    timeLabel.className = "";
-    timeLabel.classList.add("fade-in", daytime);
-    timeLabel.textContent = text;
+  let text = "";
+  if (hour >= 12) {
+    text = `Es ist ${formatted} Uhr oder auch ${altFormatted} Uhr ${daytime}`;
+  } else {
+    text = `Es ist ${formatted} Uhr ${daytime}`;
   }
+
+  timeLabel.textContent = text;
+
+  // dynamische Farbverläufe je nach Tageszeit
+  let color1, color2;
+  switch (daytime) {
+    case "morgens":
+      color1 = "#FFEB99"; color2 = "#FFD166"; break;
+    case "vormittags":
+      color1 = "#FFD166"; color2 = "#FFA500"; break;
+    case "mittags":
+      color1 = "#FFB347"; color2 = "#FF8C00"; break;
+    case "nachmittags":
+      color1 = "#87CEEB"; color2 = "#4682B4"; break;
+    case "abends":
+      color1 = "#457b9d"; color2 = "#1d3557"; break;
+    case "nachts":
+    default:
+      color1 = "#0b132b"; color2 = "#1c2541"; break;
+  }
+
+  timeLabel.style.background = `linear-gradient(to right, ${color1}, ${color2})`;
+  timeLabel.style.webkitBackgroundClip = "text";
+  timeLabel.style.webkitTextFillColor = "transparent";
+  timeLabel.style.transition = "background 1.5s ease";
+}
 
   /* -------- Init -------- */
   setTime(6, 0);
