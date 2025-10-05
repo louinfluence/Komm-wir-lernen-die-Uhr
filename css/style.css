@@ -48,18 +48,18 @@ body {
   cursor: pointer;
 }
 
-/* --- Menü --- */
+/* --- Menü (seitlich ausblendbar) --- */
 .menu {
   position: fixed;
   top: 0;
   left: 0;
-  width: 270px;
+  width: 250px;
   height: 100%;
   background: var(--menu-bg);
   border-right: 2px solid var(--menu-border);
   padding: 20px;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.25);
-  transform: translateX(-280px);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+  transform: translateX(-260px);
   transition: transform 0.3s ease;
   z-index: 1000;
 }
@@ -72,33 +72,29 @@ body {
   margin-top: 0;
 }
 
-.menu-section h3 {
-  margin-bottom: 5px;
-  font-size: 1.1rem;
+.menu ul {
+  list-style: none;
+  padding: 0;
 }
 
-.menu-section p {
-  font-size: 0.95rem;
-  line-height: 1.4;
-  margin: 0 0 10px;
+.menu li {
+  margin: 10px 0;
 }
 
-#closeMenu {
+.menu button {
   width: 100%;
-  margin-top: 20px;
-  background-color: var(--button-bg);
+  padding: 8px;
+  background: var(--button-bg);
   border: none;
-  color: white;
-  padding: 10px;
   border-radius: 6px;
-  font-size: 1rem;
+  color: white;
   cursor: pointer;
+  font-size: 1rem;
 }
 
-#closeMenu:hover {
-  background-color: var(--button-hover);
+.menu button:hover {
+  background: var(--button-hover);
 }
-
 
 /* --- Hauptinhalt --- */
 main {
@@ -109,34 +105,25 @@ main {
   justify-content: center;
 }
 
+/* Uhr */
 .clock-container {
   position: relative;
-  width: 400px;
-  height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  width: 600px;
+  height: 600px;
 }
 
-/* Ziffernblatt bleibt fest im Container */
-#ziffernblatt {
+.clock-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: auto;
-  display: block;
+  height: 100%;
+  pointer-events: none;
 }
 
-/* Zeiger liegen exakt zentriert darüber */
 #stundenzeiger,
 #minutenzeiger {
-  position: absolute;
-  top: 50%;
-  left: 50%;
   transform-origin: 50% 50%;
-  transform: translate(-50%, -50%) rotate(0deg);
-  width: 100%;
-  height: auto;
-  pointer-events: none;
 }
 
 /* Buttons & Eingaben */
