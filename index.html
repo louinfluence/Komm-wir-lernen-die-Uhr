@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Komm wir lernen die Uhr</title>
+  <title>Komm wir lernen die Uhr – Version 2.0</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 
@@ -16,38 +16,46 @@
 
   <!-- Seitenmenü -->
   <aside id="sideMenu" class="menu hidden">
-    <h2>Menü</h2>
+    <h2>Einstellungen</h2>
 
     <section class="menu-section">
-      <h3>🕓 Anleitung</h3>
-      <p>Stelle die Uhr, indem du auf die Buttons unter der Uhr tippst oder eine Uhrzeit im Feld eingibst.</p>
-      <p>Mit dem 🌗-Symbol oben kannst du zwischen <strong>Hell-</strong> und <strong>Dunkelmodus</strong> wechseln.</p>
+      <h3>Art der Uhr</h3>
+      <label><input type="radio" name="mode" value="learn" checked /> Lernmodus</label>
+      <label><input type="radio" name="mode" value="live" /> Echtzeitmodus</label>
+    </section>
+
+    <section class="menu-section">
+      <h3>Darstellung</h3>
+      <label><input type="radio" name="display" value="12h" /> 12-Stunden-Uhr</label>
+      <label><input type="radio" name="display" value="24h" checked /> 24-Stunden-Uhr</label>
+    </section>
+
+    <section class="menu-section">
+      <h3>Farbschema</h3>
+      <label><input type="radio" name="theme" value="light" checked /> Hell</label>
+      <label><input type="radio" name="theme" value="dark" /> Dunkel</label>
     </section>
 
     <hr>
 
-    <button id="closeMenu">✖ Menü schließen</button>
+    <section class="menu-section">
+      <h3>🕓 Anleitung</h3>
+      <p>Ziehe den Schieberegler, um die Uhrzeit einzustellen, oder wähle den Echtzeitmodus.</p>
+      <button id="closeMenu">✖ Menü schließen</button>
+    </section>
   </aside>
 
+  <!-- Hauptinhalt -->
   <main>
     <div class="clock-container">
-      <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt" id="ziffernblatt" />
+      <img src="assets/images/Ziffernblatt_24h.png" alt="Ziffernblatt" id="ziffernblatt" />
       <img src="assets/images/Stundenzeiger.png" alt="Stundenzeiger" id="stundenzeiger" />
       <img src="assets/images/Minutenzeiger.png" alt="Minutenzeiger" id="minutenzeiger" />
     </div>
 
-    <div class="controls">
-      <button onclick="rotateHour(-30)">◀ Stunde -</button>
-      <button onclick="rotateHour(30)">Stunde + ▶</button>
-      <button onclick="rotateMinute(-30)">◀ Minute -</button>
-      <button onclick="rotateMinute(30)">Minute + ▶</button>
-    </div>
+    <input type="range" id="timeSlider" min="0" max="1439" value="0" />
 
-    <div class="time-input">
-      <label>Stunde: <input type="number" id="hourInput" min="0" max="23" value="3"></label>
-      <label>Minute: <input type="number" id="minuteInput" min="0" max="59" value="0"></label>
-      <button onclick="applyTime()">⏱ Uhrzeit setzen</button>
-    </div>
+    <div id="timeDisplay">Es ist zwölf Uhr.</div>
   </main>
 
   <script src="js/clock.js"></script>
