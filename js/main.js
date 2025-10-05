@@ -12,6 +12,7 @@ function initClockApp() {
   const body       = document.body;
   const slider     = document.getElementById("timeSlider");
   const timeDisplay= document.getElementById("timeDisplay");
+  const timeLabel  = document.getElementById("timeLabel"); // 👈 für Textausgabe
 
   const modeSwitch    = document.getElementById("modeSwitch");
   const displaySwitch = document.getElementById("displaySwitch");
@@ -55,11 +56,8 @@ function initClockApp() {
   });
 
   /* ===== Slider: Grob/Fein ===== */
-
-  // Initial: Grobmodus aktiv (5-min Schritte → 0..288)
   setSliderMode(false);
 
-  // Input -> Zeit setzen
   slider.addEventListener("input", () => {
     if (liveMode) return;
 
@@ -76,6 +74,7 @@ function initClockApp() {
     textTimeout = setTimeout(() => {
       timeDisplay.textContent = formatTime(h, m);
       timeDisplay.style.opacity = 1;
+      updateTimeLabel(h, m); // 👈 Text aktualisieren
     }, 1000);
   });
 
@@ -86,18 +85,16 @@ function initClockApp() {
     setSliderMode(fineMode);
   };
 
-  // Pointer-Events (iPad freundlich)
   const onPointerDown = () => {
     if (liveMode) return;
     clearTimeout(lpTimer);
-    lpTimer = setTimeout(() => enableFine(true), 350); // 350ms halten => Fein
+    lpTimer = setTimeout(() => enableFine(true), 350);
   };
   const onPointerUp = () => {
     clearTimeout(lpTimer);
-    if (!liveMode) enableFine(false); // zurück zu Grob nach Loslassen
+    if (!liveMode) enableFine(false);
   };
 
-  // iOS Safari: pointer & touch unterstützen
   slider.addEventListener("pointerdown", onPointerDown);
   slider.addEventListener("pointerup", onPointerUp);
   slider.addEventListener("pointercancel", onPointerUp);
@@ -106,15 +103,14 @@ function initClockApp() {
   slider.addEventListener("touchend", onPointerUp);
   slider.addEventListener("touchcancel", onPointerUp);
 
-  // Slider-Modus setzen (Grob/Fein) und Wert synchronisieren
   function setSliderMode(fine) {
-    const minutes = (window.currentTotalMinutes ?? 180); // fallback 03:00
+    const minutes = (window.currentTotalMinutes ?? 180);
     if (fine) {
       slider.min = 0; slider.max = 1439; slider.step = 1;
       slider.value = minutes;
       slider.classList.add("fine");
     } else {
-      slider.min = 0; slider.max = 288; slider.step = 1;  // 288 * 5 = 1440
+      slider.min = 0; slider.max = 288; slider.step = 1;
       slider.value = Math.round(minutes / 5);
       slider.classList.remove("fine");
     }
@@ -134,11 +130,45 @@ function initClockApp() {
     function update() {
       const now = new Date();
       setTime(now.getHours(), now.getMinutes());
+      updateTimeLabel(now.getHours(), now.getMinutes());
     }
     update();
     liveInterval = setInterval(update, 10000);
   }
 
+  /* -------- Tageszeit-Anzeige -------- */
+  function getDaytimeText(hour) {
+    if (hour >= 6 && hour < 10)  return "morgens";
+    if (hour >= 10 && hour < 12) return "vormittags";
+    if (hour >= 12 && hour < 14) return "mittags";
+    if (hour >= 14 && hour < 17) return "nachmittags";
+    if (hour >= 17 && hour < 21) return "abends";
+    return "nachts";
+  }
+
+  function updateTimeLabel(h, m) {
+  if (!timeLabel) return;
+
+  const hour = h;
+  const daytime = getDaytimeText(hour);
+  const formatted = `${hour.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+
+  let text = "";
+  if (hour >= 12) {
+    const alt = hour >= 12 ? hour - 12 : hour + 12;
+    text = `Es ist ${formatted} Uhr oder auch ${alt}:00 Uhr ${daytime}`;
+  } else {
+    text = `Es ist ${formatted} Uhr ${daytime}`;
+  }
+
+  // sanft einblenden
+  timeLabel.className = ""; // alte Klassen entfernen
+  timeLabel.classList.add("fade-in", daytime);
+  timeLabel.textContent = text;
+}
+
+
   /* -------- Init -------- */
   setTime(6, 0);
+  updateTimeLabel(6, 0);
 }
