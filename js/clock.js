@@ -11,23 +11,21 @@ window.setTime = function(hours, minutes) {
   // Sprünge über 180° korrigieren (z. B. 354° → 0° → +6°)
   if (delta < -180) delta += 360;
   if (delta > 180) delta -= 360;
-
-  // neuen kumulierten Winkel aufaddieren
   window.totalMinuteAngle += delta;
 
   const minuteAngle = window.totalMinuteAngle;
+
   // kontinuierlicher Stundenwinkel
-window.totalHourAngle ??= 0;
-const targetHourAngle = (hours % 12) * 30 + minutes * 0.5;
-const lastHourAngle = window.totalHourAngle % 360;
-let deltaH = targetHourAngle - lastHourAngle;
+  window.totalHourAngle ??= 0;
+  const targetHourAngle = (hours % 12) * 30 + minutes * 0.5;
+  const lastHourAngle = window.totalHourAngle % 360;
+  let deltaH = targetHourAngle - lastHourAngle;
 
-if (deltaH < -180) deltaH += 360;
-if (deltaH > 180) deltaH -= 360;
+  if (deltaH < -180) deltaH += 360;
+  if (deltaH > 180) deltaH -= 360;
+  window.totalHourAngle += deltaH;
 
-window.totalHourAngle += deltaH;
-const hourAngle = window.totalHourAngle;
-
+  const hourAngle = window.totalHourAngle;
 
   // aktuelle Minuten global merken (0–1439)
   window.currentTotalMinutes = (hours * 60 + minutes) % 1440;
@@ -46,7 +44,9 @@ function updateClock(hours, minutes, hourAngle, minuteAngle) {
     minuteHand.style.transform = `translate(-50%, -50%) rotate(${minuteAngle}deg)`;
   }
 
-  document.getElementById("timeDisplay").textContent = formatTime(hours, minutes);
+  // optional: Anzeige der digitalen Zeit, falls vorhanden
+  const disp = document.getElementById("timeDisplay");
+  if (disp) disp.textContent = formatTime(hours, minutes);
 }
 
 function formatTime(h, m) {
@@ -56,6 +56,6 @@ function formatTime(h, m) {
     const hour = h % 12 || 12;
     return `Es ist ${hour}:${pad(m)} Uhr ${suffix}.`;
   } else {
-    return `Es ist ${pad(h)}:${pad(m)} Uhr.`;
+    return `${pad(h)}:${pad(m)} Uhr`;
   }
 }
