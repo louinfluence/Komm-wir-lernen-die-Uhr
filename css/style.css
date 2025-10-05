@@ -111,9 +111,13 @@ main {
 
 /* Uhr */
 .clock-container {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 400px;
   height: 400px;
+  overflow: hidden;
+  position: relative;
 }
 
 .clock-container img {
