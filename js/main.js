@@ -1,6 +1,4 @@
 window.addEventListener("DOMContentLoaded", () => {
-
-  /* kann rauß sobald veröffentlicht: von hier */
   initClockApp();
 });
 
@@ -11,11 +9,12 @@ function initClockApp() {
     setTimeout(initClockApp, 200);
     return;
   }
-  /* bisher */
-  const sideMenu = document.getElementById("sideMenu");
+
+  console.log("✅ Clock App initialisiert");
+
   const menuToggle = document.getElementById("menuToggle");
   const closeMenu = document.getElementById("closeMenu");
-  const modeToggle = document.getElementById("modeToggle"); // 🌗 oben rechts
+  const modeToggle = document.getElementById("modeToggle");
   const body = document.body;
   const slider = document.getElementById("timeSlider");
   const timeDisplay = document.getElementById("timeDisplay");
@@ -28,16 +27,16 @@ function initClockApp() {
   let liveInterval = null;
   let textTimeout = null;
 
-  /* ---------------- MENÜ ---------------- */
-menuToggle.addEventListener("click", () => {
-  sideMenu.classList.toggle("visible");
-});
+  /* ---------- MENÜ ---------- */
+  menuToggle.addEventListener("click", () => {
+    sideMenu.classList.toggle("visible");
+  });
 
-closeMenu.addEventListener("click", () => {
-  sideMenu.classList.remove("visible");
-});
+  closeMenu.addEventListener("click", () => {
+    sideMenu.classList.remove("visible");
+  });
 
-  /* ---------------- DARK / LIGHT MODUS ---------------- */
+  /* ---------- DARK/LIGHT ---------- */
   modeToggle.addEventListener("click", () => {
     body.classList.toggle("dark");
     themeSwitch.checked = body.classList.contains("dark");
@@ -49,13 +48,12 @@ closeMenu.addEventListener("click", () => {
     localStorage.setItem("theme", themeSwitch.checked ? "dark" : "light");
   });
 
-  // gespeichertes Theme laden
   if (localStorage.getItem("theme") === "dark") {
     body.classList.add("dark");
     themeSwitch.checked = true;
   }
 
-  /* ---------------- MODI ---------------- */
+  /* ---------- MODI ---------- */
   modeSwitch.addEventListener("change", () => {
     liveMode = modeSwitch.checked;
     if (liveMode) startLiveClock();
@@ -68,7 +66,7 @@ closeMenu.addEventListener("click", () => {
     if (liveMode) startLiveClock();
   });
 
-  /* ---------------- SLIDER ---------------- */
+  /* ---------- SLIDER ---------- */
   slider.addEventListener("input", () => {
     if (!liveMode) {
       const totalMinutes = parseInt(slider.value);
@@ -76,7 +74,6 @@ closeMenu.addEventListener("click", () => {
       const minutes = totalMinutes % 60;
       setTime(hours, minutes);
 
-      // Text kurz ausblenden während Slider bewegt wird
       timeDisplay.style.opacity = 0;
       clearTimeout(textTimeout);
       textTimeout = setTimeout(() => {
@@ -86,7 +83,7 @@ closeMenu.addEventListener("click", () => {
     }
   });
 
-  /* ---------------- UHR UMSCHALTUNG ---------------- */
+  /* ---------- HELFER ---------- */
   function toggleClockFace(mode) {
     const z12 = document.getElementById("ziffernblatt_12h");
     const z24 = document.getElementById("ziffernblatt_24h");
@@ -99,7 +96,6 @@ closeMenu.addEventListener("click", () => {
     }
   }
 
-  /* ---------------- ECHTZEIT ---------------- */
   function startLiveClock() {
     clearInterval(liveInterval);
     function update() {
@@ -110,6 +106,5 @@ closeMenu.addEventListener("click", () => {
     liveInterval = setInterval(update, 10000);
   }
 
-  /* ---------------- INIT ---------------- */
   setTime(3, 0);
-});
+}
