@@ -3,38 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Komm wir lernen die Uhr – Zeiger-Test</title>
+  <title>Komm wir lernen die Uhr</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
-  <div class="clock-container">
-    <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt" id="ziffernblatt" />
-    <img src="assets/images/Stundenzeiger.png" alt="Stundenzeiger" id="stundenzeiger" />
-    <img src="assets/images/Minutenzeiger.png" alt="Minutenzeiger" id="minutenzeiger" />
-  </div>
+  <header class="app-header">
+    <button id="menuToggle" aria-label="Menü öffnen">☰</button>
+    <h1>Komm wir lernen die Uhr</h1>
+    <button id="modeToggle" aria-label="Darstellung umschalten">🌗</button>
+  </header>
 
-  <div class="controls">
-    <button onclick="rotateHour(-30)">◀ Stunde -</button>
-    <button onclick="rotateHour(30)">Stunde + ▶</button>
-    <button onclick="rotateMinute(-30)">◀ Minute -</button>
-    <button onclick="rotateMinute(30)">Minute + ▶</button>
-  </div>
+  <aside id="sideMenu" class="menu hidden">
+    <h2>Menü</h2>
+    <ul>
+      <li><button onclick="setTime(3,0)">Beispiel: 3 Uhr</button></li>
+      <li><button onclick="setTime(7,30)">Beispiel: 7 : 30</button></li>
+      <li><button onclick="setTime(12,15)">Beispiel: 12 : 15</button></li>
+    </ul>
+    <hr>
+    <p><strong>Darstellung:</strong></p>
+    <button onclick="toggleMode()">🌞 / 🌚 Umschalten</button>
+  </aside>
 
-  <div class="time-input">
-  <label>
-    Stunde:
-    <input type="number" id="hourInput" min="0" max="23" value="3" />
-  </label>
-  <label>
-    Minute:
-    <input type="number" id="minuteInput" min="0" max="59" value="0" />
-  </label>
-  <button onclick="applyTime()">⏱ Uhrzeit setzen</button>
-</div>
+  <main>
+    <div class="clock-container">
+      <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt" id="ziffernblatt" />
+      <img src="assets/images/Stundenzeiger.png" alt="Stundenzeiger" id="stundenzeiger" />
+      <img src="assets/images/Minutenzeiger.png" alt="Minutenzeiger" id="minutenzeiger" />
+    </div>
 
+    <div class="controls">
+      <button onclick="rotateHour(-30)">◀ Stunde -</button>
+      <button onclick="rotateHour(30)">Stunde + ▶</button>
+      <button onclick="rotateMinute(-30)">◀ Minute -</button>
+      <button onclick="rotateMinute(30)">Minute + ▶</button>
+    </div>
 
-  <!-- JavaScript -->
+    <div class="time-input">
+      <label>Stunde: <input type="number" id="hourInput" min="0" max="23" value="3"></label>
+      <label>Minute: <input type="number" id="minuteInput" min="0" max="59" value="0"></label>
+      <button onclick="applyTime()">⏱ Uhrzeit setzen</button>
+    </div>
+  </main>
+
   <script src="js/clock.js"></script>
   <script src="js/main.js"></script>
 </body>
