@@ -106,9 +106,12 @@ function initClockApp() {
   slider.addEventListener("touchend", onPointerUp);
   slider.addEventListener("touchcancel", onPointerUp);
 
+  /* -------- Slider-Modus & Startwert -------- */
   function setSliderMode(fine) {
-    const minutes = 0; // Startwert Slider ganz links
-          window.currentTotalMinutes = 360; // Uhrzeit 6:00
+    // 👇 Slider ganz links (0), Uhr auf 6:00 Uhr
+    const minutes = 0;
+    window.currentTotalMinutes = 360;
+
     if (fine) {
       slider.min = 0; slider.max = 1439; slider.step = 1;
       slider.value = minutes;
@@ -174,4 +177,5 @@ function initClockApp() {
   /* -------- Init -------- */
   setTime(6, 0);
   updateTimeLabel(6, 0);
+  slider.value = 0; // 👈 beim Start ganz links
 }
