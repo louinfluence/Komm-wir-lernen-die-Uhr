@@ -1,23 +1,117 @@
-/* Grundlayout */
-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  background: #f5f5f5;
-  font-family: system-ui, sans-serif;
+/* --- Basislayout --- */
+:root {
+  --bg: #f5f5f5;
+  --text: #222;
+  --accent: #008cba;
+  --button-bg: #008cba;
+  --button-hover: #0074a1;
+  --menu-bg: #ffffff;
+  --menu-border: #ddd;
 }
 
-/* Uhr-Container */
+body.dark {
+  --bg: #1e1e1e;
+  --text: #eaeaea;
+  --accent: #5db2ff;
+  --button-bg: #5db2ff;
+  --button-hover: #3c9ad6;
+  --menu-bg: #2a2a2a;
+  --menu-border: #444;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Header --- */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--accent);
+  color: white;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+}
+
+.app-header button {
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* --- Menü (seitlich ausblendbar) --- */
+.menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background: var(--menu-bg);
+  border-right: 2px solid var(--menu-border);
+  padding: 20px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+  transform: translateX(-260px);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.menu.visible {
+  transform: translateX(0);
+}
+
+.menu h2 {
+  margin-top: 0;
+}
+
+.menu ul {
+  list-style: none;
+  padding: 0;
+}
+
+.menu li {
+  margin: 10px 0;
+}
+
+.menu button {
+  width: 100%;
+  padding: 8px;
+  background: var(--button-bg);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.menu button:hover {
+  background: var(--button-hover);
+}
+
+/* --- Hauptinhalt --- */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Uhr */
 .clock-container {
   position: relative;
   width: 400px;
   height: 400px;
 }
 
-/* Bilder übereinander stapeln */
 .clock-container img {
   position: absolute;
   top: 0;
@@ -27,33 +121,14 @@ body {
   pointer-events: none;
 }
 
-/* Zeiger (Drehpunkt = Bildzentrum) */
-#stundenzeiger {
-  transform-origin: 50% 50%;
-}
-
+#stundenzeiger,
 #minutenzeiger {
   transform-origin: 50% 50%;
 }
 
-/* Debug-Kreis (bei Bedarf aktivieren)
-#debug-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 8px;
-  height: 8px;
-  background: red;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0.7;
-  z-index: 10;
-}
-*/
-
-/* Buttons */
-.controls {
-  margin-top: 20px;
+/* Buttons & Eingaben */
+.controls, .time-input {
+  margin-top: 15px;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
@@ -64,31 +139,15 @@ button {
   padding: 10px 16px;
   border: none;
   border-radius: 6px;
-  background-color: #008cba;
-  color: #fff;
+  background-color: var(--button-bg);
+  color: white;
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s;
 }
 
 button:hover {
-  background-color: #0074a1;
-}
-
-/* Responsive kleiner */
-@media (max-width: 600px) {
-  .clock-container {
-    width: 300px;
-    height: 300px;
-  }
-
-  .time-input {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
+  background-color: var(--button-hover);
 }
 
 .time-input input {
@@ -96,21 +155,17 @@ button:hover {
   padding: 6px;
   font-size: 1rem;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--menu-border);
   text-align: center;
 }
 
-.time-input button {
-  padding: 8px 14px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.time-input button:hover {
-  background-color: #45a049;
-}
-
+/* --- Responsive für iPad --- */
+@media (max-width: 800px) {
+  .clock-container {
+    width: 300px;
+    height: 300px;
+  }
+  h1 {
+    font-size: 1rem;
+  }
 }
