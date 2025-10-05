@@ -16,13 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let textTimeout = null;
 
   /* ---------------- MENÜ ---------------- */
-  menuToggle.addEventListener("click", () => {
-    sideMenu.classList.toggle("visible");
-  });
+menuToggle.addEventListener("click", () => {
+  sideMenu.classList.toggle("visible");
+});
 
-  closeMenu.addEventListener("click", () => {
-    sideMenu.classList.remove("visible");
-  });
+closeMenu.addEventListener("click", () => {
+  sideMenu.classList.remove("visible");
+});
 
   /* ---------------- DARK / LIGHT MODUS ---------------- */
   modeToggle.addEventListener("click", () => {
