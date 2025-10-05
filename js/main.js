@@ -1,25 +1,27 @@
 // ----------------------------
-// MAIN.JS – Spiel- und Aufgabenlogik
+// MAIN.JS – UI & Menülogik
 // ----------------------------
 
-/**
- * Beispiel: Startfunktion (wird später beim Spielstart genutzt)
- */
-function initGame() {
-  console.log("Uhr-Spiel gestartet!");
-  // Hier könnte später z. B. die erste Aufgabe geladen werden
-  // loadLevel(0);
+const body = document.body;
+const sideMenu = document.getElementById("sideMenu");
+const menuToggle = document.getElementById("menuToggle");
+const modeToggle = document.getElementById("modeToggle");
+
+// Menü öffnen/schließen
+menuToggle.addEventListener("click", () => {
+  sideMenu.classList.toggle("visible");
+});
+
+// Dark-/Light-Mode umschalten
+modeToggle.addEventListener("click", toggleMode);
+
+function toggleMode() {
+  const isDark = body.classList.toggle("dark");
+  localStorage.setItem("mode", isDark ? "dark" : "light");
 }
 
-/**
- * Beispiel: Rückmeldung im Konsolen-Test
- */
+// beim Laden gespeicherten Modus aktivieren
 document.addEventListener("DOMContentLoaded", () => {
-  initGame();
-
-  // Beispiel-Test: Uhr auf 7:30 stellen nach 2 Sekunden
-  setTimeout(() => {
-    setTime(00, 00);
-    console.log("Uhr auf 00:00 gestellt.");
-  }, 2000);
+  const savedMode = localStorage.getItem("mode");
+  if (savedMode === "dark") body.classList.add("dark");
 });
