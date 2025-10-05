@@ -127,7 +127,7 @@ main {
 
 #stundenzeiger,
 #minutenzeiger {
-  transform-origin: 50% 55%;
+  transform-origin: 50.5% 50%;
 }
 
 /* Buttons & Eingaben */
