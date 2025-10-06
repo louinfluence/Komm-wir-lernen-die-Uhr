@@ -12,7 +12,8 @@ function initClockApp() {
   const slider           = document.getElementById("timeSlider");
   const sliderContainer  = document.getElementById("sliderContainer");
   const timeLabel        = document.getElementById("timeLabel");
-
+	const optionsOverlay = document.getElementById("optionsOverlay");
+	const closeOptions   = document.getElementById("closeOptions");
   // Neue Menü-Buttons
   const btnStartGame = document.getElementById("btnStartGame");
   const btnFreeMode  = document.getElementById("btnFreeMode");
@@ -247,10 +248,13 @@ function initClockApp() {
   });
 
   if (btnOptions) btnOptions.addEventListener("click", () => {
-    sideMenu.classList.remove("visible");
-    alert("📘 Anleitung & Optionen werden hier später angezeigt.");
-  });
+  sideMenu.classList.remove("visible");
+  optionsOverlay.classList.remove("hidden");
+});
 
+if (closeOptions) closeOptions.addEventListener("click", () => {
+  optionsOverlay.classList.add("hidden");
+});
   if (btnQuiz) btnQuiz.addEventListener("click", () => {
     sideMenu.classList.remove("visible");
     alert("💡 Quiz-Modus wird bald verfügbar!");
