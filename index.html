@@ -3,117 +3,154 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Komm wir lernen die Uhr – Version 2.1</title>
-  <link rel="stylesheet" href="css/style.css" />
-</head>
+  <title>Komm, wir lernen die Uhr</title>
+  <style>
+    body {
+      font-family: system-ui, Arial, sans-serif;
+      margin: 0;
+      background: #f0f4f8;
+      color: #222;
+    }
 
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: #4682b4;
+      color: white;
+    }
+
+    header button {
+      background: white;
+      border: none;
+      color: #4682b4;
+      font-size: 1.2em;
+      border-radius: 6px;
+      padding: 6px 10px;
+    }
+
+    main {
+      padding: 1rem;
+      text-align: center;
+    }
+
+    #clockArea {
+      position: relative;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    #timeLabel {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    #sliderContainer {
+      margin-top: 1rem;
+    }
+
+    input[type="range"] {
+      width: 80%;
+    }
+
+    #sideMenu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 300px;
+      height: 100%;
+      background: #fff;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    #sideMenu.visible {
+      transform: translateX(0);
+    }
+
+    #sideMenu button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: none;
+      background: #4682b4;
+      color: white;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      width: min(90%, 400px);
+    }
+
+    .panel button {
+      width: 80%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 6px;
+      background: #4682b4;
+      color: white;
+      font-size: 1em;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
 <body>
-  <!-- ===========================================
-       HEADER
-  ============================================ -->
-  <header class="app-header">
-    <button id="menuToggle" aria-label="Menü öffnen oder schließen">☰</button>
-    <h1>Komm wir lernen die Uhr</h1>
-    <button id="modeToggle" aria-label="Darstellung umschalten">🌗</button>
+  <header>
+    <button id="menuToggle">☰</button>
+    <h1>Komm, wir lernen die Uhr</h1>
+    <button id="modeToggle">🌓</button>
   </header>
 
-  <!-- ===========================================
-       SEITENMENÜ
-  ============================================ -->
-  <!-- =========================
-     MENÜ – NEU
-========================= -->
-<aside id="sideMenu" class="menu">
-  <h2>Hauptmenü</h2>
-
-  <nav class="menu-section">
-    <button class="menu-btn" id="btnStartGame">🎯 Lernspiel starten</button>
-    <button class="menu-btn" id="btnFreeMode">🕰️ Freie Uhr</button>
-    <button class="menu-btn" id="btnOptions">⚙️ Optionen & Anleitung</button>
-    <button class="menu-btn" id="btnQuiz">💡 Teste dein Wissen</button>
-    <hr />
-    <button class="menu-btn close" id="closeMenu">✖ Menü schließen</button>
+  <!-- Seitenmenü -->
+  <nav id="sideMenu">
+    <h2>Hauptmenü</h2>
+    <button id="btnStartGame">🎮 Lernspiel starten</button>
+    <button id="btnFreeMode">🕒 Freie Uhr</button>
+    <button id="btnOptions">⚙️ Optionen</button>
+    <button id="btnQuiz">❓ Quiz</button>
+    <button id="closeMenu">✖ Menü schließen</button>
   </nav>
-</aside>
-  <!-- ===========================================
-       HAUPTINHALT
-  ============================================ -->
+
+  <section id="optionsOverlay" class="hidden"></section>
+
   <main>
-    <!-- Uhr -->
-    <div class="clock-container">
-      <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt 12 h" id="ziffernblatt_12h" />
-      <img src="assets/images/Ziffernblatt_24h.png" alt="Ziffernblatt 24 h" id="ziffernblatt_24h" class="hidden" />
-      <img src="assets/images/Stundenzeiger.png" alt="Stundenzeiger" id="stundenzeiger" />
-      <img src="assets/images/Minutenzeiger.png" alt="Minutenzeiger" id="minutenzeiger" />
-    </div>
-    
-    
-    <!-- Anzeige der Zeit -->
-    <div id="timeLabel"></div>
+    <section id="clockArea">
+      <img id="ziffernblatt_12h" src="./assets/images/Ziffernblatt.png" alt="Ziffernblatt" />
+      <div id="timeLabel">Es ist 06:00 Uhr morgens</div>
+    </section>
 
-    <!-- Slider + Zeitstrahl -->
     <div id="sliderContainer">
-      <input type="range" id="timeSlider" min="0" max="1439" value="0" />
+      <input id="timeSlider" type="range" min="0" max="288" step="1" value="0" />
     </div>
-
   </main>
-  
-  <!-- ===========================================
-     OPTIONS-OVERLAY
-=========================================== -->
-<div id="optionsOverlay" class="overlay hidden">
-  <div class="overlay-content">
-    <h2>⚙️ Optionen & Anleitung</h2>
 
-    <section class="menu-section">
-      <h3>Art der Uhr</h3>
-      <div class="switch-group">
-        <span>Lernmodus</span>
-        <label class="switch">
-          <input type="checkbox" id="modeSwitch" />
-          <span class="slider"></span>
-        </label>
-        <span>Echtzeit</span>
-      </div>
-    </section>
-
-    <section class="menu-section">
-      <h3>Darstellung</h3>
-      <div class="switch-group">
-        <span>12 h</span>
-        <label class="switch">
-          <input type="checkbox" id="displaySwitch" />
-          <span class="slider"></span>
-        </label>
-        <span>24 h</span>
-      </div>
-    </section>
-
-    <section class="menu-section">
-      <h3>Farbschema</h3>
-      <div class="switch-group">
-        <span>Hell</span>
-        <label class="switch">
-          <input type="checkbox" id="themeSwitch" />
-          <span class="slider"></span>
-        </label>
-        <span>Dunkel</span>
-      </div>
-    </section>
-
-    <hr />
-    <p>Ziehe den Schieberegler, um die Uhrzeit einzustellen, oder wähle den Echtzeitmodus.</p>
-    <button id="closeOptions" class="menu-btn close">✖ Schließen</button>
-  </div>
-</div>
-
-  <!-- ===========================================
-       SCRIPTS
-  ============================================ -->
-<script src="js/clock.js" defer></script>
-<script src="js/main.js" defer></script>
-<script src="js/levels.js" defer></script>
-
+  <script src="./js/clock.js" defer></script>
+  <script src="./js/levels.js" defer></script>
+  <script src="./js/main.js" defer></script>
 </body>
-
 </html>
