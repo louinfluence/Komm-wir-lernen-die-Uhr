@@ -4,120 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Komm, wir lernen die Uhr</title>
-
-  <style>
-    :root{
-      /* werden dynamisch per JS gesetzt */
-      --accent1:#87CEEB; /* default (nachmittags) */
-      --accent2:#4682B4;
-      --bg:#f0f4f8;
-      --fg:#222;
-      --panel:#fff;
-      --shadow:2px 6px 18px rgba(0,0,0,.12);
-    }
-    body{ margin:0; font-family:system-ui,Arial,sans-serif; background:var(--bg); color:var(--fg); }
-
-    header{
-      display:flex; align-items:center; gap:12px;
-      padding:10px 14px; background:#4682B4; color:#fff;
-    }
-    header h1{ margin:0; font-size:1.1rem; font-weight:700; }
-    header button{
-      background:#fff; color:#4682B4; border:0; border-radius:8px; padding:6px 10px; font-size:1rem;
-    }
-    header .spacer{ margin-left:auto; }
-
-    /* Seitenmenü */
-    #sideMenu{
-      position:fixed; inset:0 auto 0 0; width:min(340px,86vw); background:#fff; box-shadow:var(--shadow);
-      transform:translateX(-100%); transition:.25s; padding:16px; z-index:100;
-    }
-    #sideMenu.visible{ transform:none; }
-    #sideMenu h2{ margin:6px 0 12px; }
-    #sideMenu button{
-      display:block; width:100%; padding:10px; margin:6px 0; border:0; border-radius:8px;
-      background:#4682B4; color:#fff; font-size:1rem;
-    }
-
-    /* Overlay */
-    .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.55);
-      display:flex; align-items:center; justify-content:center; z-index:200; }
-    .panel{ background:var(--panel); border-radius:14px; padding:18px; width:min(92vw,480px); box-shadow:var(--shadow); text-align:center; }
-    .panel h2{ margin:0 0 8px; }
-    .panel p{ margin:0 0 14px; }
-    .panel button{ width:80%; margin:6px auto; border:0; border-radius:10px; padding:10px 12px; font-size:1rem; background:#4682B4; color:#fff; }
-
-    main{ padding:14px; display:grid; place-items:center; gap:12px; }
-
-    /* Uhrbereich */
-    #clockArea{ position:relative; width:min(86vw,520px); aspect-ratio:1/1; }
-    #ziffernblatt_12h, #ziffernblatt_24h{
-      position:absolute; inset:0; width:100%; height:100%; object-fit:contain;
-    }
-    .hidden{ display:none !important; }
-
-    /* Zeiger: Pivot genau Mitte; Drehpunkt -> unten (50%|100%) */
-    .hand{
-      position:absolute; left:50%; top:50%;
-      transform-origin:50% 100%;
-      transform: translate(-50%, -100%) rotate(var(--rot, 0deg));
-      pointer-events:none; /* nicht anklickbar über dem Spiel */
-    }
-    /* Größe je nach Bild – hier typische Längen relativ zum Radius */
-    #hourHand{ height:38%; }
-    #minuteHand{ height:48%; }
-
-    /* Zeit-Label mit dynamischem Gradienten */
-    #timeLabel{
-      font-weight:800; font-size:1.15rem; text-align:center; line-height:1.2;
-      background-image:linear-gradient(to right, var(--accent1), var(--accent2));
-      -webkit-background-clip:text; background-clip:text; color:transparent;
-      transition:background-image .6s ease;
-      margin-top:8px;
-    }
-
-    /* Slider Container */
-    #sliderContainer{ width:min(86vw,520px); padding:6px 0 16px; }
-
-    /* Range – Track mit Gradient, Thumb neutral */
-    input[type="range"]{
-      -webkit-appearance:none; appearance:none; width:100%; height:22px; background:transparent;
-    }
-    input[type="range"]::-webkit-slider-runnable-track{
-      height:10px; border-radius:999px;
-      background:linear-gradient(90deg, var(--accent1), var(--accent2));
-    }
-    input[type="range"]::-webkit-slider-thumb{
-      -webkit-appearance:none; appearance:none;
-      width:20px; height:20px; border-radius:50%; background:#fff; border:2px solid #4682B4; margin-top:-5px;
-      box-shadow:0 1px 3px rgba(0,0,0,.25);
-    }
-    input[type="range"]::-moz-range-track{
-      height:10px; border-radius:999px;
-      background:linear-gradient(90deg, var(--accent1), var(--accent2));
-    }
-    input[type="range"]::-moz-range-thumb{
-      width:20px; height:20px; border-radius:50%; background:#fff; border:2px solid #4682B4;
-      box-shadow:0 1px 3px rgba(0,0,0,.25);
-    }
-
-    /* einfache Styles für das Level */
-    .game-container{ width:min(86vw,860px); margin:6px auto; padding:12px; background:#fff; border-radius:14px; box-shadow:var(--shadow); }
-    .image-row{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
-    .choice-img{ width:min(45%, 220px); border-radius:12px; box-shadow:var(--shadow); cursor:pointer; }
-    .choice-img:active{ transform:scale(.98); }
-  </style>
+  <link rel="stylesheet" href="./assets/styles.css" />
 </head>
 <body>
   <header>
-    <button id="menuToggle" aria-label="Menü öffnen">☰</button>
+    <button id="menuToggle">☰</button>
     <h1>Komm, wir lernen die Uhr</h1>
-    <div class="spacer"></div>
-    <button id="modeToggle" aria-label="Dark/Light">🌓</button>
+    <button id="modeToggle">🌓</button>
   </header>
 
-  <!-- Seitenmenü -->
-  <nav id="sideMenu" aria-label="Hauptmenü">
+  <nav id="sideMenu">
     <h2>Hauptmenü</h2>
     <button id="btnStartGame">🎮 Lernspiel starten</button>
     <button id="btnFreeMode">🕒 Freie Uhr</button>
@@ -126,19 +22,11 @@
     <button id="closeMenu">✖ Menü schließen</button>
   </nav>
 
-  <!-- Optionen, kann später gefüllt werden -->
-  <section id="optionsOverlay" class="hidden"></section>
-
   <main>
-    <section id="clockArea" aria-label="Analoguhr">
-      <!-- Ziffernblatt -->
-      <img id="ziffernblatt_12h" src="./assets/images/Ziffernblatt.png" alt="Ziffernblatt 12h">
-      <!-- optional: zweites Blatt -->
-      <img id="ziffernblatt_24h" class="hidden" alt="Ziffernblatt 24h">
-
-      <!-- Zeiger (BITTE SRC-Name ggf. anpassen) -->
-      <img id="hourHand"   class="hand" src="./assets/images/Stundenzeiger.png" alt="Stundenzeiger">
-      <img id="minuteHand" class="hand" src="./assets/images/Minutenzeiger.png" alt="Minutenzeiger">
+    <section id="clockArea">
+      <img id="ziffernblatt_12h" src="./assets/images/Ziffernblatt.png" alt="Ziffernblatt" />
+      <img id="hourHand" class="hand" src="./assets/images/Stundenzeiger.png" alt="Stundenzeiger" />
+      <img id="minuteHand" class="hand" src="./assets/images/Minutenzeiger.png" alt="Minutenzeiger" />
     </section>
 
     <div id="timeLabel">Es ist 06:00 Uhr morgens</div>
@@ -148,7 +36,6 @@
     </div>
   </main>
 
-  <!-- Reihenfolge wichtig -->
   <script src="./js/clock.js" defer></script>
   <script src="./js/levels.js" defer></script>
   <script src="./js/main.js" defer></script>
