@@ -55,6 +55,55 @@
     <!-- Anzeige der Zeit -->
     <div id="timeLabel"></div>
   </main>
+  
+  <!-- ===========================================
+     OPTIONS-OVERLAY
+=========================================== -->
+<div id="optionsOverlay" class="overlay hidden">
+  <div class="overlay-content">
+    <h2>⚙️ Optionen & Anleitung</h2>
+
+    <section class="menu-section">
+      <h3>Art der Uhr</h3>
+      <div class="switch-group">
+        <span>Lernmodus</span>
+        <label class="switch">
+          <input type="checkbox" id="modeSwitch" />
+          <span class="slider"></span>
+        </label>
+        <span>Echtzeit</span>
+      </div>
+    </section>
+
+    <section class="menu-section">
+      <h3>Darstellung</h3>
+      <div class="switch-group">
+        <span>12 h</span>
+        <label class="switch">
+          <input type="checkbox" id="displaySwitch" checked />
+          <span class="slider"></span>
+        </label>
+        <span>24 h</span>
+      </div>
+    </section>
+
+    <section class="menu-section">
+      <h3>Farbschema</h3>
+      <div class="switch-group">
+        <span>Hell</span>
+        <label class="switch">
+          <input type="checkbox" id="themeSwitch" />
+          <span class="slider"></span>
+        </label>
+        <span>Dunkel</span>
+      </div>
+    </section>
+
+    <hr />
+    <p>Ziehe den Schieberegler, um die Uhrzeit einzustellen, oder wähle den Echtzeitmodus.</p>
+    <button id="closeOptions" class="menu-btn close">✖ Schließen</button>
+  </div>
+</div>
 
   <!-- ===========================================
        SCRIPTS
