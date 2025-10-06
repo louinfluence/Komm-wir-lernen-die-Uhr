@@ -234,3 +234,36 @@ main {
     width: 24px; height: 24px;
   }
 }
+/* ===========================================
+   Overlay-Stile für Optionen & Anleitung
+=========================================== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  transition: opacity 0.3s ease;
+}
+
+.overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.overlay-content {
+  background: var(--menu-bg);
+  color: var(--text);
+  border: 2px solid var(--menu-border);
+  border-radius: 10px;
+  padding: 20px;
+  width: min(90%, 420px);
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+.overlay-content h2 {
+  margin-top: 0;
+  text-align: center;
+}
