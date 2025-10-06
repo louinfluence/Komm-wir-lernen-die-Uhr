@@ -234,11 +234,67 @@ function initClockApp() {
   /* =========================================================
      Menü-Buttons (Platzhalter)
      ========================================================= */
-  if (btnStartGame) btnStartGame.addEventListener("click", () => {
-    sideMenu.classList.remove("visible");
-    alert("🎮 Lernspiel-Modus wird bald aktiviert!");
+/* -------- Menü-Buttons -------- */
+btnStartGame.addEventListener("click", () => {
+  showLevelSelection();
+});
+
+btnFreeMode.addEventListener("click", () => {
+  sideMenu.classList.remove("visible");
+  modeSwitch.checked = false; // Lernmodus aktiv
+  liveMode = false;
+  clearInterval(liveInterval);
+});
+
+btnOptions.addEventListener("click", () => {
+  sideMenu.classList.remove("visible");
+  alert("📘 Anleitung & Optionen werden hier später angezeigt.");
+});
+
+btnQuiz.addEventListener("click", () => {
+  sideMenu.classList.remove("visible");
+  alert("💡 Quiz-Modus wird bald verfügbar!");
+});
+
+/* =========================================================
+   Untermenü: Levelauswahl
+========================================================= */
+function showLevelSelection() {
+  sideMenu.classList.remove("visible");
+
+  // Overlay anlegen
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+
+  overlay.innerHTML = `
+    <div class="overlay-content">
+      <h2>🎮 Lernspiel starten</h2>
+      <p>Wähle ein Level:</p>
+      <div class="level-list">
+        <button class="level-card" id="level1Btn">
+          <strong>Level 1:</strong><br>Tageszeiten zuordnen
+        </button>
+        <button class="level-card disabled">
+          <strong>Level 2:</strong><br>Uhrzeiten einstellen<br><small>(demnächst)</small>
+        </button>
+      </div>
+      <button class="menu-btn close" id="closeOverlay">✖ Zurück</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  // Events
+  overlay.querySelector("#level1Btn").addEventListener("click", () => {
+    overlay.remove();
+    initLevel1(); // direkt Level 1 starten
   });
 
+  overlay.querySelector("#closeOverlay").addEventListener("click", () => {
+    overlay.classList.add("hidden");
+    setTimeout(() => overlay.remove(), 300);
+  });
+}
   if (btnFreeMode) btnFreeMode.addEventListener("click", () => {
     sideMenu.classList.remove("visible");
     // Zur Sicherheit Echtzeit aus
