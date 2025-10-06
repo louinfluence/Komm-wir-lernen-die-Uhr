@@ -95,10 +95,63 @@ function initClockApp() {
   slider.addEventListener("pointerleave",() => clearTimeout(longPressTimer));
 
   /* ========== Menü-Buttons ========== */
+    /* ========== Menü-Buttons ========== */
   if (btnStartGame) btnStartGame.addEventListener("click", showLevelSelection);
   if (btnFreeMode)  btnFreeMode.addEventListener("click", () => {
     sideMenu.classList.remove("visible");
-    liveMode = false;
+    returnToStart(); // 👉 zurück zur Startuhr
+  });
+  if (btnOptions)   btnOptions.addEventListener("click", () => {
+    alert("Anleitung & Optionen folgen bald.");
+  });
+  if (btnQuiz)      btnQuiz.addEventListener("click", () => {
+    alert("Quiz-Modus kommt bald!");
+  });
+
+  /* ========== Zurück zur Startseite (Freie Uhr) ========== */
+  function returnToStart() {
+    const main = document.querySelector("main");
+    if (!main) return;
+
+    // Inhalt zurücksetzen
+    main.innerHTML = `
+      <section id="clockArea" aria-label="Analoguhr">
+        <img id="ziffernblatt_12h" src="./assets/images/Ziffernblatt.png" alt="Ziffernblatt 12h">
+        <img id="ziffernblatt_24h" class="hidden" alt="Ziffernblatt 24h">
+        <img id="hourHand"   class="hand" src="./assets/images/Stundenzeiger.png" alt="Stundenzeiger">
+        <img id="minuteHand" class="hand" src="./assets/images/Minutenzeiger.png" alt="Minutenzeiger">
+      </section>
+      <div id="timeLabel">Es ist 06:00 Uhr morgens</div>
+      <div id="sliderContainer">
+        <input id="timeSlider" type="range" min="0" max="288" step="1" value="0" />
+      </div>
+    `;
+
+    // neu gebaute DOM-Elemente wieder an init-Funktionen koppeln
+    const slider = document.getElementById("timeSlider");
+    const timeLabel = document.getElementById("timeLabel");
+
+    slider.addEventListener("input", () => {
+      const val = parseInt(slider.value, 10);
+      const totalMinutes = val * 5;
+      const adjustedMinutes = (totalMinutes + 360) % 1440;
+      const h = Math.floor(adjustedMinutes / 60);
+      const m = adjustedMinutes % 60;
+      window.currentTotalMinutes = adjustedMinutes;
+      setTime(h, m);
+      const daytime = getDaytimeText(h);
+      const hh = String(h).padStart(2,"0");
+      const mm = String(m).padStart(2,"0");
+      timeLabel.textContent = `Es ist ${hh}:${mm} Uhr ${daytime}`;
+      setDaytimeTheme(daytime);
+    });
+
+    // Standarduhrzeit
+    setTime(6, 0);
+    const d = getDaytimeText(6);
+    setDaytimeTheme(d);
+    timeLabel.textContent = "Es ist 06:00 Uhr morgens";
+  }
     // Slider sichtbar lassen – Freimodus heißt: manuell einstellen
   });
   if (btnOptions)   btnOptions.addEventListener("click", () => {
