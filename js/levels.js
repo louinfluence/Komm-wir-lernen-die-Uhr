@@ -2,6 +2,11 @@
    LEVELS.JS – Lernspiel "Tageszeiten zuordnen"
    ========================================================= */
 
+/* Kein automatischer Start mehr!
+window.addEventListener("DOMContentLoaded", () => {
+  if (typeof initLevel1 === "function") initLevel1();
+});
+*/
 
 /* =========================================================
    LEVEL 1: Tageszeiten zuordnen
@@ -10,9 +15,9 @@ function initLevel1() {
   console.log("🎮 Level 1 gestartet");
 
   const levelData = [
-    { hour: 7, minute: 0, correct: "Morgen.PNG", text: "Frühstückszeit!" },
-    { hour: 9, minute: 0, correct: "Schule.PNG", text: "Schulbeginn!" },
-    { hour: 16, minute: 0, correct: "Hobby.PNG", text: "Freizeit und Hobbys!" },
+    { hour: 7,  minute: 0, correct: "Morgen.PNG", text: "Frühstückszeit!" },
+    { hour: 9,  minute: 0, correct: "Schule.PNG", text: "Schulbeginn!" },
+    { hour: 16, minute: 0, correct: "Hobby.PNG",  text: "Freizeit und Hobbys!" },
     { hour: 21, minute: 0, correct: "Schlaf.PNG", text: "Schlafenszeit!" }
   ];
 
@@ -42,7 +47,6 @@ function initLevel1() {
   optionsArea.classList.add("options-area");
 
   const imageFiles = ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"];
-
   imageFiles.forEach(file => {
     const el = document.createElement("img");
     el.src = `assets/images/${file}`;
@@ -53,10 +57,10 @@ function initLevel1() {
     optionsArea.appendChild(el);
   });
 
-  // Finger-Tipp-Hinweis
+  // Tipp-Hinweis
   const hint = document.createElement("div");
   hint.classList.add("finger-hint");
-  hint.textContent = "👉 Tipp: Ziehe das richtige Bild auf die Uhr!";
+  hint.textContent = "👉 Ziehe das richtige Bild auf die Uhr!";
 
   // Zusammenfügen
   gameContainer.append(clockArea, hint, optionsArea);
@@ -76,7 +80,6 @@ function initLevel1() {
     if (typeof setTime === "function") setTime(hour, minute);
     document.getElementById("taskText").textContent = text;
 
-    // Reset Feedback / Animation
     document.querySelectorAll(".drag-option").forEach(opt => {
       opt.classList.remove("disabled", "correct", "wrong");
     });
@@ -89,7 +92,6 @@ function initLevel1() {
     const options = optionsArea.querySelectorAll(".drag-option");
 
     dropZone.addEventListener("dragover", e => e.preventDefault());
-
     dropZone.addEventListener("drop", e => {
       e.preventDefault();
       const dragged = document.querySelector(".dragging");
@@ -111,10 +113,18 @@ function initLevel1() {
       el.addEventListener("dragend", () => el.classList.remove("dragging"));
     });
   }
-    function nextRound() {
+
+  function showFeedback(success) {
+    const hint = document.querySelector(".finger-hint");
+    hint.textContent = success ? "✅ Richtig!" : "❌ Versuch’s nochmal!";
+    hint.style.transition = "opacity 0.3s";
+    hint.style.opacity = 1;
+    setTimeout(() => (hint.style.opacity = 0.8), 1000);
+  }
+
+  function nextRound() {
     currentRound++;
     if (currentRound < levelData.length) {
-      // sanft animieren zur neuen Uhrzeit
       const next = levelData[currentRound];
       animateClockToTime(next.hour, next.minute, 1200, startRound);
     } else {
@@ -122,17 +132,11 @@ function initLevel1() {
     }
   }
 
-  /* =========================================================
-     Sanfte Zeigeranimation
-  ========================================================= */
   function animateClockToTime(targetHour, targetMinute, duration = 1200, callback) {
     if (typeof setTime !== "function") return;
 
-    // Ausgangspunkt (aktuelle Zeit aus globalem Speicher)
     const startMinutes = window.currentTotalMinutes ?? 0;
     const endMinutes = (targetHour * 60 + targetMinute) % 1440;
-
-    // z. B. von 420 (7:00) auf 540 (9:00)
     const diff = ((endMinutes - startMinutes + 1440) % 1440);
     const stepCount = 60;
     const stepTime = duration / stepCount;
@@ -152,5 +156,19 @@ function initLevel1() {
       }
     }, stepTime);
   }
+
+  function showEndScreen() {
+    const main = document.querySelector("main");
+    main.innerHTML = `
+      <div class="end-screen">
+        <h2>🎉 Super gemacht!</h2>
+        <p>Du hast alle Tageszeiten richtig zugeordnet.</p>
+        <button id="backToMenu" class="menu-btn">🏠 Zurück zum Menü</button>
+      </div>
+    `;
+    document.getElementById("backToMenu").addEventListener("click", () => location.reload());
+  }
+}
+
+// ✅ Wichtig für Safari/iPad – globale Sichtbarkeit
 window.initLevel1 = initLevel1;
-  
