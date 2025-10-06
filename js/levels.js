@@ -152,5 +152,5 @@ function initLevel1() {
       }
     }, stepTime);
   }
-
+window.initLevel1 = initLevel1;
   
