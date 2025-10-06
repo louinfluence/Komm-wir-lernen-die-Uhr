@@ -1,51 +1,59 @@
+/* =========================================================
+   FARBSYSTEM & THEMES
+   ========================================================= */
 :root {
-  --bg-start:#e3e9f0;
-  --bg-end:#c8d4e3;
-  --text:#1c1c1c;
-  --accent:#007acc;
-  --menu-bg:#fff;
-  --menu-border:#ccc;
+  --bg-start: #e3e9f0;
+  --bg-end:   #c8d4e3;
+  --text:     #1c1c1c;
+  --accent:   #007acc;
+  --menu-bg:  #fff;
+  --menu-border: #ccc;
 }
 
 body.dark {
-  --bg-start:#1a1a1a;
-  --bg-end:#2a2a2a;
-  --text:#f2f2f2;
-  --accent:#5db2ff;
-  --menu-bg:#2a2a2a;
-  --menu-border:#444;
+  --bg-start: #1a1a1a;
+  --bg-end:   #2a2a2a;
+  --text:     #f2f2f2;
+  --accent:   #5db2ff;
+  --menu-bg:  #2a2a2a;
+  --menu-border: #444;
 }
 
-/* Layout */
+/* =========================================================
+   GRUNDEINSTELLUNGEN & LAYOUT
+   ========================================================= */
 body {
-  margin:0;
-  font-family:system-ui,sans-serif;
-  background:linear-gradient(to bottom right,var(--bg-start),var(--bg-end));
-  color:var(--text);
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  overflow-x:hidden;
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: linear-gradient(to bottom right, var(--bg-start), var(--bg-end));
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
 }
 
+/* ---------------- HEADER ---------------- */
 .app-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:var(--accent);
-  color:#fff;
-  padding:10px 20px;
-  font-size:1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 1.2rem;
 }
-.app-header button{
-  background:transparent;
-  border:none;
-  color:#fff;
-  font-size:1.5rem;
-  cursor:pointer;
+.app-header button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 
-/* Menü links */
+/* =========================================================
+   MENÜ LINKS
+   ========================================================= */
 .menu {
   position: fixed;
   top: 0;
@@ -61,124 +69,168 @@ body {
   z-index: 1000;
   overflow-y: auto;
 }
+.menu.visible { transform: translateX(0); }
+.menu-section { margin-bottom: 20px; }
+.menu h2, .menu h3 { margin-top: 0; }
 
-.menu.visible {
-  transform: translateX(0);
+/* --- Schalter / Switches --- */
+.switch-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
 }
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
 
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  border-radius: 26px;
+  transition: .3s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px; width: 20px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: .3s;
+}
+input:checked + .slider { background-color: var(--accent); }
+input:checked + .slider:before { transform: translateX(24px); }
 
-.menu-section { margin-bottom:20px; }
-.menu h2,.menu h3{margin-top:0;}
-
-/* Switches */
-.switch-group{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-top:8px;
-}
-.switch{
-  position:relative;
-  display:inline-block;
-  width:50px;
-  height:26px;
-}
-.switch input{opacity:0;width:0;height:0;}
-.slider{
-  position:absolute;
-  cursor:pointer;
-  top:0;left:0;right:0;bottom:0;
-  background-color:#ccc;
-  transition:.3s;
-  border-radius:26px;
-}
-.slider:before{
-  position:absolute;
-  content:"";
-  height:20px;width:20px;
-  left:3px;bottom:3px;
-  background-color:white;
-  transition:.3s;
-  border-radius:50%;
-}
-
-input:checked + .slider{
-  background-color:var(--accent);
-}
-input:checked + .slider:before{
-  transform:translateX(24px);
-}
-
-/* Hauptinhalt */
-main{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:10px;
+/* =========================================================
+   HAUPTINHALT / UHR
+   ========================================================= */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px;
 }
 
-.clock-container{
-  position:relative;
-  width:min(80vmin,500px);
-  aspect-ratio:1/1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+/* --- Uhr / Zeiger --- */
+.clock-container {
+  position: relative;
+  width: min(80vmin, 500px);
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
-
-.clock-container img{
-  position:absolute;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  pointer-events:none;
+.clock-container img {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
-
 #ziffernblatt_24h {
   transform: translate(-50%, -50%) scale(0.60);
 }
+#stundenzeiger, #minutenzeiger {
+  transform-origin: 50% 50%;
+}
+.hidden { display: none; }
 
-#stundenzeiger,#minutenzeiger{transform-origin:50% 50%;}
-.hidden{display:none;}
+/* =========================================================
+   SLIDER + ZEITSTRAHL
+   ========================================================= */
 
-#timeSlider{width:80%;margin-top:20px;}
-#timeDisplay{margin-top:10px;font-size:1.3rem;font-weight:500;}
+/* Zeitstrahl-Hintergrund (morgens → nacht) */
+#sliderContainer {
+  position: relative;
+  width: 90%;
+  max-width: 800px;
+  margin: 3rem auto 2rem;
+  height: 2.2rem;
+  border-radius: 8px;
+  background: linear-gradient(
+    to right,
+    #fcbf49 0%,     /* Morgen */
+    #ffd166 25%,    /* Vormittag */
+    #f77f00 40%,    /* Mittag */
+    #90e0ef 60%,    /* Nachmittag */
+    #457b9d 80%,    /* Abend */
+    #1d3557 100%    /* Nacht */
+  );
+}
 
+/* Slider über dem Zeitstrahl */
+#timeSlider {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  transform: translateY(-50%);
+  background: transparent;
+  z-index: 2;
+  height: 1.2rem;
+  touch-action: none;
+}
 
+/* Größerer Thumb für Tablets */
+#timeSlider::-webkit-slider-thumb,
+#timeSlider::-moz-range-thumb {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--accent);
+  cursor: pointer;
+}
+
+/* =========================================================
+   ZEITTEXT UNTER DER UHR
+   ========================================================= */
 #timeLabel {
   font-size: 1.6rem;
   font-weight: 600;
   text-align: center;
-  margin-top: 1rem;
+  margin-top: 2rem;
   transition: background 1.5s ease, color 1.5s ease;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 }
 
-
 /* Farben für Tageszeiten */
-#timeLabel.morgens      { color: #fcbf49; } /* sanftes Gelb-Orange */
+#timeLabel.morgens      { color: #fcbf49; }
 #timeLabel.vormittags   { color: #f77f00; }
 #timeLabel.mittags      { color: #e36414; }
 #timeLabel.nachmittags  { color: #1d3557; }
 #timeLabel.abends       { color: #457b9d; }
 #timeLabel.nachts       { color: #a8dadc; }
 
-/* Für sanftes Aufleuchten */
+/* Sanftes Aufleuchten */
 .fade-in {
   opacity: 0;
   animation: fadeIn 1s ease forwards;
 }
-@keyframes fadeIn {
-  to { opacity: 1; }
-}
+@keyframes fadeIn { to { opacity: 1; } }
 
-
-@media(max-width:800px){
-  h1{font-size:1rem;}
-  #timeDisplay{font-size:1.1rem;}
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 800px) {
+  h1 { font-size: 1rem; }
+  #timeLabel { font-size: 1.3rem; }
+  #timeSlider::-webkit-slider-thumb,
+  #timeSlider::-moz-range-thumb {
+    width: 24px; height: 24px;
+  }
 }
