@@ -2,9 +2,6 @@
    LEVELS.JS – Lernspiel "Tageszeiten zuordnen"
    ========================================================= */
 
-window.addEventListener("DOMContentLoaded", () => {
-  if (typeof initLevel1 === "function") initLevel1();
-});
 
 /* =========================================================
    LEVEL 1: Tageszeiten zuordnen
