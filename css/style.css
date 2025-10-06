@@ -260,12 +260,26 @@ main {
 #timeLabel {
   font-size: 1.6rem;
   font-weight: 600;
-  margin-top: 2rem;
   text-align: center;
-  transition: background 1.5s ease, color 1.5s ease;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  width: fit-content;
+  max-width: 90%;
+  background: rgba(255, 255, 255, 0.4); /* Standard für hellen Modus */
+  color: #000;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background 0.8s ease, color 0.8s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  display: inline-block;
+}
+
+/* Darkmode-Anpassung */
+body.dark #timeLabel {
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
 }
 
 /* =========================================================
