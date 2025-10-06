@@ -59,3 +59,4 @@ function formatTime(h, m) {
     return `${pad(h)}:${pad(m)} Uhr`;
   }
 }
+console.log("Clock.js geladen ✅");
