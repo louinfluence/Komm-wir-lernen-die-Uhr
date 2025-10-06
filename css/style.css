@@ -122,6 +122,60 @@ body.dark .menu-btn {
 }
 body.dark .menu-btn.close { background: #444; }
 
+/* ===========================================
+   Overlay / Levelauswahl
+=========================================== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  transition: opacity 0.3s ease;
+}
+.overlay.hidden { opacity: 0; pointer-events: none; }
+
+.overlay-content {
+  background: var(--menu-bg);
+  color: var(--text);
+  border: 2px solid var(--menu-border);
+  border-radius: 10px;
+  padding: 25px 30px;
+  width: min(90%, 420px);
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.level-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 1rem 0;
+}
+
+.level-card {
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(to right, var(--accent), #5da9ff);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.level-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.level-card.disabled {
+  background: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* --- Switches in Untermenüs --- */
 .switch-group {
   display: flex;
