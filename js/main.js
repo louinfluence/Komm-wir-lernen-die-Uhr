@@ -74,18 +74,22 @@ function initClockApp() {
   setSliderMode(false);
 
   slider.addEventListener("input", () => {
-    if (liveMode) return; // deaktiviert bei Echtzeit
+  if (liveMode) return;
 
-    const val = parseInt(slider.value, 10);
-    const totalMinutes = fineMode ? val : val * 5;
-    const adjustedMinutes = (totalMinutes + 360) % 1440;
-    const h = Math.floor(adjustedMinutes / 60);
-    const m = adjustedMinutes % 60;
+  const val = parseInt(slider.value, 10);
+  const totalMinutes = fineMode ? val : val * 5;
 
-    setTime(h, m);
-    updateTimeLabel(h, m);
-  });
+  // Startzeit auf 6:00 verschieben
+  const adjustedMinutes = (totalMinutes + 360) % 1440;
+  const h = Math.floor(adjustedMinutes / 60);
+  const m = adjustedMinutes % 60;
 
+  // 👉 hier neu:
+  window.currentTotalMinutes = adjustedMinutes;
+
+  setTime(h, m);
+  updateTimeLabel(h, m);
+});
   // Long-Press zum Umschalten auf Feinmodus (temporär)
   slider.addEventListener("pointerdown", () => {
     if (liveMode) return;
@@ -94,9 +98,9 @@ function initClockApp() {
   });
 
   slider.addEventListener("pointerup", () => {
-    clearTimeout(longPressTimer);
-    if (!liveMode) setSliderMode(false);
-  });
+  clearTimeout(longPressTimer);
+  // kein Reset des Modus – nur beenden
+});
 
   slider.addEventListener("touchstart", () => {
     if (liveMode) return;
@@ -105,10 +109,9 @@ function initClockApp() {
   }, { passive: true });
 
   slider.addEventListener("touchend", () => {
-    clearTimeout(longPressTimer);
-    if (!liveMode) setSliderMode(false);
-  });
-
+  clearTimeout(longPressTimer);
+  // kein Reset des Modus
+});
   /* =========================================================
      Hilfsfunktionen
      ========================================================= */
