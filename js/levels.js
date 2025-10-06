@@ -114,34 +114,46 @@ function initLevel1() {
       el.addEventListener("dragend", () => el.classList.remove("dragging"));
     });
   }
-
-  function nextRound() {
+    function nextRound() {
     currentRound++;
     if (currentRound < levelData.length) {
-      startRound();
+      // sanft animieren zur neuen Uhrzeit
+      const next = levelData[currentRound];
+      animateClockToTime(next.hour, next.minute, 1200, startRound);
     } else {
       showEndScreen();
     }
   }
 
-  function showFeedback(correct) {
-    const fb = document.createElement("div");
-    fb.className = "feedback";
-    fb.textContent = correct ? "✅ Richtig!" : "❌ Versuch’s nochmal!";
-    document.body.appendChild(fb);
-    setTimeout(() => fb.remove(), 1200);
+  /* =========================================================
+     Sanfte Zeigeranimation
+  ========================================================= */
+  function animateClockToTime(targetHour, targetMinute, duration = 1200, callback) {
+    if (typeof setTime !== "function") return;
+
+    // Ausgangspunkt (aktuelle Zeit aus globalem Speicher)
+    const startMinutes = window.currentTotalMinutes ?? 0;
+    const endMinutes = (targetHour * 60 + targetMinute) % 1440;
+
+    // z. B. von 420 (7:00) auf 540 (9:00)
+    const diff = ((endMinutes - startMinutes + 1440) % 1440);
+    const stepCount = 60;
+    const stepTime = duration / stepCount;
+    let step = 0;
+
+    const anim = setInterval(() => {
+      step++;
+      const current = (startMinutes + (diff * step / stepCount)) % 1440;
+      const h = Math.floor(current / 60);
+      const m = Math.floor(current % 60);
+      setTime(h, m);
+
+      if (step >= stepCount) {
+        clearInterval(anim);
+        window.currentTotalMinutes = endMinutes;
+        if (callback) setTimeout(callback, 200);
+      }
+    }, stepTime);
   }
 
-  function showEndScreen() {
-    main.innerHTML = `
-      <div class="level-container">
-        <h2>🎉 Super gemacht!</h2>
-        <p>Du kennst jetzt die wichtigsten Tageszeiten!</p>
-        <button id="backToMenu" class="menu-btn">🏠 Zurück zum Menü</button>
-      </div>
-    `;
-    document.getElementById("backToMenu").addEventListener("click", () => {
-      location.reload();
-    });
-  }
-}
+  
