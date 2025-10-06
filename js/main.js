@@ -95,7 +95,6 @@ function initClockApp() {
   slider.addEventListener("pointerleave",() => clearTimeout(longPressTimer));
 
   /* ========== Menü-Buttons ========== */
-    /* ========== Menü-Buttons ========== */
   if (btnStartGame) btnStartGame.addEventListener("click", showLevelSelection);
   if (btnFreeMode)  btnFreeMode.addEventListener("click", () => {
     sideMenu.classList.remove("visible");
@@ -152,39 +151,3 @@ function initClockApp() {
     setDaytimeTheme(d);
     timeLabel.textContent = "Es ist 06:00 Uhr morgens";
   }
-    // Slider sichtbar lassen – Freimodus heißt: manuell einstellen
-  });
-  if (btnOptions)   btnOptions.addEventListener("click", () => {
-    alert("Anleitung & Optionen folgen bald.");
-  });
-  if (btnQuiz)      btnQuiz.addEventListener("click", () => {
-    alert("Quiz-Modus kommt bald!");
-  });
-
-  function showLevelSelection(){
-    sideMenu.classList.remove("visible");
-    const overlay = document.createElement("div");
-    overlay.className = "overlay";
-    overlay.innerHTML = `
-      <div class="panel">
-        <h2>🎮 Lernspiel starten</h2>
-        <p>Wähle ein Level:</p>
-        <button id="level1Btn">Level 1: Tageszeiten zuordnen</button>
-        <button id="closeOverlay">✖ Zurück</button>
-      </div>`;
-    document.body.appendChild(overlay);
-
-    overlay.querySelector("#level1Btn").addEventListener("click", () => {
-      overlay.remove();
-      initLevel1(); // from levels.js
-    });
-    overlay.querySelector("#closeOverlay").addEventListener("click", () => {
-      overlay.remove();
-    });
-  }
-
-  /* ========== Startzustand ========== */
-  setTime(6, 0);
-  updateTimeLabel(6, 0);
-  setSliderMode(false); // erst grob (5-Minuten-Schritte)
-}
