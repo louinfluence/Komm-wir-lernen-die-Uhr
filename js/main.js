@@ -6,7 +6,6 @@ function initClockApp() {
   const closeMenu = document.getElementById("closeMenu");
   const modeToggle = document.getElementById("modeToggle");
 
-  const body = document.body;
   const slider = document.getElementById("timeSlider");
   const timeLabel = document.getElementById("timeLabel");
 
@@ -15,29 +14,28 @@ function initClockApp() {
   const btnOptions = document.getElementById("btnOptions");
   const btnQuiz = document.getElementById("btnQuiz");
 
-  let liveMode = false;      // (Reserve, z. B. für Echtzeitmodus)
-  let fineMode = false;      // grob (5-Min-Schritte) vs. fein (1 Min)
+  let fineMode = false;
   let longPressTimer = null;
 
-  /* ========== Menü & Theme ========== */
+  /* Menü-Steuerung */
   if (menuToggle) menuToggle.addEventListener("click", () => sideMenu.classList.toggle("visible"));
   if (closeMenu)  closeMenu.addEventListener("click", () => sideMenu.classList.remove("visible"));
 
+  /* Theme-Umschaltung */
   if (modeToggle) modeToggle.addEventListener("click", () => {
-    body.classList.toggle("dark");
-    // (hier könntest du ein Dark-Theme via CSS-Variablen setzen)
+    document.body.classList.toggle("dark");
   });
 
-  /* ========== Tageszeiten-Theme (Farben) ========== */
+  /* Tageszeit-Farben */
   function setDaytimeTheme(daytime) {
-    let c1="#87CEEB", c2="#4682B4"; // default: nachmittags
+    let c1="#87CEEB", c2="#4682B4";
     switch(daytime){
       case "morgens":     c1="#FFEB99"; c2="#FFD166"; break;
       case "vormittags":  c1="#FFD166"; c2="#FFA500"; break;
       case "mittags":     c1="#FFB347"; c2="#FF8C00"; break;
       case "nachmittags": c1="#87CEEB"; c2="#4682B4"; break;
       case "abends":      c1="#457b9d"; c2="#1d3557"; break;
-      default:            c1="#0b132b"; c2="#1c2541"; break; // nachts
+      default:            c1="#0b132b"; c2="#1c2541"; break;
     }
     document.documentElement.style.setProperty("--accent1", c1);
     document.documentElement.style.setProperty("--accent2", c2);
@@ -57,97 +55,67 @@ function initClockApp() {
     const hh = String(h).padStart(2,"0");
     const mm = String(m).padStart(2,"0");
     timeLabel.textContent = `Es ist ${hh}:${mm} Uhr ${daytime}`;
-    setDaytimeTheme(daytime); // -> setzt die Gradientenfarben (Label & Slider)
+    setDaytimeTheme(daytime);
   }
 
-  /* ========== Slider-Logik ========== */
+  /* Slider */
   function setSliderMode(fine) {
     fineMode = fine;
-    const minutes = window.currentTotalMinutes ?? 360; // 06:00
+    const minutes = window.currentTotalMinutes ?? 360;
     if (fine) {
       slider.min = 0; slider.max = 1439; slider.step = 1; slider.value = minutes;
-      slider.classList.add("fine");
     } else {
-      slider.min = 0; slider.max = 288;  slider.step = 1; slider.value = Math.round(minutes/5);
-      slider.classList.remove("fine");
+      slider.min = 0; slider.max = 288; slider.step = 1; slider.value = Math.round(minutes/5);
     }
   }
 
   slider.addEventListener("input", () => {
-    if (liveMode) return;
     const val = parseInt(slider.value, 10);
     const totalMinutes = fineMode ? val : val * 5;
-    // Referenzpunkt 06:00 (damit der Slider bei 0 auf 06:00 steht)
     const adjustedMinutes = (totalMinutes + 360) % 1440;
     const h = Math.floor(adjustedMinutes / 60);
     const m = adjustedMinutes % 60;
     window.currentTotalMinutes = adjustedMinutes;
-    setTime(h, m);          // -> clock.js rotiert die Zeiger
-    updateTimeLabel(h, m);  // -> Text + Farben
+    setTime(h, m);
+    updateTimeLabel(h, m);
   });
 
-  // Long-Press für Feineinstellung (400ms halten)
   slider.addEventListener("pointerdown", () => {
     clearTimeout(longPressTimer);
     longPressTimer = setTimeout(() => setSliderMode(true), 400);
   });
-  slider.addEventListener("pointerup",   () => clearTimeout(longPressTimer));
-  slider.addEventListener("pointerleave",() => clearTimeout(longPressTimer));
+  slider.addEventListener("pointerup", () => clearTimeout(longPressTimer));
 
-  /* ========== Menü-Buttons ========== */
+  /* Menü-Buttons */
   if (btnStartGame) btnStartGame.addEventListener("click", showLevelSelection);
-  if (btnFreeMode)  btnFreeMode.addEventListener("click", () => {
+  if (btnFreeMode)  btnFreeMode.addEventListener("click", () => sideMenu.classList.remove("visible"));
+  if (btnOptions)   btnOptions.addEventListener("click", () => alert("Anleitung & Optionen folgen bald."));
+  if (btnQuiz)      btnQuiz.addEventListener("click", () => alert("Quiz-Modus kommt bald!"));
+
+  /* Levelauswahl */
+  function showLevelSelection() {
     sideMenu.classList.remove("visible");
-    returnToStart(); // 👉 zurück zur Startuhr
-  });
-  if (btnOptions)   btnOptions.addEventListener("click", () => {
-    alert("Anleitung & Optionen folgen bald.");
-  });
-  if (btnQuiz)      btnQuiz.addEventListener("click", () => {
-    alert("Quiz-Modus kommt bald!");
-  });
-
-  /* ========== Zurück zur Startseite (Freie Uhr) ========== */
-  function returnToStart() {
-    const main = document.querySelector("main");
-    if (!main) return;
-
-    // Inhalt zurücksetzen
-    main.innerHTML = `
-      <section id="clockArea" aria-label="Analoguhr">
-        <img id="ziffernblatt_12h" src="./assets/images/Ziffernblatt.png" alt="Ziffernblatt 12h">
-        <img id="ziffernblatt_24h" class="hidden" alt="Ziffernblatt 24h">
-        <img id="hourHand"   class="hand" src="./assets/images/Stundenzeiger.png" alt="Stundenzeiger">
-        <img id="minuteHand" class="hand" src="./assets/images/Minutenzeiger.png" alt="Minutenzeiger">
-      </section>
-      <div id="timeLabel">Es ist 06:00 Uhr morgens</div>
-      <div id="sliderContainer">
-        <input id="timeSlider" type="range" min="0" max="288" step="1" value="0" />
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+    overlay.innerHTML = `
+      <div class="panel">
+        <h2>🎮 Lernspiel starten</h2>
+        <p>Wähle ein Level:</p>
+        <button id="level1Btn">Level 1: Tageszeiten zuordnen</button>
+        <button id="closeOverlay">✖ Zurück</button>
       </div>
     `;
+    document.body.appendChild(overlay);
 
-    // neu gebaute DOM-Elemente wieder an init-Funktionen koppeln
-    const slider = document.getElementById("timeSlider");
-    const timeLabel = document.getElementById("timeLabel");
-
-    slider.addEventListener("input", () => {
-      const val = parseInt(slider.value, 10);
-      const totalMinutes = val * 5;
-      const adjustedMinutes = (totalMinutes + 360) % 1440;
-      const h = Math.floor(adjustedMinutes / 60);
-      const m = adjustedMinutes % 60;
-      window.currentTotalMinutes = adjustedMinutes;
-      setTime(h, m);
-      const daytime = getDaytimeText(h);
-      const hh = String(h).padStart(2,"0");
-      const mm = String(m).padStart(2,"0");
-      timeLabel.textContent = `Es ist ${hh}:${mm} Uhr ${daytime}`;
-      setDaytimeTheme(daytime);
+    overlay.querySelector("#level1Btn").addEventListener("click", () => {
+      overlay.remove();
+      initLevel1();
     });
-
-    // Standarduhrzeit
-    setTime(6, 0);
-    const d = getDaytimeText(6);
-    setDaytimeTheme(d);
-    timeLabel.textContent = "Es ist 06:00 Uhr morgens";
+    overlay.querySelector("#closeOverlay").addEventListener("click", () => overlay.remove());
   }
+
+  /* Startzustand */
+  setTime(6, 0);
+  updateTimeLabel(6, 0);
+  setSliderMode(false);
+}
