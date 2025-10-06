@@ -11,6 +11,10 @@ function initClockApp() {
   const slider     = document.getElementById("timeSlider");
   const sliderContainer = document.getElementById("sliderContainer");
   const timeLabel  = document.getElementById("timeLabel");
+  const btnStartGame = document.getElementById("btnStartGame");
+	const btnFreeMode  = document.getElementById("btnFreeMode");
+	const btnOptions   = document.getElementById("btnOptions");
+	const btnQuiz      = document.getElementById("btnQuiz");
 
   const modeSwitch    = document.getElementById("modeSwitch");
   const displaySwitch = document.getElementById("displaySwitch");
@@ -213,6 +217,28 @@ function initClockApp() {
   /* =========================================================
      Initialisierung
      ========================================================= */
+/* -------- Menü-Buttons -------- */
+btnStartGame.addEventListener("click", () => {
+  sideMenu.classList.remove("visible");
+  alert("🎮 Lernspiel-Modus wird bald aktiviert!"); // Platzhalter
+});
+
+btnFreeMode.addEventListener("click", () => {
+  sideMenu.classList.remove("visible");
+  modeSwitch.checked = false; // Lernmodus aktiv
+  liveMode = false;
+  clearInterval(liveInterval);
+});
+
+btnOptions.addEventListener("click", () => {
+  sideMenu.classList.remove("visible");
+  alert("📘 Anleitung & Optionen werden hier später angezeigt.");
+});
+
+btnQuiz.addEventListener("click", () => {
+  sideMenu.classList.remove("visible");
+  alert("💡 Quiz-Modus wird bald verfügbar!");
+});
   setTime(6, 0);
   updateTimeLabel(6, 0);
   updateSliderFromTime(6, 0);
