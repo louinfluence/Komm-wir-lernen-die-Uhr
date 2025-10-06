@@ -20,53 +20,21 @@
   <!-- ===========================================
        SEITENMENÜ
   ============================================ -->
-  <aside id="sideMenu" class="menu">
-    <h2>Einstellungen</h2>
+  <!-- =========================
+     MENÜ – NEU
+========================= -->
+<aside id="sideMenu" class="menu">
+  <h2>Hauptmenü</h2>
 
-    <!-- Uhrmodus -->
-    <section class="menu-section">
-      <h3>Art der Uhr</h3>
-      <div class="switch-group">
-        <span>Lernmodus</span>
-        <label class="switch">
-          <input type="checkbox" id="modeSwitch" />
-          <span class="slider"></span>
-        </label>
-        <span>Echtzeit</span>
-      </div>
-    </section>
-
-    <!-- Anzeigeformat -->
-    <section class="menu-section">
-      <h3>Darstellung</h3>
-      <div class="switch-group">
-        <span>12 h</span>
-        <label class="switch">
-          <input type="checkbox" id="displaySwitch" />
-          <span class="slider"></span>
-        </label>
-        <span>24 h</span>
-      </div>
-    </section>
-
-    <!-- Farbschema -->
-    <section class="menu-section">
-      <h3>Farbschema</h3>
-      <div class="switch-group">
-        <span>Hell</span>
-        <label class="switch">
-          <input type="checkbox" id="themeSwitch" />
-          <span class="slider"></span>
-        </label>
-        <span>Dunkel</span>
-      </div>
-    </section>
-
+  <nav class="menu-section">
+    <button class="menu-btn" id="btnStartGame">🎯 Lernspiel starten</button>
+    <button class="menu-btn" id="btnFreeMode">🕰️ Freie Uhr</button>
+    <button class="menu-btn" id="btnOptions">⚙️ Optionen & Anleitung</button>
+    <button class="menu-btn" id="btnQuiz">💡 Teste dein Wissen</button>
     <hr />
-    <p>Ziehe den Schieberegler, um die Uhrzeit einzustellen, oder wähle den Echtzeitmodus.</p>
-    <button id="closeMenu">✖ Menü schließen</button>
-  </aside>
-
+    <button class="menu-btn close" id="closeMenu">✖ Menü schließen</button>
+  </nav>
+</aside>
   <!-- ===========================================
        HAUPTINHALT
   ============================================ -->
