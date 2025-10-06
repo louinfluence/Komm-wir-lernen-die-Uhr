@@ -10,100 +10,138 @@ window.addEventListener("DOMContentLoaded", () => {
    LEVEL 1: Tageszeiten zuordnen
    ========================================================= */
 function initLevel1() {
-  console.log("🎮 Level 1 gestartet: Tageszeiten zuordnen");
+  console.log("🎮 Level 1 gestartet");
+
+  const levelData = [
+    { hour: 7, minute: 0, correct: "Morgen.PNG", text: "Frühstückszeit!" },
+    { hour: 9, minute: 0, correct: "Schule.PNG", text: "Schulbeginn!" },
+    { hour: 16, minute: 0, correct: "Hobby.PNG", text: "Freizeit und Hobbys!" },
+    { hour: 21, minute: 0, correct: "Schlaf.PNG", text: "Schlafenszeit!" }
+  ];
+
+  let currentRound = 0;
+
+  const main = document.querySelector("main");
+  main.innerHTML = "";
 
   const gameContainer = document.createElement("div");
   gameContainer.id = "level1";
   gameContainer.classList.add("level-container");
 
-  // --- Uhr mit fester Startzeit ---
+  // Uhr + Aufgabe
   const clockArea = document.createElement("div");
   clockArea.classList.add("clock-area");
   clockArea.innerHTML = `
     <div class="clock-container small">
-      <img src="assets/images/Ziffernblatt.png" id="ziffernblatt_12h" alt="Ziffernblatt">
+      <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt">
       <img src="assets/images/Stundenzeiger.png" id="stundenzeiger" alt="Stundenzeiger">
       <img src="assets/images/Minutenzeiger.png" id="minutenzeiger" alt="Minutenzeiger">
     </div>
-    <p class="task-text">Welche Szene passt zur angezeigten Uhrzeit?</p>
+    <p id="taskText" class="task-text"></p>
   `;
 
-  // --- Bildoptionen ---
+  // Auswahlbilder
   const optionsArea = document.createElement("div");
   optionsArea.classList.add("options-area");
 
-  const images = [
-    { src: "assets/images/Morgen.PNG", label: "Frühstück" },
-    { src: "assets/images/Schule.PNG", label: "Schule" },
-    { src: "assets/images/Schlaf.PNG", label: "Schlafen" },
-  ];
+  const imageFiles = ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"];
 
-  images.forEach((img, i) => {
+  imageFiles.forEach(file => {
     const el = document.createElement("img");
-    el.src = img.src;
-    el.alt = img.label;
+    el.src = `assets/images/${file}`;
+    el.alt = file.split(".")[0];
     el.classList.add("drag-option");
     el.draggable = true;
-    el.dataset.correct = img.label === "Frühstück" ? "true" : "false";
+    el.dataset.file = file;
     optionsArea.appendChild(el);
   });
 
-  // --- Finger-Tipp-Hinweis ---
-  const hint = document.createElement("img");
-  hint.src = "assets/images/finger.png"; // später ersetzen
-  hint.alt = "Tipp-Hinweis";
+  // Finger-Tipp-Hinweis
+  const hint = document.createElement("div");
   hint.classList.add("finger-hint");
-  gameContainer.append(hint);
+  hint.textContent = "👉 Tipp: Ziehe das richtige Bild auf die Uhr!";
 
-  // --- Zusammenfügen ---
-  gameContainer.append(clockArea, optionsArea);
-  document.querySelector("main").innerHTML = ""; // alten Inhalt leeren
-  document.querySelector("main").appendChild(gameContainer);
+  // Zusammenfügen
+  gameContainer.append(clockArea, hint, optionsArea);
+  main.appendChild(gameContainer);
 
-  // --- Uhrzeit für die Aufgabe setzen (7:00 Uhr = Frühstück) ---
-  if (typeof setTime === "function") setTime(7, 0);
+  // Runde starten
+  startRound();
 
-  // --- Drag-&-Drop Logik ---
-  initDragDrop(optionsArea, clockArea);
-}
+  /* =========================================================
+     Funktionen
+  ========================================================= */
 
-/* =========================================================
-   Drag & Drop Logik
-   ========================================================= */
-function initDragDrop(optionsArea, clockArea) {
-  const dropZone = clockArea.querySelector(".clock-container");
+  function startRound() {
+    const round = levelData[currentRound];
+    const { hour, minute, text } = round;
 
-  dropZone.addEventListener("dragover", (e) => e.preventDefault());
-  dropZone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    const dragged = document.querySelector(".dragging");
-    if (!dragged) return;
+    if (typeof setTime === "function") setTime(hour, minute);
+    document.getElementById("taskText").textContent = text;
 
-    if (dragged.dataset.correct === "true") {
-      dropZone.classList.add("correct");
-      showFeedback(true);
+    // Reset Feedback / Animation
+    document.querySelectorAll(".drag-option").forEach(opt => {
+      opt.classList.remove("disabled", "correct", "wrong");
+    });
+
+    initDragDrop(round.correct);
+  }
+
+  function initDragDrop(correctFile) {
+    const dropZone = clockArea.querySelector(".clock-container");
+    const options = optionsArea.querySelectorAll(".drag-option");
+
+    dropZone.addEventListener("dragover", e => e.preventDefault());
+
+    dropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      const dragged = document.querySelector(".dragging");
+      if (!dragged) return;
+
+      if (dragged.dataset.file === correctFile) {
+        dragged.classList.add("correct");
+        showFeedback(true);
+        setTimeout(nextRound, 1000);
+      } else {
+        dragged.classList.add("wrong");
+        showFeedback(false);
+      }
+      dragged.classList.remove("dragging");
+    });
+
+    options.forEach(el => {
+      el.addEventListener("dragstart", () => el.classList.add("dragging"));
+      el.addEventListener("dragend", () => el.classList.remove("dragging"));
+    });
+  }
+
+  function nextRound() {
+    currentRound++;
+    if (currentRound < levelData.length) {
+      startRound();
     } else {
-      dropZone.classList.add("wrong");
-      showFeedback(false);
-      setTimeout(() => dropZone.classList.remove("wrong"), 800);
+      showEndScreen();
     }
-    dragged.classList.remove("dragging");
-  });
+  }
 
-  optionsArea.querySelectorAll(".drag-option").forEach((el) => {
-    el.addEventListener("dragstart", () => el.classList.add("dragging"));
-    el.addEventListener("dragend", () => el.classList.remove("dragging"));
-  });
-}
+  function showFeedback(correct) {
+    const fb = document.createElement("div");
+    fb.className = "feedback";
+    fb.textContent = correct ? "✅ Richtig!" : "❌ Versuch’s nochmal!";
+    document.body.appendChild(fb);
+    setTimeout(() => fb.remove(), 1200);
+  }
 
-/* =========================================================
-   Feedback & Animationen
-   ========================================================= */
-function showFeedback(correct) {
-  const feedback = document.createElement("div");
-  feedback.className = "feedback";
-  feedback.textContent = correct ? "✅ Richtig!" : "❌ Versuch’s nochmal!";
-  document.body.appendChild(feedback);
-
-  setTimeout(() => feedback.remove(), 1200);
+  function showEndScreen() {
+    main.innerHTML = `
+      <div class="level-container">
+        <h2>🎉 Super gemacht!</h2>
+        <p>Du kennst jetzt die wichtigsten Tageszeiten!</p>
+        <button id="backToMenu" class="menu-btn">🏠 Zurück zum Menü</button>
+      </div>
+    `;
+    document.getElementById("backToMenu").addEventListener("click", () => {
+      location.reload();
+    });
+  }
 }
