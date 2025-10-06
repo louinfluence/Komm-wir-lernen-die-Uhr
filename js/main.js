@@ -1,6 +1,4 @@
-window.addEventListener("DOMContentLoaded", () => {
-  initClockApp();
-});
+window.addEventListener("DOMContentLoaded", initClockApp);
 
 function initClockApp() {
   const sideMenu = document.getElementById("sideMenu");
@@ -11,6 +9,7 @@ function initClockApp() {
   const modeToggle = document.getElementById("modeToggle");
   const body       = document.body;
   const slider     = document.getElementById("timeSlider");
+  const sliderContainer = document.getElementById("sliderContainer");
   const timeLabel  = document.getElementById("timeLabel");
 
   const modeSwitch    = document.getElementById("modeSwitch");
@@ -19,91 +18,103 @@ function initClockApp() {
 
   let liveMode = false;
   let liveInterval = null;
-  let textTimeout = null;
-
-  // 👉 Grob/Fein-Status
   let fineMode = false;
-  let lpTimer  = null;
+  let longPressTimer = null;
 
-  /* -------- Menü -------- */
+  /* =========================================================
+     Menü & Theme
+     ========================================================= */
   menuToggle.addEventListener("click", () => sideMenu.classList.toggle("visible"));
   closeMenu.addEventListener("click", () => sideMenu.classList.remove("visible"));
 
-  /* -------- Dark/Light -------- */
   modeToggle.addEventListener("click", () => {
     body.classList.toggle("dark");
     themeSwitch.checked = body.classList.contains("dark");
     localStorage.setItem("theme", body.classList.contains("dark") ? "dark" : "light");
   });
+
   themeSwitch.addEventListener("change", () => {
     body.classList.toggle("dark", themeSwitch.checked);
     localStorage.setItem("theme", themeSwitch.checked ? "dark" : "light");
   });
+
   if (localStorage.getItem("theme") === "dark") {
-    body.classList.add("dark"); themeSwitch.checked = true;
+    body.classList.add("dark");
+    themeSwitch.checked = true;
   }
 
-  /* -------- Echtzeit/Lern -------- */
+  /* =========================================================
+     Echtzeitmodus / Lernmodus
+     ========================================================= */
   modeSwitch.addEventListener("change", () => {
     liveMode = modeSwitch.checked;
-    if (liveMode) startLiveClock(); else clearInterval(liveInterval);
+
+    // Echtzeit aktiv → Slider ausblenden
+    if (liveMode) {
+      sliderContainer.style.display = "none";
+      startLiveClock();
+    } else {
+      sliderContainer.style.display = "block";
+      clearInterval(liveInterval);
+    }
   });
 
-  /* -------- 12h / 24h -------- */
+  /* =========================================================
+     Anzeige: 12h / 24h
+     ========================================================= */
   displaySwitch.addEventListener("change", () => {
     window.displayMode = displaySwitch.checked ? "24h" : "12h";
     toggleClockFace(window.displayMode);
     if (liveMode) startLiveClock();
   });
 
-  /* ===== Slider: Grob/Fein ===== */
+  /* =========================================================
+     Slider Logik (mit Grob/Fein Umschaltung)
+     ========================================================= */
   setSliderMode(false);
 
- slider.addEventListener("input", () => {
-  if (liveMode) return;
+  slider.addEventListener("input", () => {
+    if (liveMode) return; // deaktiviert bei Echtzeit
 
-  const val = parseInt(slider.value, 10);
-  const totalMinutes = fineMode ? val : val * 5;
+    const val = parseInt(slider.value, 10);
+    const totalMinutes = fineMode ? val : val * 5;
+    const adjustedMinutes = (totalMinutes + 360) % 1440;
+    const h = Math.floor(adjustedMinutes / 60);
+    const m = adjustedMinutes % 60;
 
-  // Startzeit auf 6:00 verschieben
-  const adjustedMinutes = (totalMinutes + 360) % 1440;
-  const h = Math.floor(adjustedMinutes / 60);
-  const m = adjustedMinutes % 60;
+    setTime(h, m);
+    updateTimeLabel(h, m);
+  });
 
-  setTime(h, m);
-  updateTimeLabel(h, m); // 👈 direkt live aktualisieren, ohne Timeout
-});
-
-  // Long-Press → temporär Feinmodus
-  const enableFine = (on) => {
-    if (fineMode === on) return;
-    fineMode = on;
-    setSliderMode(fineMode);
-  };
-
-  const onPointerDown = () => {
+  // Long-Press zum Umschalten auf Feinmodus (temporär)
+  slider.addEventListener("pointerdown", () => {
     if (liveMode) return;
-    clearTimeout(lpTimer);
-    lpTimer = setTimeout(() => enableFine(true), 350);
-  };
-  const onPointerUp = () => {
-    clearTimeout(lpTimer);
-    if (!liveMode) enableFine(false);
-  };
+    clearTimeout(longPressTimer);
+    longPressTimer = setTimeout(() => setSliderMode(true), 400);
+  });
 
-  slider.addEventListener("pointerdown", onPointerDown);
-  slider.addEventListener("pointerup", onPointerUp);
-  slider.addEventListener("pointercancel", onPointerUp);
-  slider.addEventListener("pointerleave", onPointerUp);
-  slider.addEventListener("touchstart", onPointerDown, { passive: true });
-  slider.addEventListener("touchend", onPointerUp);
-  slider.addEventListener("touchcancel", onPointerUp);
+  slider.addEventListener("pointerup", () => {
+    clearTimeout(longPressTimer);
+    if (!liveMode) setSliderMode(false);
+  });
 
-  /* -------- Slider-Modus & Startwert -------- */
+  slider.addEventListener("touchstart", () => {
+    if (liveMode) return;
+    clearTimeout(longPressTimer);
+    longPressTimer = setTimeout(() => setSliderMode(true), 400);
+  }, { passive: true });
+
+  slider.addEventListener("touchend", () => {
+    clearTimeout(longPressTimer);
+    if (!liveMode) setSliderMode(false);
+  });
+
+  /* =========================================================
+     Hilfsfunktionen
+     ========================================================= */
   function setSliderMode(fine) {
-    // 👇 Slider ganz links (0), Uhr auf 6:00 Uhr
-    const minutes = 0;
-    window.currentTotalMinutes = 360;
+    fineMode = fine;
+    const minutes = window.currentTotalMinutes ?? 360;
 
     if (fine) {
       slider.min = 0; slider.max = 1439; slider.step = 1;
@@ -116,27 +127,44 @@ function initClockApp() {
     }
   }
 
-  /* -------- Ziffernblatt-Umschaltung -------- */
+  function updateSliderFromTime(hours, minutes) {
+    const total = ((hours * 60 + minutes) - 360 + 1440) % 1440;
+    const sliderVal = fineMode ? total : Math.round(total / 5);
+    slider.value = sliderVal;
+  }
+
   function toggleClockFace(mode) {
     const z12 = document.getElementById("ziffernblatt_12h");
     const z24 = document.getElementById("ziffernblatt_24h");
-    if (mode === "24h") { z12.classList.add("hidden"); z24.classList.remove("hidden"); }
-    else { z24.classList.add("hidden"); z12.classList.remove("hidden"); }
+    if (mode === "24h") {
+      z12.classList.add("hidden");
+      z24.classList.remove("hidden");
+    } else {
+      z24.classList.add("hidden");
+      z12.classList.remove("hidden");
+    }
   }
 
-  /* -------- Echtzeit -------- */
+  /* =========================================================
+     Echtzeitmodus
+     ========================================================= */
   function startLiveClock() {
     clearInterval(liveInterval);
+
     function update() {
       const now = new Date();
       setTime(now.getHours(), now.getMinutes());
       updateTimeLabel(now.getHours(), now.getMinutes());
+      updateSliderFromTime(now.getHours(), now.getMinutes());
     }
+
     update();
     liveInterval = setInterval(update, 10000);
   }
 
-  /* -------- Tageszeit-Anzeige -------- */
+  /* =========================================================
+     Tageszeit & Textanzeige
+     ========================================================= */
   function getDaytimeText(hour) {
     if (hour >= 6 && hour < 10)  return "morgens";
     if (hour >= 10 && hour < 12) return "vormittags";
@@ -146,54 +174,43 @@ function initClockApp() {
     return "nachts";
   }
 
-function updateTimeLabel(h, m) {
-  if (!timeLabel) return;
+  function updateTimeLabel(h, m) {
+    if (!timeLabel) return;
 
-  const hour = h;
-  const minute = m;
-  const daytime = getDaytimeText(hour);
-  const formatted = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+    const daytime = getDaytimeText(h);
+    const formatted = `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
 
-  // Alternativzeit (12 h-Format mit Minuten)
-  let altHour = hour >= 12 ? hour - 12 : hour + 12;
-  if (altHour >= 24) altHour -= 24;
-  const altFormatted = `${altHour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+    let altHour = h >= 12 ? h - 12 : h + 12;
+    if (altHour >= 24) altHour -= 24;
+    const altFormatted = `${altHour.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
 
-  let text = "";
-  if (hour >= 12) {
-    text = `Es ist ${formatted} Uhr oder auch ${altFormatted} Uhr ${daytime}`;
-  } else {
-    text = `Es ist ${formatted} Uhr ${daytime}`;
+    let text = h >= 12
+      ? `Es ist ${formatted} Uhr oder auch ${altFormatted} Uhr ${daytime}`
+      : `Es ist ${formatted} Uhr ${daytime}`;
+
+    timeLabel.textContent = text;
+
+    // Farbverlauf smooth ändern
+    let color1, color2;
+    switch (daytime) {
+      case "morgens":     color1 = "#FFEB99"; color2 = "#FFD166"; break;
+      case "vormittags":  color1 = "#FFD166"; color2 = "#FFA500"; break;
+      case "mittags":     color1 = "#FFB347"; color2 = "#FF8C00"; break;
+      case "nachmittags": color1 = "#87CEEB"; color2 = "#4682B4"; break;
+      case "abends":      color1 = "#457b9d"; color2 = "#1d3557"; break;
+      default:            color1 = "#0b132b"; color2 = "#1c2541";
+    }
+
+    timeLabel.style.background = `linear-gradient(to right, ${color1}, ${color2})`;
+    timeLabel.style.webkitBackgroundClip = "text";
+    timeLabel.style.webkitTextFillColor = "transparent";
+    timeLabel.style.transition = "background 1.5s ease";
   }
 
-  timeLabel.textContent = text;
-
-  // dynamische Farbverläufe je nach Tageszeit
-  let color1, color2;
-  switch (daytime) {
-    case "morgens":
-      color1 = "#FFEB99"; color2 = "#FFD166"; break;
-    case "vormittags":
-      color1 = "#FFD166"; color2 = "#FFA500"; break;
-    case "mittags":
-      color1 = "#FFB347"; color2 = "#FF8C00"; break;
-    case "nachmittags":
-      color1 = "#87CEEB"; color2 = "#4682B4"; break;
-    case "abends":
-      color1 = "#457b9d"; color2 = "#1d3557"; break;
-    case "nachts":
-    default:
-      color1 = "#0b132b"; color2 = "#1c2541"; break;
-  }
-
-  timeLabel.style.background = `linear-gradient(to right, ${color1}, ${color2})`;
-  timeLabel.style.webkitBackgroundClip = "text";
-  timeLabel.style.webkitTextFillColor = "transparent";
-  timeLabel.style.transition = "background 1.5s ease";
-}
-
-  /* -------- Init -------- */
+  /* =========================================================
+     Initialisierung
+     ========================================================= */
   setTime(6, 0);
   updateTimeLabel(6, 0);
-  slider.value = 0; // 👈 beim Start ganz links
+  updateSliderFromTime(6, 0);
 }
