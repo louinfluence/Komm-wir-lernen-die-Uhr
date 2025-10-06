@@ -4,60 +4,76 @@ function initLevel1() {
   console.log("🎮 Level 1 gestartet");
 
   const levelData = [
-    { hour: 7, minute: 0, correct: "Morgen.PNG", text: "Frühstückszeit!" },
-    { hour: 9, minute: 0, correct: "Schule.PNG", text: "Schulbeginn!" },
-    { hour: 16, minute: 0, correct: "Hobby.PNG", text: "Freizeit und Hobbys!" },
-    { hour: 21, minute: 0, correct: "Schlaf.PNG", text: "Schlafenszeit!" }
+    { hour: 7,  minute: 0, correct: "Morgen.PNG", text: "Frühstückszeit!" },
+    { hour: 9,  minute: 0, correct: "Schule.PNG", text: "Schulbeginn!" },
+    { hour: 16, minute: 0, correct: "Hobby.PNG",  text: "Freizeit und Hobbys!" },
+    { hour: 21, minute: 0, correct: "Schlaf.PNG",  text: "Schlafenszeit!" }
   ];
 
   const main = document.querySelector("main");
-  if (!main) {
-    console.error("❌ Kein <main>-Element gefunden!");
-    return;
-  }
+  if (!main) { console.error("❌ Kein <main> gefunden."); return; }
 
   main.innerHTML = "";
+  const game = document.createElement("div");
+  game.className = "game-container";
+  game.innerHTML = `
+    <h2>Level 1: Tageszeiten zuordnen</h2>
+    <p>Welche Bildkarte passt zur angezeigten Uhrzeit?</p>
+    <div id="levelClock" style="position:relative; width:min(80vw,480px); aspect-ratio:1/1; margin:10px auto;"></div>
+    <div class="image-row" id="choices"></div>
+  `;
+  main.appendChild(game);
 
-  const gameContainer = document.createElement("div");
-  gameContainer.className = "game-container";
+  // Kleine Uhr im Level (nutzt dieselben Zeiger & Ziffernblatt wie oben)
+  const levelClock = game.querySelector("#levelClock");
+  levelClock.innerHTML = `
+    <img class="zb" src="./assets/images/Ziffernblatt.png" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain;">
+    <img id="lvlHour"   class="hand" src="./assets/images/Stundenzeiger.png" alt="Stundenzeiger">
+    <img id="lvlMinute" class="hand" src="./assets/images/Minutenzeiger.png" alt="Minutenzeiger">
+  `;
 
-  const clockArea = document.createElement("div");
-  clockArea.id = "clockArea";
+  // Hilfsfunktion nur fürs Level (damit die großen Zeiger oben unverändert bleiben)
+  function setLevelTime(h, m) {
+    const hourDeg   = (h % 12) * 30 + m * 0.5;
+    const minuteDeg = m * 6;
+    const H = levelClock.querySelector("#lvlHour");
+    const M = levelClock.querySelector("#lvlMinute");
+    if (H) H.style.setProperty("--rot", `${hourDeg}deg`);
+    if (M) M.style.setProperty("--rot", `${minuteDeg}deg`);
+  }
 
-  const instruction = document.createElement("p");
-  instruction.textContent = "Ordne die richtige Tageszeit zu!";
+  const choicesEl = game.querySelector("#choices");
 
-  const imageRow = document.createElement("div");
-  imageRow.className = "image-row";
+  let current = 0;
+  nextRound();
 
-  levelData.forEach((entry) => {
-    const img = document.createElement("img");
-    img.src = `./assets/images/${entry.correct}`;
-    img.alt = entry.text;
-    img.className = "choice-img";
-    img.addEventListener("click", () => {
-      alert(`✅ ${entry.text}`);
-      nextRound();
-    });
-    imageRow.appendChild(img);
-  });
-
-  gameContainer.appendChild(instruction);
-  gameContainer.appendChild(clockArea);
-  gameContainer.appendChild(imageRow);
-  main.appendChild(gameContainer);
-
-  let currentRound = 0;
   function nextRound() {
-    if (currentRound >= levelData.length) {
-      main.innerHTML = "<h2>🎉 Super gemacht! Du hast alle Zeiten richtig zugeordnet!</h2>";
+    if (current >= levelData.length) {
+      main.innerHTML = `<div class="game-container"><h2>🎉 Super!</h2><p>Du hast alle Tageszeiten richtig zugeordnet.</p></div>`;
       return;
     }
 
-    const round = levelData[currentRound];
-    setTime(round.hour, round.minute);
-    currentRound++;
-  }
+    const round = levelData[current];
+    setLevelTime(round.hour, round.minute);
 
-  nextRound();
+    // Karten neu rendern (shuffle)
+    const files = levelData.map(x => x.correct).sort(() => Math.random() - 0.5);
+    choicesEl.innerHTML = "";
+    files.forEach(file => {
+      const img = document.createElement("img");
+      img.src = `./assets/images/${file}`;
+      img.alt = file.replace(".PNG",""); // kurz
+      img.className = "choice-img";
+      img.addEventListener("click", () => {
+        if (file === round.correct) {
+          alert(`✅ Richtig! ${round.text}`);
+          current++;
+          nextRound();
+        } else {
+          alert("❌ Versuch es nochmal!");
+        }
+      });
+      choicesEl.appendChild(img);
+    });
+  }
 }
