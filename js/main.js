@@ -169,20 +169,29 @@ function initClockApp() {
     if (hour >= 6 && hour < 10)  return "morgens";
     if (hour >= 10 && hour < 12) return "vormittags";
     if (hour >= 12 && hour < 14) return "mittags";
-    if (hour >= 14 && hour < 17) return "nachmittags";
-    if (hour >= 17 && hour < 21) return "abends";
+    if (hour >= 14 && hour < 18) return "nachmittags";
+    if (hour >= 18 && hour < 22) return "abends";
     return "nachts";
   }
 
   function updateTimeLabel(h, m) {
-    if (!timeLabel) return;
+  const hh = String(h).padStart(2, "0");
+  const mm = String(m).padStart(2, "0");
 
-    const daytime = getDaytimeText(h);
-    const formatted = `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+  const daytime = getDaytimeText(h);
+  let text = `Es ist ${hh}:${mm} Uhr ${daytime}`;
 
-    let altHour = h >= 12 ? h - 12 : h + 12;
-    if (altHour >= 24) altHour -= 24;
-    const altFormatted = `${altHour.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+  // Alt-Darstellung nur bei 12:xx (Mittag) oder 00:xx (Mitternacht)
+  if (h === 12 || h === 0) {
+    const altHour = (h === 12) ? 0 : 12; // 12 -> 00, 00 -> 12
+    const altFormatted = `${String(altHour).padStart(2, "0")}:${mm}`;
+    const altDaytime = getDaytimeText(altHour); // getrennt ermitteln!
+    text += ` oder auch ${altFormatted} Uhr ${altDaytime}`;
+  }
+
+  timeLabel.textContent = text;
+  setDaytimeTheme(daytime);
+}
 
     let text = h >= 12
       ? `Es ist ${formatted} Uhr oder auch ${altFormatted} Uhr ${daytime}`
