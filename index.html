@@ -2,49 +2,96 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Komm, wir lernen die Uhr</title>
-  <link rel="stylesheet" href="./css/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Komm wir lernen die Uhr – Version 2.1</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
+
 <body>
-  <header>
-    <button id="menuToggle" aria-label="Menü öffnen">☰</button>
-    <h1>Komm, wir lernen die Uhr</h1>
-    <div class="spacer"></div>
-    <button id="modeToggle" aria-label="Dark/Light">🌓</button>
+  <!-- ===========================================
+       HEADER
+  ============================================ -->
+  <header class="app-header">
+    <button id="menuToggle" aria-label="Menü öffnen oder schließen">☰</button>
+    <h1>Komm wir lernen die Uhr</h1>
+    <button id="modeToggle" aria-label="Darstellung umschalten">🌗</button>
   </header>
 
-  <!-- Seitenmenü -->
-  <nav id="sideMenu" aria-label="Hauptmenü">
-    <h2>Hauptmenü</h2>
-    <button id="btnStartGame">🎮 Lernspiel starten</button>
-    <button id="btnFreeMode">🕒 Freie Uhr</button>
-    <button id="btnOptions">⚙️ Optionen</button>
-    <button id="btnQuiz">❓ Quiz</button>
-    <button id="closeMenu">✖ Menü schließen</button>
-  </nav>
+  <!-- ===========================================
+       SEITENMENÜ
+  ============================================ -->
+  <aside id="sideMenu" class="menu">
+    <h2>Einstellungen</h2>
 
-  <main>
-    <section id="clockArea" aria-label="Analoguhr">
-      <!-- Ziffernblatt -->
-      <img id="ziffernblatt_12h" src="./assets/images/Ziffernblatt.png" alt="Ziffernblatt 12h">
-      <img id="ziffernblatt_24h" class="hidden" alt="Ziffernblatt 24h">
-
-      <!-- Zeiger -->
-      <img id="hourHand" class="hand" src="./assets/images/Stundenzeiger.png" alt="Stundenzeiger">
-      <img id="minuteHand" class="hand" src="./assets/images/Minutenzeiger.png" alt="Minutenzeiger">
+    <!-- Uhrmodus -->
+    <section class="menu-section">
+      <h3>Art der Uhr</h3>
+      <div class="switch-group">
+        <span>Lernmodus</span>
+        <label class="switch">
+          <input type="checkbox" id="modeSwitch" />
+          <span class="slider"></span>
+        </label>
+        <span>Echtzeit</span>
+      </div>
     </section>
 
-    <div id="timeLabel">Es ist 06:00 Uhr morgens</div>
+    <!-- Anzeigeformat -->
+    <section class="menu-section">
+      <h3>Darstellung</h3>
+      <div class="switch-group">
+        <span>12 h</span>
+        <label class="switch">
+          <input type="checkbox" id="displaySwitch" />
+          <span class="slider"></span>
+        </label>
+        <span>24 h</span>
+      </div>
+    </section>
 
-    <div id="sliderContainer">
-      <input id="timeSlider" type="range" min="0" max="288" step="1" value="0" />
+    <!-- Farbschema -->
+    <section class="menu-section">
+      <h3>Farbschema</h3>
+      <div class="switch-group">
+        <span>Hell</span>
+        <label class="switch">
+          <input type="checkbox" id="themeSwitch" />
+          <span class="slider"></span>
+        </label>
+        <span>Dunkel</span>
+      </div>
+    </section>
+
+    <hr />
+    <p>Ziehe den Schieberegler, um die Uhrzeit einzustellen, oder wähle den Echtzeitmodus.</p>
+    <button id="closeMenu">✖ Menü schließen</button>
+  </aside>
+
+  <!-- ===========================================
+       HAUPTINHALT
+  ============================================ -->
+  <main>
+    <!-- Uhr -->
+    <div class="clock-container">
+      <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt 12 h" id="ziffernblatt_12h" />
+      <img src="assets/images/Ziffernblatt_24h.png" alt="Ziffernblatt 24 h" id="ziffernblatt_24h" class="hidden" />
+      <img src="assets/images/Stundenzeiger.png" alt="Stundenzeiger" id="stundenzeiger" />
+      <img src="assets/images/Minutenzeiger.png" alt="Minutenzeiger" id="minutenzeiger" />
     </div>
+
+    <!-- Slider + Zeitstrahl -->
+    <div id="sliderContainer">
+      <input type="range" id="timeSlider" min="0" max="1439" value="0" />
+    </div>
+
+    <!-- Anzeige der Zeit -->
+    <div id="timeLabel"></div>
   </main>
 
-  <!-- Skripte (in richtiger Reihenfolge) -->
-  <script src="./js/clock.js" defer></script>
-  <script src="./js/levels.js" defer></script>
-  <script src="./js/main.js" defer></script>
+  <!-- ===========================================
+       SCRIPTS
+  ============================================ -->
+  <script src="js/clock.js" defer></script>
+  <script src="js/main.js" defer></script>
 </body>
 </html>
