@@ -184,31 +184,47 @@ function initClockApp() {
 
   let text = "";
 
-  // Normale Anzeige
-  // 0:00 – 11:59 Uhr → kein Zusatz (außer 0:00 Uhr selbst)
-  if ((h >= 0 && h < 12 && !(h === 0 && m === 0))) {
-    text = `Es ist ${formatted} Uhr ${daytime}`;
-  }
-
-  // 0:00 Uhr genau → Spezialfall
-  else if (h === 0 && m === 0) {
+  // 🌙 0:00 Uhr (Mitternacht)
+  if (h === 0 && m === 0) {
     text = `Es ist 12:00 Uhr nachts oder auch 00:00 Uhr`;
   }
 
-  // 12:00 Uhr mittags → kein Zusatz
+  // 🌅 0:01 – 11:59 Uhr → kein Zusatz
+  else if (h > 0 && h < 12) {
+    text = `Es ist ${formatted} Uhr ${daytime}`;
+  }
+
+  // ☀️ 12:00 Uhr genau (Mittag) → kein Zusatz
   else if (h === 12 && m === 0) {
     text = `Es ist 12:00 Uhr mittags`;
   }
 
-  // 12:01 – 23:59 Uhr → mit Zusatz
-  else if (h >= 12) {
-    // z. B. 14 → 2 Uhr
+  // 🌇 12:01 – 23:59 Uhr → mit Zusatz
+  else if (h >= 12 && !(h === 12 && m === 0)) {
     const altHour = h > 12 ? h - 12 : 12;
     const altFormatted = `${String(altHour).padStart(2, "0")}:${mm}`;
     text = `Es ist ${altFormatted} Uhr ${daytime} oder auch ${formatted} Uhr`;
   }
 
   timeLabel.textContent = text;
+
+  // Farbverlauf wie zuvor
+  let color1, color2;
+  switch (daytime) {
+    case "morgens":     color1 = "#FFEB99"; color2 = "#FFD166"; break;
+    case "vormittags":  color1 = "#FFD166"; color2 = "#FFA500"; break;
+    case "mittags":     color1 = "#FFB347"; color2 = "#FF8C00"; break;
+    case "nachmittags": color1 = "#87CEEB"; color2 = "#4682B4"; break;
+    case "abends":      color1 = "#457b9d"; color2 = "#1d3557"; break;
+    default:            color1 = "#0b132b"; color2 = "#1c2541";
+  }
+
+  timeLabel.style.backgroundImage = `linear-gradient(to right, ${color1}, ${color2})`;
+  timeLabel.style.backgroundClip = "text";
+  timeLabel.style.webkitBackgroundClip = "text";
+  timeLabel.style.color = "transparent";
+  timeLabel.style.transition = "background-image 1.5s ease";
+}
 
   // Farbverlauf wie zuvor
   let color1, color2;
