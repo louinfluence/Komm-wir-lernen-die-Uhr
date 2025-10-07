@@ -242,7 +242,6 @@ function initClockApp() {
   timeLabel.style.color = "transparent";
   timeLabel.style.transition = "background-image 1.5s ease";
 }
-  }
 
   /* =========================================================
      Initialisierung
