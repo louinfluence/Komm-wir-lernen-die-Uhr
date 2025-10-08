@@ -172,19 +172,26 @@ main {
 }
 .hidden { display: none; }
 
-#sekundenzeiger {
+<div id="secondWrapper">
+  <img src="assets/images/Sekundenzeiger.png" id="sekundenzeiger" alt="Sekundenzeiger" />
+</div>
+
+#secondWrapper {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 100%;
-  max-width: 600px;
-  height: auto;
-  transform-origin: 50% 50%;   /* Drehpunkt bleibt perfekt mittig */
-  transform: translate(0%, -50%) rotate(0deg); /* Bild leicht nach unten verschoben */
-  z-index: 4;
-  pointer-events: none;
-  display: none;
+  transform: translate(-50%, -50%); /* Position bleibt stabil */
 }
+
+#sekundenzeiger {
+  width: 600px;
+  height: auto;
+  transform-origin: 50% 50%;
+  transform: rotate(0deg); /* nur Rotation */
+  pointer-events: none;
+  z-index: 4;
+}
+
 
 
 
