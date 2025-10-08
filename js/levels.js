@@ -104,22 +104,39 @@ function runClockLevel(levelData, title, onComplete) {
     }
 
     shuffle(pool).forEach(opt => {
-      const btn = document.createElement("div");
-      btn.className = "option";
-      btn.textContent = opt.replace(".PNG", "");
-      btn.addEventListener("click", () => {
-        if (opt === data.correct) {
-          feedback.textContent = "✅ Richtig!";
-          setTimeout(() => {
-            current++;
-            nextRound();
-          }, 600);
-        } else {
-          feedback.textContent = "❌ Versuch’s nochmal!";
-        }
-      });
-      opts.appendChild(btn);
-    });
+  const btn = document.createElement("div");
+  btn.className = "option";
+
+  // Wenn es ein Bild ist (endet auf .PNG)
+  if (opt.endsWith(".PNG")) {
+    const img = document.createElement("img");
+    img.src = `assets/images/${opt}`;
+    img.alt = opt.replace(".PNG", "");
+    img.className = "option-img";
+    btn.appendChild(img);
+  } else {
+    // sonst Textoption
+    btn.textContent = opt;
+  }
+
+  btn.addEventListener("click", () => {
+    if (opt === data.correct) {
+      feedback.textContent = "✅ Richtig!";
+      btn.classList.add("correct");
+      setTimeout(() => {
+        current++;
+        nextRound();
+      }, 800);
+    } else {
+      feedback.textContent = "❌ Versuch’s nochmal!";
+      btn.classList.add("wrong");
+      setTimeout(() => btn.classList.remove("wrong"), 500);
+    }
+  });
+
+  opts.appendChild(btn);
+});
+
 
     const old = document.querySelector("#options");
     if (old) old.remove();

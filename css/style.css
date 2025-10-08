@@ -273,3 +273,30 @@ main {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
+
+.option {
+  display: inline-block;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #fff;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+  transition: transform 0.2s;
+}
+.option:hover { transform: scale(1.05); }
+
+.option-img {
+  width: 150px;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+.option.correct {
+  box-shadow: 0 0 12px #4CAF50;
+}
+.option.wrong {
+  box-shadow: 0 0 12px #E53935;
+  opacity: 0.7;
+}
