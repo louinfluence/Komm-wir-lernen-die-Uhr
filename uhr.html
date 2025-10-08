@@ -1,1 +1,99 @@
-<title>Analoguhr – Lernmodus & Echtzeit</title>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analoguhr – Lernmodus & Echtzeit</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <!-- ===========================================
+       HEADER
+  ============================================ -->
+  <header class="app-header">
+    <button id="menuToggle" aria-label="Menü öffnen oder schließen">☰</button>
+    <h1>Komm wir lernen die Uhr</h1>
+    <button id="modeToggle" aria-label="Darstellung umschalten">🌗</button>
+  </header>
+
+  <!-- ===========================================
+       SEITENMENÜ
+  ============================================ -->
+  <aside id="sideMenu" class="menu">
+    <h2>Einstellungen</h2>
+
+    <!-- Uhrmodus -->
+    <section class="menu-section">
+      <h3>Art der Uhr</h3>
+      <div class="switch-group">
+        <span>Lernmodus</span>
+        <label class="switch">
+          <input type="checkbox" id="modeSwitch" />
+          <span class="slider"></span>
+        </label>
+        <span>Echtzeit</span>
+      </div>
+    </section>
+
+    <!-- Anzeigeformat -->
+    <section class="menu-section">
+      <h3>Darstellung</h3>
+      <div class="switch-group">
+        <span>12 h</span>
+        <label class="switch">
+          <input type="checkbox" id="displaySwitch" />
+          <span class="slider"></span>
+        </label>
+        <span>24 h</span>
+      </div>
+    </section>
+
+    <!-- Farbschema -->
+    <section class="menu-section">
+      <h3>Farbschema</h3>
+      <div class="switch-group">
+        <span>Hell</span>
+        <label class="switch">
+          <input type="checkbox" id="themeSwitch" />
+          <span class="slider"></span>
+        </label>
+        <span>Dunkel</span>
+      </div>
+    </section>
+
+    <hr />
+    <p>Ziehe den Schieberegler, um die Uhrzeit einzustellen, oder wähle den Echtzeitmodus.</p>
+    <button id="closeMenu">✖ Menü schließen</button>
+  </aside>
+
+  <!-- ===========================================
+       HAUPTINHALT
+  ============================================ -->
+  <main>
+    <!-- Uhr -->
+    <div class="clock-container">
+      <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt 12 h" id="ziffernblatt_12h" />
+      <img src="assets/images/Ziffernblatt_24h.png" alt="Ziffernblatt 24 h" id="ziffernblatt_24h" class="hidden" />
+      <img src="assets/images/Stundenzeiger.png" alt="Stundenzeiger" id="stundenzeiger" />
+      <img src="assets/images/Minutenzeiger.png" alt="Minutenzeiger" id="minutenzeiger" />
+    </div>
+		
+  	<!-- Anzeige der Zeit -->
+    <div id="timeLabel"></div>
+    
+    <!-- Slider + Zeitstrahl -->
+    <div id="sliderContainer">
+      <input type="range" id="timeSlider" min="0" max="1439" value="0" />
+    </div>
+
+    
+  </main>
+
+  <!-- ===========================================
+       SCRIPTS
+  ============================================ -->
+  <script src="js/clock.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
