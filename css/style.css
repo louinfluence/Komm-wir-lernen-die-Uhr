@@ -169,6 +169,8 @@ main {
 }
 #stundenzeiger, #minutenzeiger {
   transform-origin: 50% 50%;
+}
+.hidden { display: none; }
 
 #sekundenzeiger {
   position: absolute;
@@ -178,14 +180,13 @@ main {
   max-width: 600px;
   height: auto;
   transform-origin: 50% 50%;   /* Drehpunkt bleibt perfekt mittig */
-  transform: translate(-50%, -120%) rotate(0deg); /* Bild leicht nach unten verschoben */
+  transform: translate(-50%, -10%) rotate(0deg); /* Bild leicht nach unten verschoben */
   z-index: 4;
   pointer-events: none;
   display: none;
 }
 
-}
-.hidden { display: none; }
+
 
 /* =========================================================
    SLIDER + ZEITSTRAHL
