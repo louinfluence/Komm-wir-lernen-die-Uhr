@@ -180,3 +180,19 @@ function initClock() {
     }
   }
 }
+/* -----------------------------------------------------------
+   Dark Mode Umschalter
+----------------------------------------------------------- */
+const themeSwitch = document.getElementById("themeSwitch");
+if (themeSwitch) {
+  themeSwitch.addEventListener("change", () => {
+    document.body.classList.toggle("dark", themeSwitch.checked);
+    localStorage.setItem("darkMode", themeSwitch.checked ? "true" : "false");
+  });
+
+  // Zustand beim Laden wiederherstellen
+  if (localStorage.getItem("darkMode") === "true") {
+    themeSwitch.checked = true;
+    document.body.classList.add("dark");
+  }
+}
