@@ -180,7 +180,7 @@ main {
   max-width: 600px;
   height: auto;
   transform-origin: 50% 50%;   /* Drehpunkt bleibt perfekt mittig */
-  transform: translate(-50%, 100%) rotate(0deg); /* Bild leicht nach unten verschoben */
+  transform: translate(0%, -50%) rotate(0deg); /* Bild leicht nach unten verschoben */
   z-index: 4;
   pointer-events: none;
   display: none;
