@@ -36,6 +36,49 @@ window.setTime = function (hours, minutes) {
 
   updateClock(hours, minutes, hourAngle, minuteAngle);
 };
+// digitale Anzeige aktualisieren
+const disp = document.getElementById("timeDisplay") || document.getElementById("timeLabel");
+if (disp) disp.textContent = formatTime(hours, minutes);
+
+// NEU: Tageszeit aktualisieren
+updateTimeLabel(hours, minutes);
+
+/* -----------------------------------------------------------
+   Tageszeiten-Logik für farbige Anzeige und Text
+----------------------------------------------------------- */
+function updateTimeLabel(hours, minutes) {
+  const label = document.getElementById("timeLabel");
+  if (!label) return;
+
+  // Alle alten Klassen entfernen
+  label.className = "";
+  label.classList.add("fade-in");
+
+  // Text generieren
+  const pad = (x) => x.toString().padStart(2, "0");
+  const timeString = `${pad(hours)}:${pad(minutes)} Uhr`;
+
+  // Kategorie bestimmen
+  let phase = "";
+  if (hours >= 5 && hours < 9) {
+    phase = "morgens";
+  } else if (hours >= 9 && hours < 12) {
+    phase = "vormittags";
+  } else if (hours >= 12 && hours < 14) {
+    phase = "mittags";
+  } else if (hours >= 14 && hours < 18) {
+    phase = "nachmittags";
+  } else if (hours >= 18 && hours < 21) {
+    phase = "abends";
+  } else {
+    phase = "nachts";
+  }
+
+  // Klasse und Text setzen
+  label.classList.add(phase);
+  label.textContent = `Es ist ${timeString} ${phase}.`;
+}
+
 
 /* -----------------------------------------------------------
    Anzeige und Zeigerbewegung
