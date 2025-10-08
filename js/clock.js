@@ -112,8 +112,10 @@ let realtimeInterval = null;
 
 function startRealtimeClock() {
   stopRealtimeClock(); // Sicherheitsstopp
-  const secHand = document.getElementById("sekundenzeiger");
-  if (secHand) secHand.style.display = "block"; // sichtbar im Echtzeitmodus
+ const secHand = document.getElementById("sekundenzeiger");
+if (secHand) {
+  secHand.style.transform = `rotate(${secondDeg}deg)`;
+}
 
   realtimeInterval = setInterval(() => {
     const now = new Date();
