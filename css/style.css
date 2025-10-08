@@ -267,3 +267,9 @@ main {
   margin-top: 0;
   text-align: center;
 }
+
+.level-card {
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
