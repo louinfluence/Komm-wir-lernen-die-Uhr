@@ -407,31 +407,4 @@ body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
   color: var(--text); /* war vorher transparent */
   transition: color 0.8s ease;
 }
-/* Sekundenzeiger – schlank, rot, nur im Echtzeitmodus sichtbar */
-#sekundenzeiger {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform-origin: 50% 102%;   /* Drehpunkt fast am unteren Rand */
-  transform: translate(-50%, -102%) rotate(0deg);
-  width: 2px;
-  height: 20%;
-  background: #d40000;
-  z-index: 4;
-  pointer-events: none;
-  display: none;
-}
-/* optional: kleine Gegengewichts-Spitze unten */
-#sekundenzeiger::before {
-  content: "";
-  position: absolute;
-  bottom: -10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6px;
-  height: 14%;
-  background: #d40000;
-  opacity: 0.9;
-  border-radius: 1px;
-}
 
