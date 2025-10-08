@@ -142,7 +142,7 @@ main {
 #ziffernblatt_24h {
   transform: translate(-50%, -50%) scale(0.60);
 }
-#stundenzeiger, #minutenzeiger {
+#stundenzeiger, #minutenzeiger, #sekundenzeiger {
   transform-origin: 50% 50%;
 }
 .hidden { display: none; }
@@ -407,17 +407,5 @@ body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
   color: var(--text); /* war vorher transparent */
   transition: color 0.8s ease;
 }
-#sekundenzeiger {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  max-width: 600px;
-  height: auto;
-  transform-origin: 50% 113%;  /* tieferer Drehpunkt */
-  transform: translate(-50%, -113%) rotate(0deg);
-  z-index: 4;
-  pointer-events: none;
-  display: none;
-}
+
 
