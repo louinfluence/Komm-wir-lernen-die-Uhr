@@ -73,6 +73,31 @@ body {
 .menu-section { margin-bottom: 20px; }
 .menu h2, .menu h3 { margin-top: 0; }
 
+.menu-divider {
+  border: none;
+  border-top: 1px solid var(--menu-border);
+  margin: 1.2rem 0;
+  opacity: 0.6;
+}
+
+.menu-button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+}
+
+.menu-button:hover {
+  background: #005b99; /* dunkleres Blau bei Hover */
+}
+
+
 /* --- Schalter / Switches --- */
 .switch-group {
   display: flex;
@@ -406,22 +431,6 @@ body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
   margin-top: 2rem;
   color: var(--text); /* war vorher transparent */
   transition: color 0.8s ease;
-}
-.menu-button {
-  width: 100%;
-  padding: 10px;
-  font-size: 1rem;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  margin-top: 10px;
-}
-
-.menu-button:hover {
-  background: #005b99; /* dunkleres Blau bei Hover */
 }
 
 #sekundenzeiger {
