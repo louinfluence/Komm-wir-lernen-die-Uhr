@@ -119,20 +119,22 @@ function runClockLevel(levelData, title, onComplete) {
     btn.textContent = opt;
   }
 
-  btn.addEventListener("click", () => {
-    if (opt === data.correct) {
-      feedback.textContent = "✅ Richtig!";
-      btn.classList.add("correct");
-      setTimeout(() => {
-        current++;
-        nextRound();
-      }, 800);
-    } else {
-      feedback.textContent = "❌ Versuch’s nochmal!";
-      btn.classList.add("wrong");
-      setTimeout(() => btn.classList.remove("wrong"), 500);
-    }
-  });
+btn.addEventListener("click", () => {
+  if (opt === data.correct) {
+    feedback.textContent = "✅ Richtig!";
+    btn.classList.add("correct", "pulse-correct");
+    setTimeout(() => {
+      btn.classList.remove("pulse-correct");
+      current++;
+      nextRound();
+    }, 1000);
+  } else {
+    feedback.textContent = "❌ Versuch’s nochmal!";
+    btn.classList.add("wrong", "shake-wrong");
+    setTimeout(() => btn.classList.remove("shake-wrong", "wrong"), 700);
+  }
+});
+
 
   opts.appendChild(btn);
 });
