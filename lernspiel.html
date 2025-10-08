@@ -46,6 +46,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
       font-size: 1.1rem;
       font-weight: bold;
       cursor: pointer;
@@ -77,10 +78,57 @@
     .next-level-btn:hover {
       background: #2d54c2;
     }
+
+    /* Uhr-Styles */
+    .clock {
+      width: 200px;
+      height: 200px;
+      border: 6px solid #333;
+      border-radius: 50%;
+      position: relative;
+      margin-bottom: 20px;
+      background: white;
+    }
+
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      background: #333;
+      border-radius: 4px;
+    }
+
+    .hand.hour {
+      width: 6px;
+      height: 50px;
+    }
+
+    .hand.minute {
+      width: 4px;
+      height: 80px;
+    }
+
+    .option {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 15px;
+      background: #fff;
+      border-radius: 8px;
+      border: 2px solid #333;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .option:hover {
+      background: #e3eeff;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
   <h1>🎯 Lernspiel: Tageszeiten & Uhrzeiten</h1>
+
   <main id="gameContainer">
     <div id="levelSelect" class="level-grid">
       <div class="level-card" data-level="1">🕖 Level 1<br><small>Tageszeiten</small></div>
@@ -89,6 +137,7 @@
     </div>
   </main>
 
+  <!-- Wichtig: Reihenfolge! Erst levels.js, dann main.js -->
   <script src="js/levels.js"></script>
   <script src="js/main.js"></script>
 </body>
