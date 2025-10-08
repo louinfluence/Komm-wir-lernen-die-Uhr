@@ -180,6 +180,25 @@ if (slider) {
     setTime(0, 0);
   }
 }
+   // --- Umschalten zwischen Lernmodus und Echtzeit ---
+const modeSwitch = document.getElementById("modeSwitch");
+const sliderContainer = document.getElementById("sliderContainer");
+
+if (modeSwitch) {
+  modeSwitch.addEventListener("change", () => {
+    const isRealtime = modeSwitch.checked;
+
+    if (isRealtime) {
+      // Echtzeitmodus aktivieren
+      if (sliderContainer) sliderContainer.style.display = "none";
+      startRealtimeClock();
+    } else {
+      // Lernmodus aktivieren
+      if (sliderContainer) sliderContainer.style.display = "block";
+      stopRealtimeClock();
+    }
+  });
+}
 }
 
 /* -----------------------------------------------------------
