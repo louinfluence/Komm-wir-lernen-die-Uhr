@@ -3,97 +3,121 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Komm wir lernen die Uhr – Version 2.1</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <title>Komm, wir lernen die Uhr – Startmenü</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ==============================
+       FALLENDE UHREN – Hintergrund
+    =============================== */
+    body {
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to bottom, #dce9f7, #f5f8fb);
+      font-family: system-ui, sans-serif;
+    }
+
+    .falling-clock {
+      position: absolute;
+      top: -100px;
+      width: 60px;
+      opacity: 0.8;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      from {
+        transform: translateY(-120px) rotate(0deg);
+      }
+      to {
+        transform: translateY(110vh) rotate(360deg);
+      }
+    }
+
+    /* ==============================
+       ZENTRALER MENÜBLOCK
+    =============================== */
+    .menu-box {
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      padding: 40px 30px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      max-width: 320px;
+      width: 90%;
+    }
+
+    .menu-box h1 {
+      font-size: 1.6rem;
+      margin-bottom: 1.5rem;
+      color: #003366;
+    }
+
+    .menu-btn {
+      display: block;
+      width: 100%;
+      padding: 14px 0;
+      margin: 10px 0;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .menu-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+
+    /* Farbvarianten */
+    .btn-lernspiel      { background: linear-gradient(90deg, #0077b6, #00b4d8); }
+    .btn-freies         { background: linear-gradient(90deg, #ffb703, #fb8500); transform: skewX(-5deg); }
+    .btn-test           { background: linear-gradient(90deg, #8ac926, #1982c4); }
+    .btn-optionen       { background: linear-gradient(90deg, #6c757d, #495057); }
+
+    .btn-freies:hover   { transform: skewX(-5deg) translateY(-2px); }
+
+  </style>
 </head>
 
 <body>
-  <!-- ===========================================
-       HEADER
-  ============================================ -->
-  <header class="app-header">
-    <button id="menuToggle" aria-label="Menü öffnen oder schließen">☰</button>
-    <h1>Komm wir lernen die Uhr</h1>
-    <button id="modeToggle" aria-label="Darstellung umschalten">🌗</button>
-  </header>
+  <!-- ==============================
+       HINTERGRUND-UHREN
+  =============================== -->
+  <script>
+    const clocks = [];
+    for (let i = 0; i < 12; i++) {
+      const img = document.createElement("img");
+      img.src = "assets/images/Ziffernblatt.png";
+      img.className = "falling-clock";
+      img.style.left = Math.random() * 100 + "vw";
+      img.style.animationDuration = 8 + Math.random() * 6 + "s";
+      img.style.animationDelay = Math.random() * 5 + "s";
+      img.style.width = 40 + Math.random() * 50 + "px";
+      document.body.appendChild(img);
+      clocks.push(img);
+    }
+  </script>
 
-  <!-- ===========================================
-       SEITENMENÜ
-  ============================================ -->
-  <aside id="sideMenu" class="menu">
-    <h2>Einstellungen</h2>
-
-    <!-- Uhrmodus -->
-    <section class="menu-section">
-      <h3>Art der Uhr</h3>
-      <div class="switch-group">
-        <span>Lernmodus</span>
-        <label class="switch">
-          <input type="checkbox" id="modeSwitch" />
-          <span class="slider"></span>
-        </label>
-        <span>Echtzeit</span>
-      </div>
-    </section>
-
-    <!-- Anzeigeformat -->
-    <section class="menu-section">
-      <h3>Darstellung</h3>
-      <div class="switch-group">
-        <span>12 h</span>
-        <label class="switch">
-          <input type="checkbox" id="displaySwitch" />
-          <span class="slider"></span>
-        </label>
-        <span>24 h</span>
-      </div>
-    </section>
-
-    <!-- Farbschema -->
-    <section class="menu-section">
-      <h3>Farbschema</h3>
-      <div class="switch-group">
-        <span>Hell</span>
-        <label class="switch">
-          <input type="checkbox" id="themeSwitch" />
-          <span class="slider"></span>
-        </label>
-        <span>Dunkel</span>
-      </div>
-    </section>
-
-    <hr />
-    <p>Ziehe den Schieberegler, um die Uhrzeit einzustellen, oder wähle den Echtzeitmodus.</p>
-    <button id="closeMenu">✖ Menü schließen</button>
-  </aside>
-
-  <!-- ===========================================
-       HAUPTINHALT
-  ============================================ -->
-  <main>
-    <!-- Uhr -->
-    <div class="clock-container">
-      <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt 12 h" id="ziffernblatt_12h" />
-      <img src="assets/images/Ziffernblatt_24h.png" alt="Ziffernblatt 24 h" id="ziffernblatt_24h" class="hidden" />
-      <img src="assets/images/Stundenzeiger.png" alt="Stundenzeiger" id="stundenzeiger" />
-      <img src="assets/images/Minutenzeiger.png" alt="Minutenzeiger" id="minutenzeiger" />
-    </div>
-		
-  	<!-- Anzeige der Zeit -->
-    <div id="timeLabel"></div>
-    
-    <!-- Slider + Zeitstrahl -->
-    <div id="sliderContainer">
-      <input type="range" id="timeSlider" min="0" max="1439" value="0" />
-    </div>
-
-    
-  </main>
-
-  <!-- ===========================================
-       SCRIPTS
-  ============================================ -->
-  <script src="js/clock.js" defer></script>
-  <script src="js/main.js" defer></script>
+  <!-- ==============================
+       MENÜ
+  =============================== -->
+  <div class="menu-box">
+    <h1>MENÜ</h1>
+    <button class="menu-btn btn-lernspiel" onclick="location.href='lernspiel.html'">Lernspiel</button>
+    <button class="menu-btn btn-freies" onclick="location.href='uhr.html'">Freies&nbsp;Probieren</button>
+    <button class="menu-btn btn-test" onclick="location.href='test.html'">Teste&nbsp;dein&nbsp;Wissen</button>
+    <button class="menu-btn btn-optionen" onclick="location.href='opt.html'">Einstellungen</button>
+  </div>
 </body>
 </html>
