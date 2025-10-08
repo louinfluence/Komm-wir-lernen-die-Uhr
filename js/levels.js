@@ -84,7 +84,7 @@ function runClockLevel(levelData, title, onComplete) {
     const data = levelData[current];
     feedback.textContent = data.text || "Welche Uhrzeit passt?";
 
-    // Zeiger einstellen
+    // Zeiger bewegen
     const hourAngle = (data.hour % 12) * 30 + data.minute * 0.5;
     const minuteAngle = data.minute * 6;
     hourHand.style.transform = `translate(-50%) rotate(${hourAngle}deg)`;
