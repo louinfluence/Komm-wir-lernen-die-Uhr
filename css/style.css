@@ -380,3 +380,37 @@ main {
   animation: shakeWrong 0.5s ease;
 }
 
+/* =========================================================
+   UHRZEIGER – KORREKTE POSITION & DREHUNG
+   ========================================================= */
+#stundenzeiger,
+#minutenzeiger {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 50% 100%; /* Drehpunkt unten mittig */
+  transform: translate(-50%, -100%) rotate(0deg);
+  transition: transform 0.2s ease;
+  pointer-events: none; /* verhindert, dass Zeiger Slider blockieren */
+}
+
+/* Optional: leichte Schattenwirkung für plastischen Look */
+#stundenzeiger {
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+}
+#minutenzeiger {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.25));
+}
+
+/* =========================================================
+   ZEITTEXT SICHTBAR & MIT GRUNDARBEITSFARBE
+   ========================================================= */
+#timeLabel {
+  font-size: 1.6rem;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 2rem;
+  color: var(--text); /* war vorher transparent */
+  transition: color 0.8s ease;
+}
+
