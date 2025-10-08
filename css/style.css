@@ -308,51 +308,54 @@ main {
   font-weight: 500;
 }
 
+/* =========================================================
+   ANTWORTBILDER (Level 1)
+   ========================================================= */
 .options-area {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  max-width: 450px;
+  gap: 0.8rem;
   width: 100%;
+  max-width: 500px; /* kleinere Maximalbreite */
+  margin: 0 auto;
 }
 
 .option {
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
   overflow: hidden;
 }
 
 .option:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  transform: scale(1.03);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
 }
 
+/* Bildgröße */
+.option img,
 .option-img {
   width: 100%;
   height: auto;
+  object-fit: cover;
   display: block;
+  border-radius: 10px;
 }
 
-.option.correct {
-  outline: 4px solid #4CAF50;
-  transform: scale(1.05);
-}
-
-.option.wrong {
-  outline: 4px solid #E53935;
-  opacity: 0.8;
-}
-
-/* Tablet-Freundlich */
-@media (max-width: 768px) {
-  .clock-container.small {
-    width: 180px;
-  }
+/* Tablet & Desktop */
+@media (min-width: 600px) {
   .options-area {
-    gap: 0.8rem;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 420px; /* kompakter auf iPad */
+  }
+}
+
+/* Kleinere Bildgrößen bei größeren Screens, damit’s nie zu groß wird */
+@media (min-width: 900px) {
+  .options-area {
+    max-width: 400px;
   }
 }
 
