@@ -169,6 +169,21 @@ main {
 }
 #stundenzeiger, #minutenzeiger {
   transform-origin: 50% 50%;
+
+#sekundenzeiger {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  transform-origin: 50% 50%;   /* Drehpunkt bleibt perfekt mittig */
+  transform: translate(-50%, -120%) rotate(0deg); /* Bild leicht nach unten verschoben */
+  z-index: 4;
+  pointer-events: none;
+  display: none;
+}
+
 }
 .hidden { display: none; }
 
@@ -432,19 +447,4 @@ body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
   color: var(--text); /* war vorher transparent */
   transition: color 0.8s ease;
 }
-
-#sekundenzeiger {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  max-width: 600px;
-  height: auto;
-  transform-origin: 50% 50%;   /* Drehpunkt bleibt perfekt mittig */
-  transform: translate(-50%, -60%) rotate(0deg); /* Bild leicht nach unten verschoben */
-  z-index: 4;
-  pointer-events: none;
-  display: none;
-}
-
 
