@@ -133,25 +133,47 @@ window.addEventListener("DOMContentLoaded", () => {
      🔹 Uhr.html
   --------------------------------------------------------- */
 function initClock() {
+  // --- Menüsteuerung bleibt wie gehabt ---
   const menuToggle = document.getElementById("menuToggle");
   const sideMenu   = document.getElementById("sideMenu");
   const closeMenu  = document.getElementById("closeMenu");
 
   if (menuToggle && sideMenu) {
-    menuToggle.addEventListener("click", () => sideMenu.classList.toggle("visible"));
+    menuToggle.addEventListener("click", () =>
+      sideMenu.classList.toggle("visible")
+    );
   }
   if (closeMenu && sideMenu) {
-    closeMenu.addEventListener("click", () => sideMenu.classList.remove("visible"));
+    closeMenu.addEventListener("click", () =>
+      sideMenu.classList.remove("visible")
+    );
   }
 
+  // --- Uhrsteuerung über Slider ---
   const slider = document.getElementById("timeSlider");
   if (slider) {
     slider.addEventListener("input", () => {
       const totalMinutes = parseInt(slider.value, 10);
       const h = Math.floor(totalMinutes / 60);
       const m = totalMinutes % 60;
-      setTime(h, m);
+
+      // alte Funktion: setTime(h, m)
+      // → neue Variante: benutze updateClockFromSlider aus clock.js
+      if (typeof updateClockFromSlider === "function") {
+        updateClockFromSlider(totalMinutes);
+      } else if (typeof setTime === "function") {
+        // Fallback, falls ältere Version noch aktiv ist
+        setTime(h, m);
+      } else {
+        console.warn("⚠️ Weder updateClockFromSlider noch setTime vorhanden!");
+      }
     });
-    setTime(6, 0);
+
+    // --- Anfangszeit setzen (z. B. 6:00 Uhr) ---
+    if (typeof updateClockFromSlider === "function") {
+      updateClockFromSlider(6 * 60);
+    } else if (typeof setTime === "function") {
+      setTime(6, 0);
+    }
   }
 }
