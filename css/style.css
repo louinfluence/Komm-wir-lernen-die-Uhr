@@ -274,29 +274,84 @@ main {
   -webkit-tap-highlight-color: transparent;
 }
 
-.option {
-  display: inline-block;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 10px;
-  cursor: pointer;
-  background: #fff;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-  transition: transform 0.2s;
+/* =========================================================
+   LERNLEVEL: ANORDNUNG & STYLING
+   ========================================================= */
+.level-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+  padding: 1rem;
 }
-.option:hover { transform: scale(1.05); }
+
+.clock-area {
+  background: var(--menu-bg);
+  border: 2px solid var(--menu-border);
+  border-radius: 12px;
+  padding: 1rem;
+  max-width: 400px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.clock-container.small {
+  position: relative;
+  width: 220px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+}
+
+.task-text {
+  margin-top: 0.8rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.options-area {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  max-width: 450px;
+  width: 100%;
+}
+
+.option {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.option:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
 
 .option-img {
-  width: 150px;
+  width: 100%;
   height: auto;
   display: block;
-  border-radius: 8px;
 }
 
 .option.correct {
-  box-shadow: 0 0 12px #4CAF50;
+  outline: 4px solid #4CAF50;
+  transform: scale(1.05);
 }
+
 .option.wrong {
-  box-shadow: 0 0 12px #E53935;
-  opacity: 0.7;
+  outline: 4px solid #E53935;
+  opacity: 0.8;
+}
+
+/* Tablet-Freundlich */
+@media (max-width: 768px) {
+  .clock-container.small {
+    width: 180px;
+  }
+  .options-area {
+    gap: 0.8rem;
+  }
 }
