@@ -89,15 +89,18 @@ window.addEventListener("DOMContentLoaded", () => {
   /* ---------------------------------------------------------
      🔹 Uhr-Seite: Interaktive Uhrsteuerung (wenn vorhanden)
   --------------------------------------------------------- */
-  if (document.getElementById("clockContainer")) {
-    console.log("🕒 Uhr-Seite erkannt – Initialisierung läuft...");
+  /* ---------------------------------------------------------
+   🔹 Uhr-Seite: Interaktive Uhrsteuerung (wenn vorhanden)
+--------------------------------------------------------- */
+if (document.querySelector(".clock-container")) {
+  console.log("🕒 Uhr-Seite erkannt – Initialisierung läuft...");
 
-    if (typeof initClock === "function") {
-      initClock();
-    } else {
-      console.warn("⚠️ Keine Funktion initClock() gefunden.");
-    }
+  if (typeof initClock === "function") {
+    initClock();
+  } else {
+    console.warn("⚠️ Keine Funktion initClock() gefunden.");
   }
+}
    
   /* ---------------------------------------------------------
      🔹 Test-Seite: Quiz oder Aufgabenmodus
