@@ -208,13 +208,21 @@ main {
   color: transparent;
 }
 
-/* Farben für Tageszeiten */
-#timeLabel.morgens      { color: #fcbf49; }
-#timeLabel.vormittags   { color: #f77f00; }
-#timeLabel.mittags      { color: #e36414; }
-#timeLabel.nachmittags  { color: #1d3557; }
-#timeLabel.abends       { color: #457b9d; }
-#timeLabel.nachts       { color: #a8dadc; }
+/* Standard (helles Theme) */
+#timeLabel.morgens      { color: #d96b00; }   /* dunkles Orange */
+#timeLabel.vormittags   { color: #b84e00; }   /* kräftiges Rot-Orange */
+#timeLabel.mittags      { color: #183b8f; }   /* dunkles Blau */
+#timeLabel.nachmittags  { color: #922222; }   /* Rotton am Nachmittag */
+#timeLabel.abends       { color: #5b0b0b; }   /* dunkles Rot */
+#timeLabel.nachts       { color: #000000; }   /* Schwarz */
+
+/* DARK-MODE – invertierte Logik */
+body.dark #timeLabel.morgens      { color: #ffb366; }  /* helles Orange */
+body.dark #timeLabel.vormittags   { color: #ff9966; }  /* weicher Verlauf */
+body.dark #timeLabel.mittags      { color: #00ffff; }  /* Cyan am Mittag */
+body.dark #timeLabel.nachmittags  { color: #66ccff; }  /* helles Blau */
+body.dark #timeLabel.abends       { color: #99aaff; }  /* kühler Verlauf */
+body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
 
 /* Sanftes Aufleuchten */
 .fade-in {
