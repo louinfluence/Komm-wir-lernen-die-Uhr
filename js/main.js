@@ -168,6 +168,7 @@ function initClock() {
         console.warn("⚠️ Weder updateClockFromSlider noch setTime vorhanden!");
       }
     });
+}
 
 // --- Anfangszeit setzen (z. B. 0:00 Uhr) ---
 if (typeof updateClockFromSlider === "function") {
