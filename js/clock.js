@@ -16,7 +16,6 @@ window.setTime = function (hours, minutes) {
   if (delta < -180) delta += 360;
   if (delta > 180) delta -= 360;
   window.totalMinuteAngle += delta;
-
   const minuteAngle = window.totalMinuteAngle;
 
   // kontinuierlicher Stundenwinkel
@@ -24,24 +23,20 @@ window.setTime = function (hours, minutes) {
   const targetHourAngle = (hours % 12) * 30 + minutes * 0.5;
   const lastHourAngle = window.totalHourAngle % 360;
   let deltaH = targetHourAngle - lastHourAngle;
-
   if (deltaH < -180) deltaH += 360;
   if (deltaH > 180) deltaH -= 360;
   window.totalHourAngle += deltaH;
-
   const hourAngle = window.totalHourAngle;
 
   // aktuelle Minuten global merken (0–1439)
   window.currentTotalMinutes = (hours * 60 + minutes) % 1440;
 
+  // --- jetzt die Uhr und Anzeige aktualisieren ---
   updateClock(hours, minutes, hourAngle, minuteAngle);
-};
-// digitale Anzeige aktualisieren
-const disp = document.getElementById("timeDisplay") || document.getElementById("timeLabel");
-if (disp) disp.textContent = formatTime(hours, minutes);
 
-// NEU: Tageszeit aktualisieren
-updateTimeLabel(hours, minutes);
+  // --- Text & Tageszeit aktualisieren ---
+  updateTimeLabel(hours, minutes);
+};
 
 /* -----------------------------------------------------------
    Tageszeiten-Logik für farbige Anzeige und Text
@@ -78,7 +73,6 @@ function updateTimeLabel(hours, minutes) {
   label.classList.add(phase);
   label.textContent = `Es ist ${timeString} ${phase}.`;
 }
-
 
 /* -----------------------------------------------------------
    Anzeige und Zeigerbewegung
