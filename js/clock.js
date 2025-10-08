@@ -109,16 +109,34 @@ function updateClockFromSlider(totalMinutes) {
    Echtzeitmodus (optional)
 ----------------------------------------------------------- */
 let realtimeInterval = null;
+
 function startRealtimeClock() {
-  stopRealtimeClock();
+  stopRealtimeClock(); // Sicherheitsstopp
+  const secHand = document.getElementById("sekundenzeiger");
+  if (secHand) secHand.style.display = "block"; // sichtbar im Echtzeitmodus
+
   realtimeInterval = setInterval(() => {
     const now = new Date();
-    setTime(now.getHours(), now.getMinutes());
+    const hours   = now.getHours();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+
+    // Stunden/Minuten wie bisher
+    setTime(hours, minutes);
+
+    // Sekundenzeiger (6° pro Sekunde)
+    const secondDeg = seconds * 6;
+    if (secHand) {
+      secHand.style.transform = `translate(-50%, -100%) rotate(${secondDeg}deg)`;
+    }
   }, 1000);
 }
+
 function stopRealtimeClock() {
   if (realtimeInterval) {
     clearInterval(realtimeInterval);
     realtimeInterval = null;
   }
+  const secHand = document.getElementById("sekundenzeiger");
+  if (secHand) secHand.style.display = "none"; // im Lernmodus ausblenden
 }
