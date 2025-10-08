@@ -143,6 +143,7 @@ function initClock() {
       sideMenu.classList.toggle("visible")
     );
   }
+
   if (closeMenu && sideMenu) {
     closeMenu.addEventListener("click", () =>
       sideMenu.classList.remove("visible")
@@ -168,14 +169,15 @@ function initClock() {
         console.warn("⚠️ Weder updateClockFromSlider noch setTime vorhanden!");
       }
     });
-}
 
-// --- Anfangszeit setzen (z. B. 0:00 Uhr) ---
-if (typeof updateClockFromSlider === "function") {
-  updateClockFromSlider(0); // 0 Minuten = 0:00 Uhr
-} else if (typeof setTime === "function") {
-  setTime(0, 0); // Stunden 0, Minuten 0
-}
+    // --- Anfangszeit setzen (z. B. 0:00 Uhr) ---
+    if (typeof updateClockFromSlider === "function") {
+      updateClockFromSlider(0); // Startzeit Mitternacht
+    } else if (typeof setTime === "function") {
+      setTime(0, 0);
+    }
+  } 
+} 
 
 /* -----------------------------------------------------------
    Dark Mode Umschalter
