@@ -99,31 +99,6 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
    
-function initClock() {
-  const menuToggle = document.getElementById("menuToggle");
-  const sideMenu   = document.getElementById("sideMenu");
-  const closeMenu  = document.getElementById("closeMenu");
-
-  if (menuToggle && sideMenu) {
-    menuToggle.addEventListener("click", () => sideMenu.classList.toggle("visible"));
-  }
-  if (closeMenu && sideMenu) {
-    closeMenu.addEventListener("click", () => sideMenu.classList.remove("visible"));
-  }
-
-  const slider = document.getElementById("timeSlider");
-  if (slider) {
-    slider.addEventListener("input", () => {
-      const totalMinutes = parseInt(slider.value, 10);
-      const h = Math.floor(totalMinutes / 60);
-      const m = totalMinutes % 60;
-      setTime(h, m);
-    });
-    setTime(6, 0);
-  }
-}
-
-
   /* ---------------------------------------------------------
      🔹 Test-Seite: Quiz oder Aufgabenmodus
   --------------------------------------------------------- */
@@ -153,3 +128,30 @@ function initClock() {
   --------------------------------------------------------- */
   console.log("✅ Initialisierung abgeschlossen für:", currentPage);
 });
+
+ /* ---------------------------------------------------------
+     🔹 Uhr.html
+  --------------------------------------------------------- */
+function initClock() {
+  const menuToggle = document.getElementById("menuToggle");
+  const sideMenu   = document.getElementById("sideMenu");
+  const closeMenu  = document.getElementById("closeMenu");
+
+  if (menuToggle && sideMenu) {
+    menuToggle.addEventListener("click", () => sideMenu.classList.toggle("visible"));
+  }
+  if (closeMenu && sideMenu) {
+    closeMenu.addEventListener("click", () => sideMenu.classList.remove("visible"));
+  }
+
+  const slider = document.getElementById("timeSlider");
+  if (slider) {
+    slider.addEventListener("input", () => {
+      const totalMinutes = parseInt(slider.value, 10);
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      setTime(h, m);
+    });
+    setTime(6, 0);
+  }
+}
