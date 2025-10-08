@@ -407,5 +407,21 @@ body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
   color: var(--text); /* war vorher transparent */
   transition: color 0.8s ease;
 }
+.menu-button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+}
+
+.menu-button:hover {
+  background: #005b99; /* dunkleres Blau bei Hover */
+}
 
 
