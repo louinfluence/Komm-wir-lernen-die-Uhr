@@ -87,9 +87,6 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ---------------------------------------------------------
-     🔹 Uhr-Seite: Interaktive Uhrsteuerung (wenn vorhanden)
-  --------------------------------------------------------- */
-  /* ---------------------------------------------------------
    🔹 Uhr-Seite: Interaktive Uhrsteuerung (wenn vorhanden)
 --------------------------------------------------------- */
 if (document.querySelector(".clock-container")) {
@@ -172,14 +169,13 @@ function initClock() {
       }
     });
 
-    // --- Anfangszeit setzen (z. B. 6:00 Uhr) ---
-    if (typeof updateClockFromSlider === "function") {
-      updateClockFromSlider(6 * 60);
-    } else if (typeof setTime === "function") {
-      setTime(6, 0);
-    }
-  }
+// --- Anfangszeit setzen (z. B. 0:00 Uhr) ---
+if (typeof updateClockFromSlider === "function") {
+  updateClockFromSlider(0); // 0 Minuten = 0:00 Uhr
+} else if (typeof setTime === "function") {
+  setTime(0, 0); // Stunden 0, Minuten 0
 }
+
 /* -----------------------------------------------------------
    Dark Mode Umschalter
 ----------------------------------------------------------- */
