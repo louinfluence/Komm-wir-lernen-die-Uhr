@@ -1,5 +1,5 @@
 /* ===========================================================
-   clock.js – erweitert (Original + Slider- & Echtzeitunterstützung)
+   clock.js – stabilisierte Version (voll kompatibel)
    =========================================================== */
 
 // --- CLOCK CORE FUNCTIONS ---
@@ -11,8 +11,6 @@ window.setTime = function (hours, minutes) {
   const targetAngle = minutes * 6;
   const lastAngle = window.totalMinuteAngle % 360;
   let delta = targetAngle - lastAngle;
-
-  // Sprünge über 180° korrigieren (z. B. 354° → 0° → +6°)
   if (delta < -180) delta += 360;
   if (delta > 180) delta -= 360;
   window.totalMinuteAngle += delta;
@@ -31,48 +29,10 @@ window.setTime = function (hours, minutes) {
   // aktuelle Minuten global merken (0–1439)
   window.currentTotalMinutes = (hours * 60 + minutes) % 1440;
 
-  // --- jetzt die Uhr und Anzeige aktualisieren ---
+  // --- jetzt Zeiger und Text aktualisieren ---
   updateClock(hours, minutes, hourAngle, minuteAngle);
-
-  // --- Text & Tageszeit aktualisieren ---
   updateTimeLabel(hours, minutes);
 };
-
-/* -----------------------------------------------------------
-   Tageszeiten-Logik für farbige Anzeige und Text
------------------------------------------------------------ */
-function updateTimeLabel(hours, minutes) {
-  const label = document.getElementById("timeLabel");
-  if (!label) return;
-
-  // Alle alten Klassen entfernen
-  label.className = "";
-  label.classList.add("fade-in");
-
-  // Text generieren
-  const pad = (x) => x.toString().padStart(2, "0");
-  const timeString = `${pad(hours)}:${pad(minutes)} Uhr`;
-
-  // Kategorie bestimmen
-  let phase = "";
-  if (hours >= 5 && hours < 9) {
-    phase = "morgens";
-  } else if (hours >= 9 && hours < 12) {
-    phase = "vormittags";
-  } else if (hours >= 12 && hours < 14) {
-    phase = "mittags";
-  } else if (hours >= 14 && hours < 18) {
-    phase = "nachmittags";
-  } else if (hours >= 18 && hours < 21) {
-    phase = "abends";
-  } else {
-    phase = "nachts";
-  }
-
-  // Klasse und Text setzen
-  label.classList.add(phase);
-  label.textContent = `Es ist ${timeString} ${phase}.`;
-}
 
 /* -----------------------------------------------------------
    Anzeige und Zeigerbewegung
@@ -108,29 +68,54 @@ function formatTime(h, m) {
 }
 
 /* -----------------------------------------------------------
+   Tageszeiten-Logik für farbige Anzeige und Text
+----------------------------------------------------------- */
+function updateTimeLabel(hours, minutes) {
+  const label = document.getElementById("timeLabel");
+  if (!label) return;
+
+  // Alle alten Klassen entfernen
+  label.className = "";
+  label.classList.add("fade-in");
+
+  // Text generieren
+  const pad = (x) => x.toString().padStart(2, "0");
+  const timeString = `${pad(hours)}:${pad(minutes)} Uhr`;
+
+  // Kategorie bestimmen
+  let phase = "";
+  if (hours >= 5 && hours < 9) phase = "morgens";
+  else if (hours >= 9 && hours < 12) phase = "vormittags";
+  else if (hours >= 12 && hours < 14) phase = "mittags";
+  else if (hours >= 14 && hours < 18) phase = "nachmittags";
+  else if (hours >= 18 && hours < 21) phase = "abends";
+  else phase = "nachts";
+
+  // Klasse und Text setzen
+  label.classList.add(phase);
+  label.textContent = `Es ist ${timeString} ${phase}.`;
+}
+
+/* -----------------------------------------------------------
    Integration für Slidersteuerung
-   (wird von main.js via updateClockFromSlider() aufgerufen)
 ----------------------------------------------------------- */
 function updateClockFromSlider(totalMinutes) {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-  setTime(hours, minutes); // nutzt deine bestehende setTime()-Logik
+  setTime(hours, minutes);
 }
 
 /* -----------------------------------------------------------
-   Echtzeitmodus (optional, kann per toggleRealtimeMode() aktiviert werden)
+   Echtzeitmodus (optional)
 ----------------------------------------------------------- */
 let realtimeInterval = null;
-
 function startRealtimeClock() {
-  stopRealtimeClock(); // alten Timer stoppen, falls aktiv
-
+  stopRealtimeClock();
   realtimeInterval = setInterval(() => {
     const now = new Date();
     setTime(now.getHours(), now.getMinutes());
   }, 1000);
 }
-
 function stopRealtimeClock() {
   if (realtimeInterval) {
     clearInterval(realtimeInterval);
