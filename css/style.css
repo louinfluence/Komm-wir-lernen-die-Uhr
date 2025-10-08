@@ -423,6 +423,7 @@ body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
 .menu-button:hover {
   background: #005b99; /* dunkleres Blau bei Hover */
 }
+
 #sekundenzeiger {
   position: absolute;
   top: 50%;
@@ -430,7 +431,8 @@ body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
   width: 100%;
   max-width: 600px;
   height: auto;
-  transform-origin: 50% 50%;  /* tieferer Drehpunkt */
+  transform-origin: 50% 50%;   /* Drehpunkt bleibt perfekt mittig */
+  transform: translate(-50%, -60%) rotate(0deg); /* Bild leicht nach unten verschoben */
   z-index: 4;
   pointer-events: none;
   display: none;
