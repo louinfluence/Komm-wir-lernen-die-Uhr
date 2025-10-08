@@ -196,50 +196,7 @@ function initClockApp() {
     timeLabel.style.webkitBackgroundClip = "text";
     timeLabel.style.color = "transparent";
     timeLabel.style.transition = "background-image 1.5s ease";
-  }
-
-  /* ==========================================
-   main.js – Übersicht & Level-Steuerung
-   ========================================== */
-
-window.addEventListener("DOMContentLoaded", () => {
-  console.log("📋 Levelübersicht geladen");
-  const container = document.getElementById("gameContainer");
-  const levelSelect = document.getElementById("levelSelect");
-
-  // Klicks auf Level-Karten
-  document.querySelectorAll(".level-card").forEach(card => {
-    card.addEventListener("click", () => {
-      const level = parseInt(card.dataset.level);
-      console.log("▶️ Starte Level", level);
-
-      // Übersicht ausblenden
-      levelSelect.style.display = "none";
-
-      // Spiel initialisieren
-      if (level === 1) initLevel1(showNextButton);
-      else if (level === 2) initLevel2(showNextButton);
-      else if (level === 3) initLevel3(showNextButton);
-    });
-  });
-
-  // Callback für "Weiter"-Button
-  function showNextButton(nextLevel) {
-    const btn = document.createElement("button");
-    btn.className = "next-level-btn";
-    btn.textContent = `➡️ Weiter zu Level ${nextLevel}`;
-    btn.addEventListener("click", () => {
-      btn.remove();
-      container.innerHTML = "";
-      if (nextLevel === 2) initLevel2(showNextButton);
-      else if (nextLevel === 3) initLevel3(showNextButton);
-      else {
-        container.innerHTML = "<h2>🎉 Super! Alle Level geschafft!</h2>";
-      }
-    });
-    container.appendChild(btn);
-  }
-});
+  }lernspiel.html
 
   /* =========================================================
      Initialisierung
