@@ -150,34 +150,36 @@ function initClock() {
     );
   }
 
-  // --- Uhrsteuerung über Slider ---
-  const slider = document.getElementById("timeSlider");
-  if (slider) {
-    slider.addEventListener("input", () => {
-      const totalMinutes = parseInt(slider.value, 10);
+// --- Uhrsteuerung über Slider (feinfühligere Variante B) ---
+const slider = document.getElementById("timeSlider");
+if (slider) {
+  // Slider hat jetzt doppelt so viele Schritte (0–2878)
+  // → ergibt weicheres Bewegen, aber weiterhin 0–1439 Minuten real
+  slider.max = 2878;
+  slider.step = 1;
+
+  slider.addEventListener("input", () => {
+    // interner Wert = Sliderwert / 2 → ergibt Minuten (0–1439)
+    const totalMinutes = Math.round(parseInt(slider.value, 10) / 2);
+
+    if (typeof updateClockFromSlider === "function") {
+      updateClockFromSlider(totalMinutes);
+    } else if (typeof setTime === "function") {
       const h = Math.floor(totalMinutes / 60);
       const m = totalMinutes % 60;
-
-      // alte Funktion: setTime(h, m)
-      // → neue Variante: benutze updateClockFromSlider aus clock.js
-      if (typeof updateClockFromSlider === "function") {
-        updateClockFromSlider(totalMinutes);
-      } else if (typeof setTime === "function") {
-        // Fallback, falls ältere Version noch aktiv ist
-        setTime(h, m);
-      } else {
-        console.warn("⚠️ Weder updateClockFromSlider noch setTime vorhanden!");
-      }
-    });
-
-    // --- Anfangszeit setzen (z. B. 0:00 Uhr) ---
-    if (typeof updateClockFromSlider === "function") {
-      updateClockFromSlider(0); // Startzeit Mitternacht
-    } else if (typeof setTime === "function") {
-      setTime(0, 0);
+      setTime(h, m);
+    } else {
+      console.warn("⚠️ Weder updateClockFromSlider noch setTime vorhanden!");
     }
-  } 
-} 
+  });
+
+  // --- Anfangszeit setzen (z. B. 0:00 Uhr) ---
+  if (typeof updateClockFromSlider === "function") {
+    updateClockFromSlider(0);
+  } else if (typeof setTime === "function") {
+    setTime(0, 0);
+  }
+}
 
 /* -----------------------------------------------------------
    Dark Mode Umschalter
