@@ -412,25 +412,24 @@ body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
   position: absolute;
   top: 50%;
   left: 50%;
-  transform-origin: 50% 90%; /* leicht höherer Drehpunkt = sitzt mittiger */
-  transform: translate(-50%, -90%) rotate(0deg);
+  transform-origin: 50% 98%;   /* Drehpunkt fast am unteren Rand */
+  transform: translate(-50%, -98%) rotate(0deg);
   width: 2px;
-  height: 44%;               /* etwas kürzer als vorher */
+  height: 43%;
   background: #d40000;
   z-index: 4;
   pointer-events: none;
   display: none;
 }
-
 /* optional: kleine Gegengewichts-Spitze unten */
 #sekundenzeiger::before {
   content: "";
   position: absolute;
-  bottom: -6%;
+  bottom: -5%;
   left: 50%;
   transform: translateX(-50%);
   width: 2px;
-  height: 8%;
+  height: 6%;
   background: #d40000;
   opacity: 0.9;
   border-radius: 1px;
