@@ -1,7 +1,11 @@
+/* ===========================================================
+   clock.js – erweitert (Original + Slider- & Echtzeitunterstützung)
+   =========================================================== */
+
 // --- CLOCK CORE FUNCTIONS ---
 window.displayMode = "24h"; // global sichtbar
 
-window.setTime = function(hours, minutes) {
+window.setTime = function (hours, minutes) {
   // kontinuierlicher Minutenwinkel (keine Sprünge)
   window.totalMinuteAngle ??= 0;
   const targetAngle = minutes * 6;
@@ -33,6 +37,9 @@ window.setTime = function(hours, minutes) {
   updateClock(hours, minutes, hourAngle, minuteAngle);
 };
 
+/* -----------------------------------------------------------
+   Anzeige und Zeigerbewegung
+----------------------------------------------------------- */
 function updateClock(hours, minutes, hourAngle, minuteAngle) {
   const hourHand = document.getElementById("stundenzeiger");
   const minuteHand = document.getElementById("minutenzeiger");
@@ -44,11 +51,14 @@ function updateClock(hours, minutes, hourAngle, minuteAngle) {
     minuteHand.style.transform = `translate(-50%, -50%) rotate(${minuteAngle}deg)`;
   }
 
-  // optional: Anzeige der digitalen Zeit, falls vorhanden
-  const disp = document.getElementById("timeDisplay");
+  // digitale Anzeige (alter timeDisplay + neuer timeLabel-Support)
+  const disp = document.getElementById("timeDisplay") || document.getElementById("timeLabel");
   if (disp) disp.textContent = formatTime(hours, minutes);
 }
 
+/* -----------------------------------------------------------
+   Formatierung der Zeit (12h / 24h)
+----------------------------------------------------------- */
 function formatTime(h, m) {
   const pad = (x) => x.toString().padStart(2, "0");
   if (window.displayMode === "12h") {
@@ -57,5 +67,36 @@ function formatTime(h, m) {
     return `Es ist ${hour}:${pad(m)} Uhr ${suffix}.`;
   } else {
     return `${pad(h)}:${pad(m)} Uhr`;
+  }
+}
+
+/* -----------------------------------------------------------
+   Integration für Slidersteuerung
+   (wird von main.js via updateClockFromSlider() aufgerufen)
+----------------------------------------------------------- */
+function updateClockFromSlider(totalMinutes) {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  setTime(hours, minutes); // nutzt deine bestehende setTime()-Logik
+}
+
+/* -----------------------------------------------------------
+   Echtzeitmodus (optional, kann per toggleRealtimeMode() aktiviert werden)
+----------------------------------------------------------- */
+let realtimeInterval = null;
+
+function startRealtimeClock() {
+  stopRealtimeClock(); // alten Timer stoppen, falls aktiv
+
+  realtimeInterval = setInterval(() => {
+    const now = new Date();
+    setTime(now.getHours(), now.getMinutes());
+  }, 1000);
+}
+
+function stopRealtimeClock() {
+  if (realtimeInterval) {
+    clearInterval(realtimeInterval);
+    realtimeInterval = null;
   }
 }
