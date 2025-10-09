@@ -2,54 +2,6 @@
    LEVELS.JS – Alle Spiel-Levels.
    ========================================================= */
 
-/* ========================
-   LEVEL 1 – Tageszeiten
-   ======================== */
-function initLevel1(onComplete) {
-  console.log("🎮 initLevel1 gestartet");
-
-  const levelData = [
-    { hour: 7, minute: 0, correct: "Morgen.PNG", text: "Frühstückszeit!" },
-    { hour: 9, minute: 0, correct: "Schule.PNG", text: "Schulbeginn!" },
-    { hour: 16, minute: 0, correct: "Hobby.PNG", text: "Freizeit und Hobbys!" },
-    { hour: 21, minute: 0, correct: "Schlaf.PNG", text: "Schlafenszeit!" }
-  ];
-
-  runClockLevel(levelData, "Level 1: Tageszeiten zuordnen", () => onComplete(2));
-}
-
-/* ========================
-   LEVEL 2 – Volle Stunden
-   ======================== */
-function initLevel2(onComplete) {
-  console.log("🎮 initLevel2 gestartet");
-
-  const levelData = [
-    { hour: 3, minute: 0, correct: "3 Uhr" },
-    { hour: 6, minute: 0, correct: "6 Uhr" },
-    { hour: 9, minute: 0, correct: "9 Uhr" },
-    { hour: 12, minute: 0, correct: "12 Uhr" }
-  ];
-
-  runClockLevel(levelData, "Level 2: Volle Stunden erkennen", () => onComplete(3));
-}
-
-/* ========================
-   LEVEL 3 – Halbe Stunden
-   ======================== */
-function initLevel3(onComplete) {
-  console.log("🎮 initLevel3 gestartet");
-
-  const levelData = [
-    { hour: 1, minute: 30, correct: "halb 2" },
-    { hour: 4, minute: 30, correct: "halb 5" },
-    { hour: 7, minute: 30, correct: "halb 8" },
-    { hour: 10, minute: 30, correct: "halb 11" }
-  ];
-
-  runClockLevel(levelData, "Level 3: Halbe Stunden erkennen", () => onComplete(null));
-}
-
 /* =========================================================
    Gemeinsame Spiellogik
    ========================================================= */
