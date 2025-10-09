@@ -33,7 +33,9 @@ async function startGameLevel(levelId, onComplete) {
 
 // Level 1
 function showTask(task) {
-  container.innerHTML = `
+   const container = document.getElementById("gameContainer");
+ 
+   container.innerHTML = `
     <div class="task-block">
       <div class="clock-preview">
         🕒 <span>${task.text}</span>
