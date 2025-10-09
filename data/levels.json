@@ -3,30 +3,37 @@
     {
       "id": 1,
       "title": "Tageszeiten erkennen",
-      "description": "Ziehe das passende Bild zur beschriebenen Tageszeit.",
+      "description": "Ordne die passende Tageszeit zu jeder Uhrzeit.",
       "tasks": [
         {
-          "text": "Frühstückszeit!",
-          "correct": "Morgen.PNG",
-          "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"]
+          "text": "7:00 Uhr – Frühstückszeit",
+          "time": "7:00",
+          "label": "Morgen – Frühstückszeit",
+          "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"],
+          "correct": "Morgen.PNG"
         },
         {
-          "text": "Schulbeginn!",
-          "correct": "Schule.PNG",
-          "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"]
+          "text": "9:00 Uhr – Schulbeginn",
+          "time": "9:00",
+          "label": "Morgen – Schulbeginn",
+          "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"],
+          "correct": "Schule.PNG"
         },
         {
-          "text": "Freizeit und Hobbys!",
-          "correct": "Hobby.PNG",
-          "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"]
+          "text": "16:00 Uhr – Freizeit",
+          "time": "16:00",
+          "label": "Nachmittag – Hobby & Freizeit",
+          "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"],
+          "correct": "Hobby.PNG"
         },
         {
-          "text": "Schlafenszeit!",
-          "correct": "Schlaf.PNG",
-          "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"]
+          "text": "21:00 Uhr – Schlafenszeit",
+          "time": "21:00",
+          "label": "Abends – Schlafenszeit",
+          "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"],
+          "correct": "Schlaf.PNG"
         }
       ]
     }
   ]
 }
-
