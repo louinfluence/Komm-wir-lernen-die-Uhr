@@ -195,7 +195,7 @@ function initClock() {
       }
     });
   }
-
+   
   // --- Umschalten zwischen 12h- und 24h-Darstellung ---
   const displaySwitch = document.getElementById("displaySwitch");
   if (displaySwitch) {
@@ -213,6 +213,25 @@ function initClock() {
         setTime(h, m);
       }
     });
+
+    // Beim Laden gleich korrekt einstellen
+    window.displayMode = displaySwitch.checked ? "24h" : "12h";
+    if (typeof applyDialForMode === "function") applyDialForMode();
+  }
+
+  // --- Zurück zum Startbildschirm ---
+  const backToStart = document.getElementById("backToStart");
+  if (backToStart) {
+    backToStart.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (typeof window.navigateTo === "function") {
+        window.navigateTo("start");
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+  }
+}
 
     // Beim Laden gleich korrekt einstellen
     window.displayMode = displaySwitch.checked ? "24h" : "12h";
