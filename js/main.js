@@ -38,7 +38,6 @@ window.addEventListener("DOMContentLoaded", () => {
   if (levelSelect) {
     console.log("🎮 Lernspiel: Levelauswahl aktiv");
 
-    // robust für Touch + Maus
     const delegate = (e) => {
       const card = e.target.closest(".level-card");
       if (!card || !container.contains(card)) return;
@@ -50,7 +49,6 @@ window.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("pointerup", delegate, { passive: false });
     document.addEventListener("click", delegate);
 
-    // Level starten
     function startLevel(level) {
       console.log("▶️ Starte Level:", level);
       if (levelSelect) levelSelect.style.display = "none";
@@ -61,7 +59,6 @@ window.addEventListener("DOMContentLoaded", () => {
       else console.warn("⚠️ Level-Funktion fehlt oder wurde nicht geladen:", level);
     }
 
-    // "Weiter zu Level X" – Button nach Abschluss
     function showNextButton(nextLevel) {
       const btn = document.createElement("button");
       btn.className = "next-level-btn";
@@ -82,22 +79,21 @@ window.addEventListener("DOMContentLoaded", () => {
       container.appendChild(btn);
     }
 
-    // Für Debug/Manuellen Start (Konsole)
     window.__startLevel = (n) => startLevel(n);
   }
 
   /* ---------------------------------------------------------
    🔹 Uhr-Seite: Interaktive Uhrsteuerung (wenn vorhanden)
---------------------------------------------------------- */
-if (document.querySelector(".clock-container")) {
-  console.log("🕒 Uhr-Seite erkannt – Initialisierung läuft...");
+  --------------------------------------------------------- */
+  if (document.querySelector(".clock-container")) {
+    console.log("🕒 Uhr-Seite erkannt – Initialisierung läuft...");
 
-  if (typeof initClock === "function") {
-    initClock();
-  } else {
-    console.warn("⚠️ Keine Funktion initClock() gefunden.");
+    if (typeof initClock === "function") {
+      initClock();
+    } else {
+      console.warn("⚠️ Keine Funktion initClock() gefunden.");
+    }
   }
-}
    
   /* ---------------------------------------------------------
      🔹 Test-Seite: Quiz oder Aufgabenmodus
@@ -122,16 +118,17 @@ if (document.querySelector(".clock-container")) {
       console.warn("⚠️ initOptions() nicht definiert.");
     }
   }
-     /* ---------------------------------------------------------
+
+  /* ---------------------------------------------------------
      🔹 Debug-Hinweis
   --------------------------------------------------------- */
   console.log("✅ Initialisierung abgeschlossen für:", currentPage);
 });
 
 
- /* ---------------------------------------------------------
-     🔹 Uhr.html
-  --------------------------------------------------------- */
+/* ---------------------------------------------------------
+   🔹 Uhr.html – Funktionen
+--------------------------------------------------------- */
 function initClock() {
   // --- Menüsteuerung ---
   const menuToggle = document.getElementById("menuToggle");
@@ -143,14 +140,13 @@ function initClock() {
       sideMenu.classList.toggle("visible")
     );
   }
-
   if (closeMenu && sideMenu) {
     closeMenu.addEventListener("click", () =>
       sideMenu.classList.remove("visible")
     );
   }
 
-  // --- Uhrsteuerung über Slider (feinfühligere Variante B) ---
+  // --- Uhrsteuerung über Slider ---
   const slider = document.getElementById("timeSlider");
   if (slider) {
     slider.max = 2878;
@@ -158,19 +154,15 @@ function initClock() {
 
     slider.addEventListener("input", () => {
       const totalMinutes = Math.round(parseInt(slider.value, 10) / 2);
-
       if (typeof updateClockFromSlider === "function") {
         updateClockFromSlider(totalMinutes);
       } else if (typeof setTime === "function") {
         const h = Math.floor(totalMinutes / 60);
         const m = totalMinutes % 60;
         setTime(h, m);
-      } else {
-        console.warn("⚠️ Weder updateClockFromSlider noch setTime vorhanden!");
       }
     });
 
-    // Anfangszeit = 0:00 Uhr
     if (typeof updateClockFromSlider === "function") {
       updateClockFromSlider(0);
     } else if (typeof setTime === "function") {
@@ -178,14 +170,13 @@ function initClock() {
     }
   }
 
-  // --- Umschalten zwischen Lernmodus und Echtzeit ---
+  // --- Echtzeitmodus ---
   const modeSwitch = document.getElementById("modeSwitch");
   const sliderContainer = document.getElementById("sliderContainer");
 
   if (modeSwitch) {
     modeSwitch.addEventListener("change", () => {
       const isRealtime = modeSwitch.checked;
-
       if (isRealtime) {
         if (sliderContainer) sliderContainer.style.display = "none";
         startRealtimeClock();
@@ -195,13 +186,12 @@ function initClock() {
       }
     });
   }
-   
-  // --- Umschalten zwischen 12h- und 24h-Darstellung ---
+
+  // --- 12h / 24h-Umschalter ---
   const displaySwitch = document.getElementById("displaySwitch");
   if (displaySwitch) {
     displaySwitch.addEventListener("change", () => {
       window.displayMode = displaySwitch.checked ? "24h" : "12h";
-
       if (typeof applyDialForMode === "function") applyDialForMode();
 
       const total = window.currentTotalMinutes ?? 0;
@@ -214,7 +204,6 @@ function initClock() {
       }
     });
 
-    // Beim Laden gleich korrekt einstellen
     window.displayMode = displaySwitch.checked ? "24h" : "12h";
     if (typeof applyDialForMode === "function") applyDialForMode();
   }
@@ -233,29 +222,10 @@ function initClock() {
   }
 }
 
-    // Beim Laden gleich korrekt einstellen
-    window.displayMode = displaySwitch.checked ? "24h" : "12h";
-    if (typeof applyDialForMode === "function") applyDialForMode();
-  
 
-  // --- Zurück zum Startbildschirm ---
-  const backToStart = document.getElementById("backToStart");
-  if (backToStart) {
-    backToStart.addEventListener("click", (e) => {
-      e.preventDefault();
-      if (typeof window.navigateTo === "function") {
-        window.navigateTo("start");
-      } else {
-        window.location.href = "index.html";
-      }
-    });
-  }
-}
-
-
-// -----------------------------------------------------------
-// Dark Mode Umschalter (steht jetzt wieder auf oberster Ebene)
-// -----------------------------------------------------------
+/* -----------------------------------------------------------
+   Dark Mode Umschalter (global)
+----------------------------------------------------------- */
 const themeSwitch = document.getElementById("themeSwitch");
 if (themeSwitch) {
   themeSwitch.addEventListener("change", () => {
@@ -263,14 +233,8 @@ if (themeSwitch) {
     localStorage.setItem("darkMode", themeSwitch.checked ? "true" : "false");
   });
 
-  // Zustand beim Laden wiederherstellen
   if (localStorage.getItem("darkMode") === "true") {
     themeSwitch.checked = true;
     document.body.classList.add("dark");
   }
 }
-
-
-
-
-
