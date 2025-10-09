@@ -236,7 +236,7 @@ function initClock() {
     // Beim Laden gleich korrekt einstellen
     window.displayMode = displaySwitch.checked ? "24h" : "12h";
     if (typeof applyDialForMode === "function") applyDialForMode();
-  }
+  
 
   // --- Zurück zum Startbildschirm ---
   const backToStart = document.getElementById("backToStart");
