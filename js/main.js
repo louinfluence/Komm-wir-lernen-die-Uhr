@@ -122,6 +122,12 @@ if (document.querySelector(".clock-container")) {
       console.warn("⚠️ initOptions() nicht definiert.");
     }
   }
+     /* ---------------------------------------------------------
+     🔹 Debug-Hinweis
+  --------------------------------------------------------- */
+  console.log("✅ Initialisierung abgeschlossen für:", currentPage);
+});
+
 
  /* ---------------------------------------------------------
      🔹 Uhr.html
