@@ -195,10 +195,5 @@ function animateClockToTime(oldTime, newTime, baseDuration = 1800) {
   });
 }
 
-
-  });
-}
-
-
 /* Aliase, damit main.js kompatibel bleibt */
 function initLevel1(cb) { startGameLevel(1, cb); }
