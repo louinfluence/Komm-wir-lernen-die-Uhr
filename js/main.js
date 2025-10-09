@@ -123,12 +123,6 @@ if (document.querySelector(".clock-container")) {
     }
   }
 
-  /* ---------------------------------------------------------
-     🔹 Debug-Hinweis
-  --------------------------------------------------------- */
-  console.log("✅ Initialisierung abgeschlossen für:", currentPage);
-});
-
  /* ---------------------------------------------------------
      🔹 Uhr.html
   --------------------------------------------------------- */
@@ -218,8 +212,7 @@ if (themeSwitch) {
   }
 }
 
-// ----------------------------------------------------------
-console.log("✅ Initialisierung abgeschlossen für:", currentPage);
+
 
 
 
