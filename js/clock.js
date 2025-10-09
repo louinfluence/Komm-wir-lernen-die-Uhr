@@ -111,11 +111,10 @@ function updateClockFromSlider(totalMinutes) {
 let realtimeInterval = null;
 
 function startRealtimeClock() {
-  stopRealtimeClock(); // Sicherheitsstopp
- const secHand = document.getElementById("sekundenzeiger");
-if (secHand) {
-  secHand.style.transform = `rotate(${secondDeg}deg)`;
-}
+  stopRealtimeClock(); // alten Timer stoppen
+
+  const secHand = document.getElementById("sekundenzeiger");
+  if (secHand) secHand.style.display = "block"; // Sekundenzeiger einblenden
 
   realtimeInterval = setInterval(() => {
     const now = new Date();
@@ -123,7 +122,7 @@ if (secHand) {
     const minutes = now.getMinutes();
     const seconds = now.getSeconds();
 
-    // Stunden/Minuten wie bisher
+    // Stunden + Minuten aktualisieren
     setTime(hours, minutes);
 
     // Sekundenzeiger (6° pro Sekunde)
@@ -142,3 +141,4 @@ function stopRealtimeClock() {
   const secHand = document.getElementById("sekundenzeiger");
   if (secHand) secHand.style.display = "none"; // im Lernmodus ausblenden
 }
+
