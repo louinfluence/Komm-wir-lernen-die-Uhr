@@ -438,28 +438,27 @@ body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
   transition: transform 0.2s;
 }
 .draggable-option:hover { transform: scale(1.05); }
-
-/* =========================================================
-   ANIMATIONEN FÜR FEEDBACK
-   ========================================================= */
-@keyframes pulseCorrect {
-  0%   { transform: scale(1); box-shadow: 0 0 0 rgba(76,175,80,0.7); }
-  50%  { transform: scale(1.1); box-shadow: 0 0 25px rgba(76,175,80,0.6); }
-  100% { transform: scale(1); box-shadow: 0 0 0 rgba(76,175,80,0.7); }
-}
-.pulse-correct {
-  animation: pulseCorrect 0.8s ease-in-out;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes shakeWrong {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-8px); }
-  40%, 80% { transform: translateX(8px); }
-}
-.shake-wrong {
-  animation: shakeWrong 0.5s ease;
+.task-block {
+  text-align: center;
+  animation: fadeIn 0.6s ease forwards;
 }
 
+.clock-preview {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 1rem auto;
+  padding: 0.6rem 1rem;
+  background: var(--menu-bg);
+  border: 2px solid var(--menu-border);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: inline-block;
+}
 
 /* =========================================================
    ZEITTEXT SICHTBAR & MIT GRUNDARBEITSFARBE
