@@ -28,6 +28,7 @@ async function startGameLevel(levelId, onComplete) {
   // Aufgaben nacheinander anzeigen
   let current = 0;
   showTask(level.tasks[current]);
+}
 
 
 // Level 1
