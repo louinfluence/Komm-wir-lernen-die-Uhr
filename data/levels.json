@@ -1,1 +1,32 @@
+{
+  "levels": [
+    {
+      "id": 1,
+      "title": "Tageszeiten erkennen",
+      "description": "Ziehe das passende Bild zur beschriebenen Tageszeit.",
+      "tasks": [
+        {
+          "text": "Frühstückszeit!",
+          "correct": "Morgen.PNG",
+          "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"]
+        },
+        {
+          "text": "Schulbeginn!",
+          "correct": "Schule.PNG",
+          "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"]
+        },
+        {
+          "text": "Freizeit und Hobbys!",
+          "correct": "Hobby.PNG",
+          "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"]
+        },
+        {
+          "text": "Schlafenszeit!",
+          "correct": "Schlaf.PNG",
+          "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"]
+        }
+      ]
+    }
+  ]
+}
 
