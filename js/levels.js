@@ -2,6 +2,11 @@
    LEVELS – JSON-basiertes Lernspiel mit Drag & Drop
    ========================================================= */
 
+// 🔹 Globale Steuerungsvariablen (werden von mehreren Funktionen gebraucht)
+let level = null;
+let current = 0;
+
+// Lädt Leveldaten aus der JSON-Datei
 async function loadLevels() {
   const res = await fetch("data/levels.json");
   const data = await res.json();
@@ -14,7 +19,7 @@ async function startGameLevel(levelId, onComplete) {
   container.innerHTML = ""; // altes Level leeren
 
   const levels = await loadLevels();
-  const level = levels.find(l => l.id === levelId);
+  level = levels.find(l => l.id === levelId); // ✅ global speichern
   if (!level) return console.error("Level nicht gefunden:", levelId);
 
   const title = document.createElement("h2");
@@ -26,25 +31,23 @@ async function startGameLevel(levelId, onComplete) {
   container.appendChild(desc);
 
   // Aufgaben nacheinander anzeigen
-  let current = 0;
+  current = 0; // ✅ global aktualisieren
   showTask(level.tasks[current]);
+
+  // Callback speichern, damit es beim Abschluss verwendet werden kann
+  window.onComplete = onComplete;
 }
 
-
-// Level 1
+/* =========================================================
+   🧩 Einzelne Aufgaben anzeigen & prüfen
+   ========================================================= */
 function showTask(task) {
-   const container = document.getElementById("gameContainer");
- 
-   container.innerHTML = `
+  const container = document.getElementById("gameContainer");
+
+  container.innerHTML = `
     <div class="task-block">
-      <div class="clock-preview">
-        🕒 <span>${task.text}</span>
-      </div>
-
-      <div id="dropZone" class="drop-zone">
-        Ziehe das passende Bild hierher 👇
-      </div>
-
+      <div class="clock-preview">🕒 <span>${task.text}</span></div>
+      <div id="dropZone" class="drop-zone">Ziehe das passende Bild hierher 👇</div>
       <div class="options-area" id="optionsArea"></div>
     </div>
   `;
@@ -86,13 +89,12 @@ function showTask(task) {
         const nextBtn = document.createElement("button");
         nextBtn.textContent = "➡️ Weiter zum nächsten Level";
         nextBtn.className = "next-level-btn";
-        nextBtn.addEventListener("click", () => onComplete(level.id + 1));
+        nextBtn.addEventListener("click", () => window.onComplete(level.id + 1));
         container.appendChild(nextBtn);
       }
     }, 1500);
   });
 }
-
 
 /* Aliase, damit main.js kompatibel bleibt */
 function initLevel1(cb) { startGameLevel(1, cb); }
