@@ -96,18 +96,24 @@ function updateTimeLabel(hours, minutes) {
   label.textContent = `Es ist ${timeString} ${phase}.`;
 
  // Wechsel 12h / 24h Ziffernblatt
-   function applyDialForMode() {
+function applyDialForMode() {
   const face12 = document.getElementById("ziffernblatt_12h");
   const face24 = document.getElementById("ziffernblatt_24h");
 
-  if (window.displayMode === "24h") {
-    if (face12) face12.classList.add("hidden");
-    if (face24) face24.classList.remove("hidden");
-  } else {
-    if (face24) face24.classList.add("hidden");
-    if (face12) face12.classList.remove("hidden");
+  if (!face12 || !face24) {
+    console.warn("❗ applyDialForMode: Ziffernblatt-Elemente nicht gefunden.");
+    return;
   }
-}
+
+  if (window.displayMode === "24h") {
+    face12.classList.add("hidden");
+    face24.classList.remove("hidden");
+    console.log("🕐 24-h-Ziffernblatt aktiviert");
+  } else {
+    face24.classList.add("hidden");
+    face12.classList.remove("hidden");
+    console.log("🕛 12-h-Ziffernblatt aktiviert");
+  }
 }
 
 /* -----------------------------------------------------------
