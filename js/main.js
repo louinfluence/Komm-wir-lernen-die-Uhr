@@ -180,7 +180,7 @@ if (slider) {
     setTime(0, 0);
   }
 }
-   // --- Umschalten zwischen Lernmodus und Echtzeit ---
+  // --- Umschalten zwischen Lernmodus und Echtzeit ---
 const modeSwitch = document.getElementById("modeSwitch");
 const sliderContainer = document.getElementById("sliderContainer");
 
@@ -199,11 +199,10 @@ if (modeSwitch) {
     }
   });
 }
-}
 
-/* -----------------------------------------------------------
-   Dark Mode Umschalter
------------------------------------------------------------ */
+// -----------------------------------------------------------
+// Dark Mode Umschalter (steht jetzt wieder auf oberster Ebene)
+// -----------------------------------------------------------
 const themeSwitch = document.getElementById("themeSwitch");
 if (themeSwitch) {
   themeSwitch.addEventListener("change", () => {
@@ -217,3 +216,10 @@ if (themeSwitch) {
     document.body.classList.add("dark");
   }
 }
+
+// ----------------------------------------------------------
+console.log("✅ Initialisierung abgeschlossen für:", currentPage);
+}
+
+
+
