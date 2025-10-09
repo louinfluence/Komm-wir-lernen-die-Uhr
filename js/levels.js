@@ -1,113 +1,86 @@
 /* =========================================================
-   LEVELS.JS – Alle Spiel-Levels.
+   LEVELS – JSON-basiertes Lernspiel mit Drag & Drop
    ========================================================= */
 
-/* =========================================================
-   Gemeinsame Spiellogik
-   ========================================================= */
-function runClockLevel(levelData, title, onComplete) {
-  const main = document.getElementById("gameContainer");
-  main.innerHTML = `<h2>${title}</h2>`;
+async function loadLevels() {
+  const res = await fetch("data/levels.json");
+  const data = await res.json();
+  return data.levels;
+}
 
-  const clock = document.createElement("div");
-  clock.className = "clock";
+/* Haupt-Startfunktion */
+async function startGameLevel(levelId, onComplete) {
+  const container = document.getElementById("gameContainer");
+  container.innerHTML = ""; // altes Level leeren
 
-  const hourHand = document.createElement("div");
-  hourHand.className = "hand hour";
-  const minuteHand = document.createElement("div");
-  minuteHand.className = "hand minute";
-  clock.appendChild(hourHand);
-  clock.appendChild(minuteHand);
-  main.appendChild(clock);
+  const levels = await loadLevels();
+  const level = levels.find(l => l.id === levelId);
+  if (!level) return console.error("Level nicht gefunden:", levelId);
 
-  const feedback = document.createElement("div");
-  feedback.id = "feedback";
-  main.appendChild(feedback);
+  const title = document.createElement("h2");
+  title.textContent = `🎯 ${level.title}`;
+  container.appendChild(title);
 
+  const desc = document.createElement("p");
+  desc.textContent = level.description;
+  container.appendChild(desc);
+
+  // Aufgaben nacheinander anzeigen
   let current = 0;
+  showTask(level.tasks[current]);
 
-  function nextRound() {
-    if (current >= levelData.length) {
-      feedback.textContent = "🎉 Geschafft!";
-      onComplete();
-      return;
-    }
+  function showTask(task) {
+    container.innerHTML = `
+      <h3>${task.text}</h3>
+      <div id="dropZone" class="drop-zone">Ziehe das richtige Bild hierher 👇</div>
+      <div class="options-area" id="optionsArea"></div>
+    `;
 
-    const data = levelData[current];
-    feedback.textContent = data.text || "Welche Uhrzeit passt?";
+    const optionsArea = document.getElementById("optionsArea");
 
-    // Zeiger bewegen
-    const hourAngle = (data.hour % 12) * 30 + data.minute * 0.5;
-    const minuteAngle = data.minute * 6;
-    hourHand.style.transform = `translate(-50%) rotate(${hourAngle}deg)`;
-    minuteHand.style.transform = `translate(-50%) rotate(${minuteAngle}deg)`;
+    task.options.forEach(opt => {
+      const img = document.createElement("img");
+      img.src = `assets/images/${opt}`;
+      img.alt = opt.replace(".PNG", "");
+      img.draggable = true;
+      img.className = "draggable-option";
+      img.addEventListener("dragstart", e => {
+        e.dataTransfer.setData("text/plain", opt);
+      });
+      optionsArea.appendChild(img);
+    });
 
-    // Antwortoptionen
-    const opts = document.createElement("div");
-    opts.id = "options";
+    const dropZone = document.getElementById("dropZone");
+    dropZone.addEventListener("dragover", e => e.preventDefault());
+    dropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      const selected = e.dataTransfer.getData("text/plain");
 
-    let pool;
-    if (data.correct.endsWith(".PNG")) {
-      pool = ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"];
-    } else if (data.correct.includes("halb")) {
-      pool = ["halb 2", "halb 5", "halb 8", "halb 11"];
-    } else {
-      pool = ["3 Uhr", "6 Uhr", "9 Uhr", "12 Uhr"];
-    }
+      if (selected === task.correct) {
+        dropZone.textContent = "✅ Richtig!";
+        dropZone.classList.add("correct");
+      } else {
+        dropZone.textContent = "❌ Falsch!";
+        dropZone.classList.add("wrong");
+      }
 
-    shuffle(pool).forEach(opt => {
-  const btn = document.createElement("div");
-  btn.className = "option";
-
-  // Wenn es ein Bild ist (endet auf .PNG)
-  if (opt.endsWith(".PNG")) {
-    const img = document.createElement("img");
-    img.src = `assets/images/${opt}`;
-    img.alt = opt.replace(".PNG", "");
-    img.className = "option-img";
-    btn.appendChild(img);
-  } else {
-    // sonst Textoption
-    btn.textContent = opt;
+      setTimeout(() => {
+        current++;
+        if (current < level.tasks.length) {
+          showTask(level.tasks[current]);
+        } else {
+          // Level abgeschlossen
+          container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
+          const nextBtn = document.createElement("button");
+          nextBtn.textContent = "➡️ Weiter zum nächsten Level";
+          nextBtn.className = "next-level-btn";
+          nextBtn.addEventListener("click", () => onComplete(level.id + 1));
+          container.appendChild(nextBtn);
+        }
+      }, 1500);
+    });
   }
-
-btn.addEventListener("click", () => {
-  if (opt === data.correct) {
-    feedback.textContent = "✅ Richtig!";
-    btn.classList.add("correct", "pulse-correct");
-    setTimeout(() => {
-      btn.classList.remove("pulse-correct");
-      current++;
-      nextRound();
-    }, 1000);
-  } else {
-    feedback.textContent = "❌ Versuch’s nochmal!";
-    btn.classList.add("wrong", "shake-wrong");
-    setTimeout(() => btn.classList.remove("shake-wrong", "wrong"), 700);
-  }
-});
-
-
-  opts.appendChild(btn);
-});
-
-
-    const old = document.querySelector("#options");
-    if (old) old.remove();
-    main.appendChild(opts);
-  }
-
-  nextRound();
 }
 
-/* =========================================================
-   Hilfsfunktionen
-   ========================================================= */
-function shuffle(arr) {
-  let a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+/* Aliase, damit main.js kompatibel bleibt */
+function initLevel1(cb) { startGameLevel(1, cb); }
