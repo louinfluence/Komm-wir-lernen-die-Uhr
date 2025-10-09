@@ -220,7 +220,6 @@ if (themeSwitch) {
 
 // ----------------------------------------------------------
 console.log("✅ Initialisierung abgeschlossen für:", currentPage);
-}
 
 
 
