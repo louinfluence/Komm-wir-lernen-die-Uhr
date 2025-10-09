@@ -205,6 +205,22 @@ if (displaySwitch) {
     // Wenn Schalter aktiv → 24h-Modus, sonst 12h
     window.displayMode = displaySwitch.checked ? "24h" : "12h";
 
+// --- Zurück zum Startbildschirm ---
+const backToStart = document.getElementById("backToStart");
+if (backToStart) {
+  backToStart.addEventListener("click", (e) => {
+    e.preventDefault();
+    // nutzt deine zentrale Navigation aus main.js
+    if (typeof window.navigateTo === "function") {
+      window.navigateTo("start");
+    } else {
+      // Fallback, falls navigateTo nicht geladen wurde
+      window.location.href = "index.html";
+    }
+  });
+}
+
+
     // Ziffernblatt anpassen (Funktion aus clock.js)
     if (typeof applyDialForMode === "function") applyDialForMode();
 
