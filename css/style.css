@@ -393,8 +393,8 @@ body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
 /* Bildgröße */
 .option img,
 .option-img {
-  width: 100%;
-  height: auto;
+  width: 50%;
+  height: 50%;
   object-fit: cover;
   display: block;
   border-radius: 10px;
