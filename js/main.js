@@ -197,6 +197,33 @@ if (modeSwitch) {
       if (sliderContainer) sliderContainer.style.display = "block";
       stopRealtimeClock();
     }
+
+   // --- Umschalten zwischen 12h- und 24h-Darstellung ---
+const displaySwitch = document.getElementById("displaySwitch");
+if (displaySwitch) {
+  displaySwitch.addEventListener("change", () => {
+    // Wenn Schalter aktiv → 24h-Modus, sonst 12h
+    window.displayMode = displaySwitch.checked ? "24h" : "12h";
+
+    // Ziffernblatt anpassen (Funktion aus clock.js)
+    if (typeof applyDialForMode === "function") applyDialForMode();
+
+    // Uhrzeit neu zeichnen, damit Text und Zeiger sofort passen
+    const total = window.currentTotalMinutes ?? 0;
+    if (typeof updateClockFromSlider === "function") {
+      updateClockFromSlider(total);
+    } else if (typeof setTime === "function") {
+      const h = Math.floor(total / 60);
+      const m = total % 60;
+      setTime(h, m);
+    }
+  });
+
+  // Beim Laden gleich korrekt einstellen
+  window.displayMode = displaySwitch.checked ? "24h" : "12h";
+  if (typeof applyDialForMode === "function") applyDialForMode();
+}
+
   });
 }
 }
