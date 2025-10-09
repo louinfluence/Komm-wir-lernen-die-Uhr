@@ -145,19 +145,26 @@ shuffledOptions.forEach(opt => {
       dropZone.classList.add("wrong");
     }
 
-    setTimeout(() => {
-      current++;
-      if (current < level.tasks.length) {
-        showTask(level.tasks[current]);
-      } else {
-        container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
-        const nextBtn = document.createElement("button");
-        nextBtn.textContent = "➡️ Weiter zum nächsten Level";
-        nextBtn.className = "next-level-btn";
-        nextBtn.addEventListener("click", () => window.onComplete(level.id + 1));
-        container.appendChild(nextBtn);
-      }
-    }, 1500);
+setTimeout(async () => {
+  const oldTime = task.time;
+  current++;
+  if (current < level.tasks.length) {
+    const nextTime = level.tasks[current].time;
+
+    // ⏳ Uhr sanft weiterdrehen bevor die neue Aufgabe geladen wird
+    await animateClockToTime(oldTime, nextTime, 1800);
+
+    showTask(level.tasks[current]);
+  } else {
+    container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "➡️ Weiter zum nächsten Level";
+    nextBtn.className = "next-level-btn";
+    nextBtn.addEventListener("click", () => window.onComplete(level.id + 1));
+    container.appendChild(nextBtn);
+  }
+}, 1200);
+
   });
 }
 
