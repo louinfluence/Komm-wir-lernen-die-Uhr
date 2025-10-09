@@ -76,23 +76,26 @@ function showTask(task) {
   if (hourHand) hourHand.style.transform = `translate(-50%, -50%) rotate(${hourAngle}deg)`;
   if (minuteHand) minuteHand.style.transform = `translate(-50%, -50%) rotate(${minuteAngle}deg)`;
 
-  /* ----------------------------------------------------
-     🔹 Optionen rendern
-  ---------------------------------------------------- */
-  const optionsArea = document.getElementById("optionsArea");
+/* ----------------------------------------------------
+   🔹 Optionen rendern 
+---------------------------------------------------- */
+const optionsArea = document.getElementById("optionsArea");
 
-  task.options.forEach(opt => {
-    const img = document.createElement("img");
-    img.src = `assets/images/${opt}`;
-    img.alt = opt.replace(".PNG", "");
-    img.draggable = true;
-    img.className = "draggable-option";
-    img.addEventListener("dragstart", e => {
-      e.dataTransfer.setData("text/plain", opt);
-    });
-    optionsArea.appendChild(img);
+// Kopie der Optionsliste und zufällig mischen
+const shuffledOptions = [...task.options].sort(() => Math.random() - 0.5);
+
+shuffledOptions.forEach(opt => {
+  const img = document.createElement("img");
+  img.src = `assets/images/${opt}`;
+  img.alt = opt.replace(".PNG", "");
+  img.draggable = true;
+  img.className = "draggable-option";
+  img.addEventListener("dragstart", e => {
+    e.dataTransfer.setData("text/plain", opt);
   });
-
+  optionsArea.appendChild(img);
+});
+   
   /* ----------------------------------------------------
      🔹 Drop-Zone Logik
   ---------------------------------------------------- */
