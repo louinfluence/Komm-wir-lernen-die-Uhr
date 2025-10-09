@@ -167,7 +167,7 @@ dropZone.addEventListener("drop", async e => {
     }
   }, 1200);
 }); 
-
+}
 // Sanfte Bewegung beider Uhrzeiger – Dauer abhängig von Stundenunterschied
 function animateClockToTime(oldTime, newTime, baseDuration = 1800) {
   const [oldH, oldM] = oldTime.split(":").map(Number);
