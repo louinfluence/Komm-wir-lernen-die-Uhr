@@ -128,7 +128,7 @@ function startRealtimeClock() {
     // Sekundenzeiger (6° pro Sekunde)
     const secondDeg = seconds * 6;
     if (secHand) {
-      secHand.style.transform = `translate(-50%, -100%) rotate(${secondDeg}deg)`;
+      secHand.style.transform = `translate(-50%, -50%) rotate(${secondDeg}deg)`;
     }
   }, 1000);
 }
