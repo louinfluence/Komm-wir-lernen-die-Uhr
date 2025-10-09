@@ -94,6 +94,20 @@ function updateTimeLabel(hours, minutes) {
   // Klasse und Text setzen
   label.classList.add(phase);
   label.textContent = `Es ist ${timeString} ${phase}.`;
+
+ // Wechsel 12h / 24h Ziffernblatt
+   function applyDialForMode() {
+  const face12 = document.getElementById("ziffernblatt_12h");
+  const face24 = document.getElementById("ziffernblatt_24h");
+
+  if (window.displayMode === "24h") {
+    if (face12) face12.classList.add("hidden");
+    if (face24) face24.classList.remove("hidden");
+  } else {
+    if (face24) face24.classList.add("hidden");
+    if (face12) face12.classList.remove("hidden");
+  }
+}
 }
 
 /* -----------------------------------------------------------
