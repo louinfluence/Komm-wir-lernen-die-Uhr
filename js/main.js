@@ -133,7 +133,7 @@ if (document.querySelector(".clock-container")) {
      🔹 Uhr.html
   --------------------------------------------------------- */
 function initClock() {
-  // --- Menüsteuerung bleibt wie gehabt ---
+  // --- Menüsteuerung ---
   const menuToggle = document.getElementById("menuToggle");
   const sideMenu   = document.getElementById("sideMenu");
   const closeMenu  = document.getElementById("closeMenu");
@@ -150,99 +150,89 @@ function initClock() {
     );
   }
 
-// --- Uhrsteuerung über Slider (feinfühligere Variante B) ---
-const slider = document.getElementById("timeSlider");
-if (slider) {
-  // Slider hat jetzt doppelt so viele Schritte (0–2878)
-  // → ergibt weicheres Bewegen, aber weiterhin 0–1439 Minuten real
-  slider.max = 2878;
-  slider.step = 1;
+  // --- Uhrsteuerung über Slider (feinfühligere Variante B) ---
+  const slider = document.getElementById("timeSlider");
+  if (slider) {
+    slider.max = 2878;
+    slider.step = 1;
 
-  slider.addEventListener("input", () => {
-    // interner Wert = Sliderwert / 2 → ergibt Minuten (0–1439)
-    const totalMinutes = Math.round(parseInt(slider.value, 10) / 2);
+    slider.addEventListener("input", () => {
+      const totalMinutes = Math.round(parseInt(slider.value, 10) / 2);
 
+      if (typeof updateClockFromSlider === "function") {
+        updateClockFromSlider(totalMinutes);
+      } else if (typeof setTime === "function") {
+        const h = Math.floor(totalMinutes / 60);
+        const m = totalMinutes % 60;
+        setTime(h, m);
+      } else {
+        console.warn("⚠️ Weder updateClockFromSlider noch setTime vorhanden!");
+      }
+    });
+
+    // Anfangszeit = 0:00 Uhr
     if (typeof updateClockFromSlider === "function") {
-      updateClockFromSlider(totalMinutes);
+      updateClockFromSlider(0);
     } else if (typeof setTime === "function") {
-      const h = Math.floor(totalMinutes / 60);
-      const m = totalMinutes % 60;
-      setTime(h, m);
-    } else {
-      console.warn("⚠️ Weder updateClockFromSlider noch setTime vorhanden!");
+      setTime(0, 0);
     }
-  });
+  }
 
-  // --- Anfangszeit setzen (z. B. 0:00 Uhr) ---
-  if (typeof updateClockFromSlider === "function") {
-    updateClockFromSlider(0);
-  } else if (typeof setTime === "function") {
-    setTime(0, 0);
+  // --- Umschalten zwischen Lernmodus und Echtzeit ---
+  const modeSwitch = document.getElementById("modeSwitch");
+  const sliderContainer = document.getElementById("sliderContainer");
+
+  if (modeSwitch) {
+    modeSwitch.addEventListener("change", () => {
+      const isRealtime = modeSwitch.checked;
+
+      if (isRealtime) {
+        if (sliderContainer) sliderContainer.style.display = "none";
+        startRealtimeClock();
+      } else {
+        if (sliderContainer) sliderContainer.style.display = "block";
+        stopRealtimeClock();
+      }
+    });
+  }
+
+  // --- Umschalten zwischen 12h- und 24h-Darstellung ---
+  const displaySwitch = document.getElementById("displaySwitch");
+  if (displaySwitch) {
+    displaySwitch.addEventListener("change", () => {
+      window.displayMode = displaySwitch.checked ? "24h" : "12h";
+
+      if (typeof applyDialForMode === "function") applyDialForMode();
+
+      const total = window.currentTotalMinutes ?? 0;
+      if (typeof updateClockFromSlider === "function") {
+        updateClockFromSlider(total);
+      } else if (typeof setTime === "function") {
+        const h = Math.floor(total / 60);
+        const m = total % 60;
+        setTime(h, m);
+      }
+    });
+
+    // Beim Laden gleich korrekt einstellen
+    window.displayMode = displaySwitch.checked ? "24h" : "12h";
+    if (typeof applyDialForMode === "function") applyDialForMode();
+  }
+
+  // --- Zurück zum Startbildschirm ---
+  const backToStart = document.getElementById("backToStart");
+  if (backToStart) {
+    backToStart.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (typeof window.navigateTo === "function") {
+        window.navigateTo("start");
+      } else {
+        window.location.href = "index.html";
+      }
+    });
   }
 }
-  // --- Umschalten zwischen Lernmodus und Echtzeit ---
-const modeSwitch = document.getElementById("modeSwitch");
-const sliderContainer = document.getElementById("sliderContainer");
 
-if (modeSwitch) {
-  modeSwitch.addEventListener("change", () => {
-    const isRealtime = modeSwitch.checked;
-
-    if (isRealtime) {
-      // Echtzeitmodus aktivieren
-      if (sliderContainer) sliderContainer.style.display = "none";
-      startRealtimeClock();
-    } else {
-      // Lernmodus aktivieren
-      if (sliderContainer) sliderContainer.style.display = "block";
-      stopRealtimeClock();
-    }
-
-   // --- Umschalten zwischen 12h- und 24h-Darstellung ---
-const displaySwitch = document.getElementById("displaySwitch");
-if (displaySwitch) {
-  displaySwitch.addEventListener("change", () => {
-    // Wenn Schalter aktiv → 24h-Modus, sonst 12h
-    window.displayMode = displaySwitch.checked ? "24h" : "12h";
-
-// --- Zurück zum Startbildschirm ---
-const backToStart = document.getElementById("backToStart");
-if (backToStart) {
-  backToStart.addEventListener("click", (e) => {
-    e.preventDefault();
-    // nutzt deine zentrale Navigation aus main.js
-    if (typeof window.navigateTo === "function") {
-      window.navigateTo("start");
-    } else {
-      // Fallback, falls navigateTo nicht geladen wurde
-      window.location.href = "index.html";
-    }
-  });
-}
-
-
-    // Ziffernblatt anpassen (Funktion aus clock.js)
-    if (typeof applyDialForMode === "function") applyDialForMode();
-
-    // Uhrzeit neu zeichnen, damit Text und Zeiger sofort passen
-    const total = window.currentTotalMinutes ?? 0;
-    if (typeof updateClockFromSlider === "function") {
-      updateClockFromSlider(total);
-    } else if (typeof setTime === "function") {
-      const h = Math.floor(total / 60);
-      const m = total % 60;
-      setTime(h, m);
-    }
-  });
-
-  // Beim Laden gleich korrekt einstellen
-  window.displayMode = displaySwitch.checked ? "24h" : "12h";
-  if (typeof applyDialForMode === "function") applyDialForMode();
-}
-
-  });
-}
-}
 
 // -----------------------------------------------------------
 // Dark Mode Umschalter (steht jetzt wieder auf oberster Ebene)
