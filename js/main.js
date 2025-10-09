@@ -199,6 +199,7 @@ if (modeSwitch) {
     }
   });
 }
+}
 
 // -----------------------------------------------------------
 // Dark Mode Umschalter (steht jetzt wieder auf oberster Ebene)
