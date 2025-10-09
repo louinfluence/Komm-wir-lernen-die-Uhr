@@ -242,3 +242,9 @@ h1, h2, h3 {
   color: #0d47a1;
 }
 
+.mini-stundenzeiger,
+.mini-minutenzeiger {
+  transition: transform 0.2s ease-out;
+}
+
+
