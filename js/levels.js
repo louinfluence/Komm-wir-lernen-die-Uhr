@@ -29,58 +29,67 @@ async function startGameLevel(levelId, onComplete) {
   let current = 0;
   showTask(level.tasks[current]);
 
-  function showTask(task) {
-    container.innerHTML = `
-      <h3>${task.text}</h3>
-      <div id="dropZone" class="drop-zone">Ziehe das richtige Bild hierher 👇</div>
+
+// Level 1
+function showTask(task) {
+  container.innerHTML = `
+    <div class="task-block">
+      <div class="clock-preview">
+        🕒 <span>${task.text}</span>
+      </div>
+
+      <div id="dropZone" class="drop-zone">
+        Ziehe das passende Bild hierher 👇
+      </div>
+
       <div class="options-area" id="optionsArea"></div>
-    `;
+    </div>
+  `;
 
-    const optionsArea = document.getElementById("optionsArea");
+  const optionsArea = document.getElementById("optionsArea");
 
-    task.options.forEach(opt => {
-      const img = document.createElement("img");
-      img.src = `assets/images/${opt}`;
-      img.alt = opt.replace(".PNG", "");
-      img.draggable = true;
-      img.className = "draggable-option";
-      img.addEventListener("dragstart", e => {
-        e.dataTransfer.setData("text/plain", opt);
-      });
-      optionsArea.appendChild(img);
+  task.options.forEach(opt => {
+    const img = document.createElement("img");
+    img.src = `assets/images/${opt}`;
+    img.alt = opt.replace(".PNG", "");
+    img.draggable = true;
+    img.className = "draggable-option";
+    img.addEventListener("dragstart", e => {
+      e.dataTransfer.setData("text/plain", opt);
     });
+    optionsArea.appendChild(img);
+  });
 
-    const dropZone = document.getElementById("dropZone");
-    dropZone.addEventListener("dragover", e => e.preventDefault());
-    dropZone.addEventListener("drop", e => {
-      e.preventDefault();
-      const selected = e.dataTransfer.getData("text/plain");
+  const dropZone = document.getElementById("dropZone");
+  dropZone.addEventListener("dragover", e => e.preventDefault());
+  dropZone.addEventListener("drop", e => {
+    e.preventDefault();
+    const selected = e.dataTransfer.getData("text/plain");
 
-      if (selected === task.correct) {
-        dropZone.textContent = "✅ Richtig!";
-        dropZone.classList.add("correct");
+    if (selected === task.correct) {
+      dropZone.textContent = "✅ Richtig!";
+      dropZone.classList.add("correct");
+    } else {
+      dropZone.textContent = "❌ Falsch!";
+      dropZone.classList.add("wrong");
+    }
+
+    setTimeout(() => {
+      current++;
+      if (current < level.tasks.length) {
+        showTask(level.tasks[current]);
       } else {
-        dropZone.textContent = "❌ Falsch!";
-        dropZone.classList.add("wrong");
+        container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
+        const nextBtn = document.createElement("button");
+        nextBtn.textContent = "➡️ Weiter zum nächsten Level";
+        nextBtn.className = "next-level-btn";
+        nextBtn.addEventListener("click", () => onComplete(level.id + 1));
+        container.appendChild(nextBtn);
       }
-
-      setTimeout(() => {
-        current++;
-        if (current < level.tasks.length) {
-          showTask(level.tasks[current]);
-        } else {
-          // Level abgeschlossen
-          container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
-          const nextBtn = document.createElement("button");
-          nextBtn.textContent = "➡️ Weiter zum nächsten Level";
-          nextBtn.className = "next-level-btn";
-          nextBtn.addEventListener("click", () => onComplete(level.id + 1));
-          container.appendChild(nextBtn);
-        }
-      }, 1500);
-    });
-  }
+    }, 1500);
+  });
 }
+
 
 /* Aliase, damit main.js kompatibel bleibt */
 function initLevel1(cb) { startGameLevel(1, cb); }
