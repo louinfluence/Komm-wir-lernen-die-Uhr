@@ -188,7 +188,7 @@ main {
   width: 600px;
   height: auto;
   transform-origin: 50% 50%;
-  transform: 50% 20%; rotate(0deg); /* nur Rotation */
+  transform: 50% -20%; rotate(0deg); /* nur Rotation */
   pointer-events: none;
   z-index: 4;
 }
