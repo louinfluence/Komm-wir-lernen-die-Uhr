@@ -97,7 +97,6 @@ body {
   background: #005b99; /* dunkleres Blau bei Hover */
 }
 
-
 /* --- Schalter / Switches --- */
 .switch-group {
   display: flex;
@@ -172,19 +171,15 @@ main {
 }
 .hidden { display: none; }
 
-<div id="secondWrapper">
-  <img src="assets/images/Sekundenzeiger.png" id="sekundenzeiger" alt="Sekundenzeiger" />
-</div>
-
 #secondWrapper {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* Position bleibt stabil */
+  transform: translate(-50%, -50%);
 }
 
 #sekundenzeiger {
-  display: none; /* Sekundenzeiger zu Beginn unsichtbar */
+  display: none;
   width: 600px;
   height: auto;
   transform-origin: 50% 50%;
@@ -192,14 +187,9 @@ main {
   z-index: 4;
 }
 
-
-
-
 /* =========================================================
    SLIDER + ZEITSTRAHL
    ========================================================= */
-
-/* Zeitstrahl-Hintergrund (morgens → nacht) */
 #sliderContainer {
   position: relative;
   width: 90%;
@@ -218,7 +208,6 @@ main {
   );
 }
 
-/* Slider über dem Zeitstrahl */
 #timeSlider {
   position: absolute;
   top: 50%;
@@ -231,7 +220,6 @@ main {
   touch-action: none;
 }
 
-/* Größerer Thumb für Tablets */
 #timeSlider::-webkit-slider-thumb,
 #timeSlider::-moz-range-thumb {
   width: 30px;
@@ -256,23 +244,20 @@ main {
   color: transparent;
 }
 
-/* Standard (helles Theme) */
-#timeLabel.morgens      { color: #d96b00; }   /* dunkles Orange */
-#timeLabel.vormittags   { color: #b84e00; }   /* kräftiges Rot-Orange */
-#timeLabel.mittags      { color: #183b8f; }   /* dunkles Blau */
-#timeLabel.nachmittags  { color: #922222; }   /* Rotton am Nachmittag */
-#timeLabel.abends       { color: #5b0b0b; }   /* dunkles Rot */
-#timeLabel.nachts       { color: #000000; }   /* Schwarz */
+#timeLabel.morgens      { color: #d96b00; }
+#timeLabel.vormittags   { color: #b84e00; }
+#timeLabel.mittags      { color: #183b8f; }
+#timeLabel.nachmittags  { color: #922222; }
+#timeLabel.abends       { color: #5b0b0b; }
+#timeLabel.nachts       { color: #000000; }
 
-/* DARK-MODE – invertierte Logik */
-body.dark #timeLabel.morgens      { color: #ffb366; }  /* helles Orange */
-body.dark #timeLabel.vormittags   { color: #ff9966; }  /* weicher Verlauf */
-body.dark #timeLabel.mittags      { color: #00ffff; }  /* Cyan am Mittag */
-body.dark #timeLabel.nachmittags  { color: #66ccff; }  /* helles Blau */
-body.dark #timeLabel.abends       { color: #99aaff; }  /* kühler Verlauf */
-body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
+body.dark #timeLabel.morgens      { color: #ffb366; }
+body.dark #timeLabel.vormittags   { color: #ff9966; }
+body.dark #timeLabel.mittags      { color: #00ffff; }
+body.dark #timeLabel.nachmittags  { color: #66ccff; }
+body.dark #timeLabel.abends       { color: #99aaff; }
+body.dark #timeLabel.nachts       { color: #ffffff; }
 
-/* Sanftes Aufleuchten */
 .fade-in {
   opacity: 0;
   animation: fadeIn 1s ease forwards;
@@ -290,9 +275,10 @@ body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
     width: 24px; height: 24px;
   }
 }
-/* ===========================================
-   Overlay-Stile für Optionen & Anleitung
-=========================================== */
+
+/* =========================================================
+   OVERLAY & ANLEITUNG
+   ========================================================= */
 .overlay {
   position: fixed;
   inset: 0;
@@ -323,154 +309,3 @@ body.dark #timeLabel.nachts       { color: #ffffff; }  /* Weiß in der Nacht */
   margin-top: 0;
   text-align: center;
 }
-
-.level-card {
-  pointer-events: auto;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* =========================================================
-   LERNLEVEL: ANORDNUNG & STYLING
-   ========================================================= */
-.level-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 1.5rem;
-  padding: 1rem;
-}
-
-.clock-area {
-  background: var(--menu-bg);
-  border: 2px solid var(--menu-border);
-  border-radius: 12px;
-  padding: 1rem;
-  max-width: 400px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.clock-container.small {
-  position: relative;
-  width: 220px;
-  aspect-ratio: 1 / 1;
-  margin: 0 auto;
-}
-
-.task-text {
-  margin-top: 0.8rem;
-  font-size: 1.2rem;
-  font-weight: 500;
-}
-
-/* =========================================================
-   ANTWORTBILDER (Level 1)
-   ========================================================= */
-.options-area {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.8rem;
-  width: 100%;
-  max-width: 500px; /* kleinere Maximalbreite */
-  margin: 0 auto;
-}
-
-.option {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
-  overflow: hidden;
-}
-
-.option:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-}
-
-/* Bildgröße */
-.option img,
-.option-img {
-  width: 25%;
-  height: 25%;
-  border-radius: 10px;
-}
-
-/* Tablet & Desktop */
-@media (min-width: 600px) {
-  .options-area {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 420px; /* kompakter auf iPad */
-  }
-}
-
-/* Kleinere Bildgrößen bei größeren Screens, damit’s nie zu groß wird */
-@media (min-width: 900px) {
-  .options-area {
-    max-width: 400px;
-  }
-}
-.drop-zone {
-  width: 280px;
-  height: 120px;
-  margin: 1rem auto;
-  border: 3px dashed var(--accent);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  background: rgba(255,255,255,0.8);
-  transition: background 0.3s, transform 0.3s;
-}
-
-.drop-zone.correct { background: rgba(76,175,80,0.2); }
-.drop-zone.wrong { background: rgba(255,0,0,0.2); }
-
-.draggable-option {
-  width: 120px;
-  height: auto;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  margin: 10px;
-  transition: transform 0.2s;
-}
-.draggable-option:hover { transform: scale(1.05); }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.task-block {
-  text-align: center;
-  animation: fadeIn 0.6s ease forwards;
-}
-
-.clock-preview {
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin: 1rem auto;
-  padding: 0.6rem 1rem;
-  background: var(--menu-bg);
-  border: 2px solid var(--menu-border);
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  display: inline-block;
-}
-
-/* =========================================================
-   ZEITTEXT SICHTBAR & MIT GRUNDARBEITSFARBE
-   ========================================================= */
-#timeLabel {
-  font-size: 1.6rem;
-  font-weight: 600;
-  text-align: center;
-  margin-top: 2rem;
-  color: var(--text); /* war vorher transparent */
-  transition: color 0.8s ease;
-}
-
-
-
