@@ -199,3 +199,46 @@ h1, h2, h3 {
     height: 90px;
   }
 }
+
+/* =========================
+   🕒 Mini-Uhr im Aufgabenblock
+   ========================= */
+.mini-clock {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 10px auto;
+}
+
+.mini-clock img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 50% 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.mini-ziffernblatt {
+  width: 100%;
+  height: auto;
+}
+
+.mini-stundenzeiger {
+  width: 60%;
+  height: auto;
+  z-index: 2;
+}
+
+.mini-minutenzeiger {
+  width: 75%;
+  height: auto;
+  z-index: 3;
+}
+
+.clock-label {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #0d47a1;
+}
+
