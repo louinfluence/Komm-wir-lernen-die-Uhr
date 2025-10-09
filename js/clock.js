@@ -94,6 +94,7 @@ function updateTimeLabel(hours, minutes) {
   // Klasse und Text setzen
   label.classList.add(phase);
   label.textContent = `Es ist ${timeString} ${phase}.`;
+}
 
  // Wechsel 12h / 24h Ziffernblatt
 function applyDialForMode() {
@@ -115,6 +116,7 @@ function applyDialForMode() {
     console.log("🕛 12-h-Ziffernblatt aktiviert");
   }
 }
+
 
 /* -----------------------------------------------------------
    Integration für Slidersteuerung
