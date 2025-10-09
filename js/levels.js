@@ -46,7 +46,18 @@ function showTask(task) {
 
   container.innerHTML = `
     <div class="task-block">
-      <div class="clock-preview">🕒 <span>${task.text}</span></div>
+      <div class="clock-preview">
+  <div class="mini-clock">
+    <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt" class="mini-ziffernblatt">
+    <img src="assets/images/Stundenzeiger.png" class="mini-stundenzeiger" alt="Stundenzeiger" />
+    <img src="assets/images/Minutenzeiger.png" class="mini-minutenzeiger" alt="Minutenzeiger" />
+  </div>
+  <div class="clock-label">
+    <strong>${task.text}</strong><br>
+    <span>${task.label}</span>
+  </div>
+</div>
+
       <div id="dropZone" class="drop-zone">Ziehe das passende Bild hierher 👇</div>
       <div class="options-area" id="optionsArea"></div>
     </div>
