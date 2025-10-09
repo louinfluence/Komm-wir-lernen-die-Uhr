@@ -128,28 +128,45 @@ shuffledOptions.forEach(opt => {
   optionsArea.appendChild(img);
 });
    
-  /* ----------------------------------------------------
-     🔹 Drop-Zone Logik
-  ---------------------------------------------------- */
-  const dropZone = document.getElementById("dropZone");
-  dropZone.addEventListener("dragover", e => e.preventDefault());
-  dropZone.addEventListener("drop", e => {
-    e.preventDefault();
-    const selected = e.dataTransfer.getData("text/plain");
+/* ----------------------------------------------------
+   🔹 Drop-Zone Logik
+---------------------------------------------------- */
+const dropZone = document.getElementById("dropZone");
+dropZone.addEventListener("dragover", e => e.preventDefault());
+dropZone.addEventListener("drop", async e => {
+  e.preventDefault();
+  const selected = e.dataTransfer.getData("text/plain");
 
-    if (selected === task.correct) {
-      dropZone.textContent = "✅ Richtig!";
-      dropZone.classList.add("correct");
+  if (selected === task.correct) {
+    dropZone.textContent = "✅ Richtig!";
+    dropZone.classList.add("correct");
+  } else {
+    dropZone.textContent = "❌ Falsch!";
+    dropZone.classList.add("wrong");
+  }
+
+  // ⏳ Wartezeit + Animation der Uhr vor nächster Aufgabe
+  setTimeout(async () => {
+    const oldTime = task.time;
+    current++;
+
+    if (current < level.tasks.length) {
+      const nextTime = level.tasks[current].time;
+
+      // Uhr bewegt sich weiter zur nächsten Zeit
+      await animateClockToTime(oldTime, nextTime, 1800);
+
+      showTask(level.tasks[current]);
     } else {
-      dropZone.textContent = "❌ Falsch!";
-      dropZone.classList.add("wrong");
+      container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
+      const nextBtn = document.createElement("button");
+      nextBtn.textContent = "➡️ Weiter zum nächsten Level";
+      nextBtn.className = "next-level-btn";
+      nextBtn.addEventListener("click", () => window.onComplete(level.id + 1));
+      container.appendChild(nextBtn);
     }
-
-setTimeout(async () => {
-  const oldTime = task.time;
-  current++;
-  if (current < level.tasks.length) {
-    const nextTime = level.tasks[current].time;
+  }, 1200);
+}); 
 
 // Sanfte Bewegung beider Uhrzeiger – Dauer abhängig von Stundenunterschied
 function animateClockToTime(oldTime, newTime, baseDuration = 1800) {
@@ -197,3 +214,4 @@ function animateClockToTime(oldTime, newTime, baseDuration = 1800) {
 
 /* Aliase, damit main.js kompatibel bleibt */
 function initLevel1(cb) { startGameLevel(1, cb); }
+
