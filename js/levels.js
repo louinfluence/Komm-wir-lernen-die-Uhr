@@ -47,22 +47,38 @@ function showTask(task) {
   container.innerHTML = `
     <div class="task-block">
       <div class="clock-preview">
-  <div class="mini-clock">
-    <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt" class="mini-ziffernblatt">
-    <img src="assets/images/Stundenzeiger.png" class="mini-stundenzeiger" alt="Stundenzeiger" />
-    <img src="assets/images/Minutenzeiger.png" class="mini-minutenzeiger" alt="Minutenzeiger" />
-  </div>
-  <div class="clock-label">
-    <strong>${task.text}</strong><br>
-    <span>${task.label}</span>
-  </div>
-</div>
+        <div class="mini-clock">
+          <img src="assets/images/Ziffernblatt.png" alt="Ziffernblatt" class="mini-ziffernblatt">
+          <img src="assets/images/Stundenzeiger.png" class="mini-stundenzeiger" alt="Stundenzeiger" />
+          <img src="assets/images/Minutenzeiger.png" class="mini-minutenzeiger" alt="Minutenzeiger" />
+        </div>
+        <div class="clock-label">
+          <strong>${task.text}</strong><br>
+          <span>${task.label}</span>
+        </div>
+      </div>
 
       <div id="dropZone" class="drop-zone">Ziehe das passende Bild hierher 👇</div>
       <div class="options-area" id="optionsArea"></div>
     </div>
   `;
 
+  /* ----------------------------------------------------
+     🕒 Zeigerstellung basierend auf task.time
+  ---------------------------------------------------- */
+  const [hours, minutes] = task.time.split(":").map(Number);
+  const hourAngle = (hours % 12) * 30 + minutes * 0.5;
+  const minuteAngle = minutes * 6;
+
+  const hourHand = container.querySelector(".mini-stundenzeiger");
+  const minuteHand = container.querySelector(".mini-minutenzeiger");
+
+  if (hourHand) hourHand.style.transform = `translate(-50%, -50%) rotate(${hourAngle}deg)`;
+  if (minuteHand) minuteHand.style.transform = `translate(-50%, -50%) rotate(${minuteAngle}deg)`;
+
+  /* ----------------------------------------------------
+     🔹 Optionen rendern
+  ---------------------------------------------------- */
   const optionsArea = document.getElementById("optionsArea");
 
   task.options.forEach(opt => {
@@ -77,6 +93,9 @@ function showTask(task) {
     optionsArea.appendChild(img);
   });
 
+  /* ----------------------------------------------------
+     🔹 Drop-Zone Logik
+  ---------------------------------------------------- */
   const dropZone = document.getElementById("dropZone");
   dropZone.addEventListener("dragover", e => e.preventDefault());
   dropZone.addEventListener("drop", e => {
@@ -106,6 +125,7 @@ function showTask(task) {
     }, 1500);
   });
 }
+
 
 /* Aliase, damit main.js kompatibel bleibt */
 function initLevel1(cb) { startGameLevel(1, cb); }
