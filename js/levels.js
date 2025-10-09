@@ -151,19 +151,50 @@ setTimeout(async () => {
   if (current < level.tasks.length) {
     const nextTime = level.tasks[current].time;
 
-    // ⏳ Uhr sanft weiterdrehen bevor die neue Aufgabe geladen wird
-    await animateClockToTime(oldTime, nextTime, 1800);
+// Sanfte Bewegung beider Uhrzeiger – Dauer abhängig von Stundenunterschied
+function animateClockToTime(oldTime, newTime, baseDuration = 1800) {
+  const [oldH, oldM] = oldTime.split(":").map(Number);
+  const [newH, newM] = newTime.split(":").map(Number);
 
-    showTask(level.tasks[current]);
-  } else {
-    container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
-    const nextBtn = document.createElement("button");
-    nextBtn.textContent = "➡️ Weiter zum nächsten Level";
-    nextBtn.className = "next-level-btn";
-    nextBtn.addEventListener("click", () => window.onComplete(level.id + 1));
-    container.appendChild(nextBtn);
-  }
-}, 1200);
+  const hourHand = document.querySelector(".mini-stundenzeiger");
+  const minuteHand = document.querySelector(".mini-minutenzeiger");
+  if (!hourHand || !minuteHand) return Promise.resolve();
+
+  // Ausgangspositionen
+  const oldHourAngle = (oldH % 12) * 30 + oldM * 0.5;
+  const oldMinuteAngle = oldM * 6;
+
+  // Berechne Stunden-Differenz (immer vorwärts im Uhrzeigersinn)
+  let hourDeltaHours = (newH - oldH + 12) % 12;
+  if (hourDeltaHours === 0 && newTime !== oldTime) hourDeltaHours = 12; // z.B. 12→12
+
+  const hourDeltaAngle = hourDeltaHours * 30;
+  const newHourAngle = oldHourAngle + hourDeltaAngle;
+  const newMinuteAngle = oldMinuteAngle + 360; // Minutenzeiger immer volle Runde
+
+  // ⏱ Dauer skaliert mit Stunden-Differenz (mehr Stunden = länger)
+  const duration = Math.max(baseDuration, baseDuration * (hourDeltaHours / 2));
+  // Beispiel: 1h → ~1800ms, 4h → ~3600ms, 10h → ~9000ms
+
+  return new Promise(resolve => {
+    const start = performance.now();
+    function step(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; // easeInOut
+
+      const curHour = oldHourAngle + (newHourAngle - oldHourAngle) * eased;
+      const curMinute = oldMinuteAngle + (newMinuteAngle - oldMinuteAngle) * eased;
+
+      hourHand.style.transform = `translate(-50%, -50%) rotate(${curHour}deg)`;
+      minuteHand.style.transform = `translate(-50%, -50%) rotate(${curMinute}deg)`;
+
+      if (t < 1) requestAnimationFrame(step);
+      else resolve();
+    }
+    requestAnimationFrame(step);
+  });
+}
+
 
   });
 }
