@@ -235,8 +235,16 @@ function showLevelComplete(level, onComplete) {
   btn.textContent = `➡️ Weiter zu Level ${level.id + 1}`;
 
   btn.addEventListener("click", () => {
-    const cb = onComplete || window.onComplete;
-    if (typeof cb === "function") cb(level.id + 1);
+    // Bildschirm leeren
+    container.innerHTML = "";
+
+    // 🔧 Jetzt wirklich das nächste Level starten:
+    if (typeof initLevel1 === "function" && level.id + 1 === 1) initLevel1(showLevelComplete);
+    else if (typeof startLevel2 === "function" && level.id + 1 === 2) startLevel2(showLevelComplete);
+    else if (typeof initLevel3 === "function" && level.id + 1 === 3) initLevel3(showLevelComplete);
+    else {
+      container.innerHTML = `<h2>🎉 Alle Level abgeschlossen!</h2>`;
+    }
   });
 
   container.appendChild(btn);
