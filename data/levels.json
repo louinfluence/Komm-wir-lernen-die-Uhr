@@ -61,7 +61,29 @@
           "correct": "Abends"
         }
       ]
-    }
+    },
+    {
+  "id": 3,
+  "title": "Stell deine eigene Uhrzeit!",
+  "description": "Experimentiere mit der Uhr und finde heraus, wann du verschiedene Dinge am Tag machst.",
+  "type": "clockInput",
+  "questions": [
+    "Wann stehst du auf?",
+    "Wann frühstückst du?",
+    "Wann gehst du zur Schule?",
+    "Wann machst du Hausaufgaben?",
+    "Wann isst du zu Abend?",
+    "Wann gehst du schlafen?"
+  ],
+  "showFeedback": false,
+  "assets": {
+    "clockFace": "assets/images/Ziffernblatt.png",
+    "hourHand": "assets/images/Stundenzeiger.png",
+    "minuteHand": "assets/images/Minutenzeiger.png"
+  },
+  "timeRange": { "minHour": 0, "maxHour": 23 },
+  "background": "daynight" 
+}
   ]
 }
 
