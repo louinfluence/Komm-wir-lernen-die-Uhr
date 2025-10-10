@@ -41,7 +41,7 @@
       "description": "Wähle die richtige Tageszeit zu jedem Bild.",
       "tasks": [
         {
-          "image": "Fruehstueck.PNG",
+          "image": "Morgen.PNG",
           "options": ["Morgens", "Mittags", "Nachmittags", "Abends"],
           "correct": "Morgens"
         },
