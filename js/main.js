@@ -5,6 +5,14 @@
 window.addEventListener("DOMContentLoaded", () => {
   console.log("📋 main.js geladen und bereit.");
 
+   // Audio unlock 
+
+document.body.addEventListener("pointerdown", () => {
+  const unlock = new Audio("assets/sounds/erfolg.mp3");
+  unlock.play().then(a => unlock.pause()).catch(()=>{});
+}, { once: true });
+
+
   /* ---------------------------------------------------------
      🔹 Globale Variablen & Selektoren
   --------------------------------------------------------- */
