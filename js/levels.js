@@ -135,9 +135,8 @@ function showTask(task) {
               await animateClockToTime(oldTime, nextTime, 1800);
               showTask(level.tasks[current]);
             } else {
-              container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
-              await new Promise(res => setTimeout(res, 1500));
-              window.onComplete(level.id + 1);
+              showLevelComplete(level, window.onComplete);
+
             }
           }, 1000);
         }
@@ -174,12 +173,8 @@ function showTask(task) {
         await animateClockToTime(oldTime, nextTime, 1800);
         showTask(level.tasks[current]);
       } else {
-        container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
-        const nextBtn = document.createElement("button");
-        nextBtn.textContent = "➡️ Weiter zum nächsten Level";
-        nextBtn.className = "next-level-btn";
-        nextBtn.addEventListener("click", () => window.onComplete(level.id + 1));
-        container.appendChild(nextBtn);
+       showLevelComplete(level, window.onComplete);
+
       }
     }, 1200);
   });
@@ -224,6 +219,27 @@ function animateClockToTime(oldTime, newTime, baseDuration = 1800) {
     }
     requestAnimationFrame(step);
   });
+}
+// Einheitlicher Abschluss-Bildschirm für jedes Level
+function showLevelComplete(level, onComplete) {
+  const container = document.getElementById("gameContainer");
+
+  // Einheitlicher Inhalt
+  container.innerHTML = `
+    <h2>🎉 ${level.title} abgeschlossen!</h2>
+  `;
+
+  // Weiter-Button
+  const btn = document.createElement("button");
+  btn.className = "next-level-btn";
+  btn.textContent = `➡️ Weiter zu Level ${level.id + 1}`;
+
+  btn.addEventListener("click", () => {
+    const cb = onComplete || window.onComplete;
+    if (typeof cb === "function") cb(level.id + 1);
+  });
+
+  container.appendChild(btn);
 }
 
 /* =========================================================
@@ -283,9 +299,8 @@ async function startLevel2(onComplete) {
       if (current < level.tasks.length) {
         showTask2(level.tasks[current]);
       } else {
-        container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
-        await new Promise(r => setTimeout(r, 1500));
-        onComplete(level.id + 1); // direkt weiter zu Level 3
+      showLevelComplete(level, onComplete);
+
       }
     }, 1000);
   }
