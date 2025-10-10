@@ -108,7 +108,7 @@ function showTask(task) {
   if (hourHand) hourHand.style.transform = `translate(-50%, -50%) rotate(${hourAngle}deg)`;
   if (minuteHand) minuteHand.style.transform = `translate(-50%, -50%) rotate(${minuteAngle}deg)`;
 /* ----------------------------------------------------
-   🔹 Optionen rendern (optimiert für Touch)
+   🔹 Optionen rendern (echtes Drag & Drop + manuelles Touch-Drag für iPad)
 ---------------------------------------------------- */
 const optionsArea = document.getElementById("optionsArea");
 
@@ -122,23 +122,78 @@ shuffledOptions.forEach(opt => {
   img.draggable = true;
   img.className = "draggable-option";
 
-  // ✅ Desktop / Laptop Drag
+  // --- normales Drag für Desktop ---
   img.addEventListener("dragstart", e => {
     e.dataTransfer.setData("text/plain", opt);
   });
 
-  // ✅ Touch-Optimierung für iPad (keine lange Haltezeit)
+  // --- manuelles Touch-Drag für iPad ---
+  let touchMoveHandler, touchEndHandler;
   img.addEventListener("touchstart", e => {
-    e.preventDefault(); // verhindert Safari-Langdruck & Kontextmenü
-    const dt = new DataTransfer();
-    dt.setData("text/plain", opt);
-    const event = new DragEvent("dragstart", { dataTransfer: dt });
-    img.dispatchEvent(event);
+    e.preventDefault();
+    const touch = e.touches[0];
+    const startX = touch.clientX;
+    const startY = touch.clientY;
+    const clone = img.cloneNode(true);
+    clone.style.position = "fixed";
+    clone.style.pointerEvents = "none";
+    clone.style.width = img.offsetWidth + "px";
+    clone.style.height = img.offsetHeight + "px";
+    clone.style.opacity = "0.8";
+    clone.style.left = startX - img.offsetWidth / 2 + "px";
+    clone.style.top = startY - img.offsetHeight / 2 + "px";
+    clone.style.zIndex = "9999";
+    document.body.appendChild(clone);
+
+    touchMoveHandler = ev => {
+      const move = ev.touches[0];
+      clone.style.left = move.clientX - img.offsetWidth / 2 + "px";
+      clone.style.top = move.clientY - img.offsetHeight / 2 + "px";
+    };
+
+    touchEndHandler = ev => {
+      document.removeEventListener("touchmove", touchMoveHandler);
+      document.removeEventListener("touchend", touchEndHandler);
+      const end = ev.changedTouches[0];
+      const target = document.elementFromPoint(end.clientX, end.clientY);
+      clone.remove();
+
+      const dropZone = document.getElementById("dropZone");
+      if (target && dropZone.contains(target)) {
+        // „Manueller Drop“
+        if (opt === task.correct) {
+          dropZone.textContent = "✅ Richtig!";
+          dropZone.classList.add("correct");
+        } else {
+          dropZone.textContent = "❌ Falsch!";
+          dropZone.classList.add("wrong");
+        }
+
+        setTimeout(async () => {
+          const oldTime = task.time;
+          current++;
+          if (current < level.tasks.length) {
+            const nextTime = level.tasks[current].time;
+            await animateClockToTime(oldTime, nextTime, 1800);
+            showTask(level.tasks[current]);
+          } else {
+            container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
+            const nextBtn = document.createElement("button");
+            nextBtn.textContent = "➡️ Weiter zum nächsten Level";
+            nextBtn.className = "next-level-btn";
+            nextBtn.addEventListener("click", () => window.onComplete(level.id + 1));
+            container.appendChild(nextBtn);
+          }
+        }, 1000);
+      }
+    };
+
+    document.addEventListener("touchmove", touchMoveHandler, { passive: false });
+    document.addEventListener("touchend", touchEndHandler);
   }, { passive: false });
 
   optionsArea.appendChild(img);
 });
-
    
 /* ----------------------------------------------------
    🔹 Drop-Zone Logik
