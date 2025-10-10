@@ -12,10 +12,6 @@ document.body.addEventListener("pointerdown", () => {
   unlock.play().then(a => unlock.pause()).catch(()=>{});
 }, { once: true });
 
-case "clockInput":
-  initLevel(level);
-  break;
-
 
   /* ---------------------------------------------------------
      🔹 Globale Variablen & Selektoren
