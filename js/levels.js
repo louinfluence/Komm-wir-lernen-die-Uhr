@@ -280,3 +280,63 @@ function animateClockToTime(oldTime, newTime, baseDuration = 1800) {
 /* Aliase, damit main.js kompatibel bleibt */
 function initLevel1(cb) { startGameLevel(1, cb); }
 
+/* =========================================================
+   🕓 Level 2 – Tageszeit anhand eines Bildes erkennen
+   ========================================================= */
+async function startLevel2(onComplete) {
+  const container = document.getElementById("gameContainer");
+  container.innerHTML = "";
+
+  const levels = await loadLevels();
+  const level = levels.find(l => l.id === 2);
+  if (!level) return console.error("Level 2 nicht gefunden!");
+
+  let current = 0;
+
+  showTask2(level.tasks[current]);
+
+  function showTask2(task) {
+    container.innerHTML = `
+      <div class="task-block">
+        <div class="image-preview">
+          <img src="assets/images/${task.image}" alt="Situation" class="situation-img">
+        </div>
+        <div class="options-grid" id="optionsGrid"></div>
+      </div>
+    `;
+
+    const grid = document.getElementById("optionsGrid");
+    const shuffled = [...task.options].sort(() => Math.random() - 0.5);
+
+    shuffled.forEach(option => {
+      const btn = document.createElement("button");
+      btn.textContent = option;
+      btn.className = "option-btn";
+      btn.addEventListener("click", () => handleAnswer(option, task.correct, btn));
+      grid.appendChild(btn);
+    });
+  }
+
+  async function handleAnswer(selected, correct, btn) {
+    const buttons = document.querySelectorAll(".option-btn");
+    buttons.forEach(b => (b.disabled = true));
+
+    if (selected === correct) {
+      btn.classList.add("correct");
+    } else {
+      btn.classList.add("wrong");
+    }
+
+    setTimeout(async () => {
+      current++;
+      if (current < level.tasks.length) {
+        showTask2(level.tasks[current]);
+      } else {
+        container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
+        await new Promise(r => setTimeout(r, 1500));
+        onComplete(level.id + 1); // direkt weiter zu Level 3
+      }
+    }, 1000);
+  }
+}
+
