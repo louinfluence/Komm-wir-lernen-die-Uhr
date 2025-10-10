@@ -252,7 +252,62 @@ function showLevelComplete(level, onComplete) {
 
   container.appendChild(btn);
 }
+// --- LEVEL TYPE: CLOCK INPUT ---
+if (level.type === "clockInput") {
+  const container = document.getElementById("gameContainer");
+  container.innerHTML = `
+    <div class="clockInput-container">
+      <h2>${level.title}</h2>
+      <p id="clockQuestion">${level.questions[0]}</p>
 
+      <div class="clock-wrapper">
+        <img id="clockFace" src="${level.assets.clockFace}" alt="Ziffernblatt">
+        <img id="hourHand" src="${level.assets.hourHand}" alt="Stundenzeiger">
+        <img id="minuteHand" src="${level.assets.minuteHand}" alt="Minutenzeiger">
+      </div>
+
+      <div class="time-input">
+        <input id="hoursInput" type="number" min="${level.timeRange.minHour}" max="${level.timeRange.maxHour}" value="7"> :
+        <input id="minutesInput" type="number" min="0" max="59" value="0">
+      </div>
+
+      <button id="nextQuestionBtn">Nächste Frage</button>
+    </div>
+  `;
+
+  const hourInput = document.getElementById("hoursInput");
+  const minuteInput = document.getElementById("minutesInput");
+  const hourHand = document.getElementById("hourHand");
+  const minuteHand = document.getElementById("minuteHand");
+  const question = document.getElementById("clockQuestion");
+  const nextBtn = document.getElementById("nextQuestionBtn");
+
+  let currentQ = 0;
+
+  function updateClock() {
+    const hours = parseInt(hourInput.value) || 0;
+    const minutes = parseInt(minuteInput.value) || 0;
+    const hourAngle = (hours % 12) * 30 + minutes * 0.5;
+    const minuteAngle = minutes * 6;
+    hourHand.style.transform = `rotate(${hourAngle}deg)`;
+    minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
+
+    // Optional Hintergrundwechsel Tag/Nacht
+    if (level.background === "daynight") {
+      document.body.classList.toggle("night-mode", hours < 6 || hours >= 20);
+    }
+  }
+
+  hourInput.addEventListener("input", updateClock);
+  minuteInput.addEventListener("input", updateClock);
+
+  nextBtn.addEventListener("click", () => {
+    currentQ = (currentQ + 1) % level.questions.length;
+    question.textContent = level.questions[currentQ];
+  });
+
+  updateClock(); // initial render
+}
 /* =========================================================
    Aliase, damit main.js kompatibel bleibt
    ========================================================= */
