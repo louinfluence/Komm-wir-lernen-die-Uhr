@@ -107,9 +107,8 @@ function showTask(task) {
 
   if (hourHand) hourHand.style.transform = `translate(-50%, -50%) rotate(${hourAngle}deg)`;
   if (minuteHand) minuteHand.style.transform = `translate(-50%, -50%) rotate(${minuteAngle}deg)`;
-
 /* ----------------------------------------------------
-   🔹 Optionen rendern 
+   🔹 Optionen rendern (optimiert für Touch)
 ---------------------------------------------------- */
 const optionsArea = document.getElementById("optionsArea");
 
@@ -122,11 +121,24 @@ shuffledOptions.forEach(opt => {
   img.alt = opt.replace(".PNG", "");
   img.draggable = true;
   img.className = "draggable-option";
+
+  // ✅ Desktop / Laptop Drag
   img.addEventListener("dragstart", e => {
     e.dataTransfer.setData("text/plain", opt);
   });
+
+  // ✅ Touch-Optimierung für iPad (keine lange Haltezeit)
+  img.addEventListener("touchstart", e => {
+    e.preventDefault(); // verhindert Safari-Langdruck & Kontextmenü
+    const dt = new DataTransfer();
+    dt.setData("text/plain", opt);
+    const event = new DragEvent("dragstart", { dataTransfer: dt });
+    img.dispatchEvent(event);
+  }, { passive: false });
+
   optionsArea.appendChild(img);
 });
+
    
 /* ----------------------------------------------------
    🔹 Drop-Zone Logik
