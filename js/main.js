@@ -32,58 +32,65 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  /* ---------------------------------------------------------
-     🔹 Lernspiel: Levelsteuerung
-  --------------------------------------------------------- */
-  if (levelSelect) {
-    console.log("🎮 Lernspiel: Levelauswahl aktiv");
+/* ---------------------------------------------------------
+   🔹 Lernspiel: Levelsteuerung
+--------------------------------------------------------- */
+if (levelSelect) {
+  console.log("🎮 Lernspiel: Levelauswahl aktiv");
 
-    const delegate = (e) => {
-      const card = e.target.closest(".level-card");
-      if (!card || !container.contains(card)) return;
-      e.preventDefault();
-      const level = parseInt(card.dataset.level, 10);
-      startLevel(level);
-    };
+  const delegate = (e) => {
+    const card = e.target.closest(".level-card");
+    if (!card || !container.contains(card)) return;
+    e.preventDefault();
+    const level = parseInt(card.dataset.level, 10);
+    startLevel(level);
+  };
 
-    document.addEventListener("pointerup", delegate, { passive: false });
-    document.addEventListener("click", delegate);
+  document.addEventListener("pointerup", delegate, { passive: false });
+  document.addEventListener("click", delegate);
 
-    function startLevel(level) {
-      console.log("▶️ Starte Level:", level);
-      if (levelSelect) levelSelect.style.display = "none";
-    else if (level === 2 && typeof startLevel2 === "function") startLevel2(showNextButton);
+  function startLevel(level) {
+    console.log("▶️ Starte Level:", level);
+    if (levelSelect) levelSelect.style.display = "none";
 
-      if (level === 1 && typeof initLevel1 === "function") initLevel1(showNextButton);
-      else if (level === 2 && typeof initLevel2 === "function") initLevel2(showNextButton);
-      else if (level === 3 && typeof initLevel3 === "function") initLevel3(showNextButton);
-      else console.warn("⚠️ Level-Funktion fehlt oder wurde nicht geladen:", level);
+    // 🟢 Richtige Aufrufe der Level-Startfunktionen
+    if (level === 1 && typeof initLevel1 === "function") {
+      initLevel1(showNextButton);
+    } 
+    else if (level === 2 && typeof startLevel2 === "function") {
+      startLevel2(showNextButton);
+    } 
+    else if (level === 3 && typeof initLevel3 === "function") {
+      initLevel3(showNextButton);
+    } 
+    else {
+      console.warn("⚠️ Level-Funktion fehlt oder wurde nicht geladen:", level);
     }
-
-    function showNextButton(nextLevel) {
-      const btn = document.createElement("button");
-      btn.className = "next-level-btn";
-
-      if (nextLevel) {
-        btn.textContent = `➡️ Weiter zu Level ${nextLevel}`;
-        btn.addEventListener("click", () => {
-          btn.remove();
-          container.innerHTML = "";
-          if (nextLevel === 2 && typeof initLevel2 === "function") initLevel2(showNextButton);
-          else if (nextLevel === 3 && typeof initLevel3 === "function") initLevel3(showNextButton);
-        });
-      } else {
-        btn.textContent = "🎉 Alle Level geschafft!";
-        btn.disabled = true;
-      }
-
-      container.appendChild(btn);
-    }
-
-    window.__startLevel = (n) => startLevel(n);
   }
 
-  /* ---------------------------------------------------------
+  function showNextButton(nextLevel) {
+    const btn = document.createElement("button");
+    btn.className = "next-level-btn";
+
+    if (nextLevel) {
+      btn.textContent = `➡️ Weiter zu Level ${nextLevel}`;
+      btn.addEventListener("click", () => {
+        btn.remove();
+        container.innerHTML = "";
+        if (nextLevel === 2 && typeof startLevel2 === "function") startLevel2(showNextButton);
+        else if (nextLevel === 3 && typeof initLevel3 === "function") initLevel3(showNextButton);
+      });
+    } else {
+      btn.textContent = "🎉 Alle Level geschafft!";
+      btn.disabled = true;
+    }
+
+    container.appendChild(btn);
+  }
+
+  window.__startLevel = (n) => startLevel(n);
+} 
+   /* ---------------------------------------------------------
    🔹 Uhr-Seite: Interaktive Uhrsteuerung (wenn vorhanden)
   --------------------------------------------------------- */
   if (document.querySelector(".clock-container")) {
