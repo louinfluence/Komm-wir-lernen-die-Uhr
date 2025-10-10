@@ -52,6 +52,7 @@ window.addEventListener("DOMContentLoaded", () => {
     function startLevel(level) {
       console.log("▶️ Starte Level:", level);
       if (levelSelect) levelSelect.style.display = "none";
+    else if (level === 2 && typeof startLevel2 === "function") startLevel2(showNextButton);
 
       if (level === 1 && typeof initLevel1 === "function") initLevel1(showNextButton);
       else if (level === 2 && typeof initLevel2 === "function") initLevel2(showNextButton);
@@ -81,7 +82,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     window.__startLevel = (n) => startLevel(n);
   }
-   else if (level === 2 && typeof startLevel2 === "function") startLevel2(showNextButton);
 
   /* ---------------------------------------------------------
    🔹 Uhr-Seite: Interaktive Uhrsteuerung (wenn vorhanden)
