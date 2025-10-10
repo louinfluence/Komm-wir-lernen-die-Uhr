@@ -122,7 +122,7 @@ function showTask(task) {
           if (opt === task.correct) {
             dropZone.textContent = "✅ Richtig!";
             dropZone.classList.add("correct");
-            const successSound = new Audio("assets/sounds/erfolg.mp3");
+         const successSound = new Audio("assets/sounds/erfolg.mp3");
             successSound.play().catch(() => {});
 
           } else {
