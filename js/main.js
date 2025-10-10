@@ -81,6 +81,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     window.__startLevel = (n) => startLevel(n);
   }
+   else if (level === 2 && typeof startLevel2 === "function") startLevel2(showNextButton);
 
   /* ---------------------------------------------------------
    🔹 Uhr-Seite: Interaktive Uhrsteuerung (wenn vorhanden)
