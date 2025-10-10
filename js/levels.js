@@ -248,9 +248,6 @@ function animateClockToTime(oldTime, newTime, baseDuration = 1800) {
   });
 }
 
-/* Aliase, damit main.js kompatibel bleibt */
-function initLevel1(cb) { startGameLevel(1, cb); }
-
 /* =========================================================
    🕓 Level 2 – Tageszeit anhand eines Bildes erkennen
    ========================================================= */
@@ -314,4 +311,7 @@ async function startLevel2(onComplete) {
       }
     }, 1000);
   }
-    function initLevel2(cb) { startLevel2(cb); }
+}
+/* ✅ Aliase, damit main.js kompatibel bleibt */
+function initLevel1(cb) { startGameLevel(1, cb); }
+function initLevel2(cb) { startLevel2(cb); }
