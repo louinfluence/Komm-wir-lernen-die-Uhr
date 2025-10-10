@@ -6,9 +6,9 @@
       "description": "Ordne die passende Tageszeit zu jeder Uhrzeit.",
       "tasks": [
         {
-          "text": "7:00 Uhr – Frühstückszeit",
+          "text": "7:00 Uhr",
           "time": "7:00",
-          "label": "Morgen – Frühstückszeit",
+          "label": "Morges - Frühstückszeit",
           "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"],
           "correct": "Morgen.PNG"
         },
@@ -20,14 +20,14 @@
           "correct": "Schule.PNG"
         },
         {
-          "text": "16:00 Uhr – Freizeit",
+          "text": "16:00 Uhr oder auch 4:00 Uhr",
           "time": "16:00",
-          "label": "Nachmittag – Hobby & Freizeit",
+          "label": "Nachmittags – Hobby & Freizeit",
           "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"],
           "correct": "Hobby.PNG"
         },
         {
-          "text": "21:00 Uhr – Schlafenszeit",
+          "text": "21:00 Uhr oder auch 9:00 Uhr",
           "time": "21:00",
           "label": "Abends – Schlafenszeit",
           "options": ["Morgen.PNG", "Schule.PNG", "Hobby.PNG", "Schlaf.PNG"],
