@@ -247,4 +247,10 @@ h1, h2, h3 {
   transition: transform 0.2s ease-out;
 }
 
+.draggable-option {
+  touch-action: none;          /* verhindert Ghost-Scrolls beim Drag */
+  -webkit-user-drag: element;  /* erlaubt direktes Ziehen in Safari */
+  user-select: none;           /* verhindert Textauswahl */
+}
+
 
