@@ -248,9 +248,9 @@ h1, h2, h3 {
 }
 
 .draggable-option {
-  touch-action: none;          /* verhindert Ghost-Scrolls beim Drag */
-  -webkit-user-drag: element;  /* erlaubt direktes Ziehen in Safari */
-  user-select: none;           /* verhindert Textauswahl */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: grab;
 }
-
 
