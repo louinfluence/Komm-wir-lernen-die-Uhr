@@ -259,8 +259,13 @@ async function startLevel2(onComplete) {
   container.innerHTML = "";
 
   const levels = await loadLevels();
-  level = levels.find(l => l.id === 2);
-  if (!level) return console.error("Level 2 nicht gefunden!");
+  level = levels.find(l => l.id === 2); // ✅ kein "const" mehr!
+
+  if (!level || !level.tasks) {
+    console.error("Level 2 nicht gefunden oder fehlerhaft:", level);
+    container.innerHTML = "<p>❌ Fehler beim Laden des Levels.</p>";
+    return;
+  }
 
   let current = 0;
 
@@ -309,4 +314,4 @@ async function startLevel2(onComplete) {
       }
     }, 1000);
   }
-   function initLevel2(cb) { startLevel2(cb); }
+    function initLevel2(cb) { startLevel2(cb); }
