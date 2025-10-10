@@ -254,3 +254,56 @@ h1, h2, h3 {
   cursor: grab;
 }
 
+/* =========================================================
+   🕓 Level 2 – Buttons und Bilddarstellung
+   ========================================================= */
+.image-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.situation-img {
+  width: 220px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  background: #fff;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.option-btn {
+  padding: 0.8rem 1rem;
+  font-size: 1.2rem;
+  border: 2px solid var(--menu-border);
+  border-radius: 10px;
+  background: var(--menu-bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.option-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.option-btn.correct {
+  background: #4caf50;
+  color: white;
+  border-color: #388e3c;
+}
+
+.option-btn.wrong {
+  background: #e53935;
+  color: white;
+  border-color: #b71c1c;
+}
+
