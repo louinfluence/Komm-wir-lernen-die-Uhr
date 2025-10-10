@@ -1,3 +1,22 @@
+// 💡 Sichtbare Debug-Ausgabe (hilft auf dem iPad ohne Konsole)
+function debug(msg, color = "#1565c0") {
+  const box = document.createElement("div");
+  box.style.background = "#fff9c4";
+  box.style.border = `2px solid ${color}`;
+  box.style.color = "#000";
+  box.style.padding = "10px";
+  box.style.borderRadius = "10px";
+  box.style.margin = "10px";
+  box.style.fontFamily = "monospace";
+  box.style.fontSize = "0.9rem";
+  box.style.position = "relative";
+  box.style.zIndex = "99999";
+  box.textContent = msg;
+  document.body.appendChild(box);
+  console.log(msg);
+}
+
+
 /* =========================================================
    LEVELS – JSON-basiertes Lernspiel mit Drag & Drop
    ========================================================= */
