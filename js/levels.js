@@ -310,4 +310,3 @@ async function startLevel2(onComplete) {
     }, 1000);
   }
    function initLevel2(cb) { startLevel2(cb); }
-}
