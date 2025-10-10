@@ -177,13 +177,11 @@ shuffledOptions.forEach(opt => {
             await animateClockToTime(oldTime, nextTime, 1800);
             showTask(level.tasks[current]);
           } else {
-            container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
-            const nextBtn = document.createElement("button");
-            nextBtn.textContent = "➡️ Weiter zum nächsten Level";
-            nextBtn.className = "next-level-btn";
-            nextBtn.addEventListener("click", () => window.onComplete(level.id + 1));
-            container.appendChild(nextBtn);
-          }
+         // 🎉 Level abgeschlossen – automatisch weiter
+        container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
+        await new Promise(res => setTimeout(res, 1500)); // kurzer Moment zum Lesen
+        window.onComplete(level.id + 1); // direkt nächstes Level starten
+         }
         }, 1000);
       }
     };
