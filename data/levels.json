@@ -34,33 +34,34 @@
           "correct": "Schlaf.PNG"
         }
       ]
-    }
-    {
-  "id": 2,
-  "title": "Tageszeiten zu Situationen erkennen",
-  "description": "Wähle die richtige Tageszeit zu jedem Bild.",
-  "tasks": [
-    {
-      "image": "Fruehstueck.PNG",
-      "options": ["Morgens", "Mittags", "Nachmittags", "Abends"],
-      "correct": "Morgens"
     },
     {
-      "image": "Schule.PNG",
-      "options": ["Morgens", "Mittags", "Nachmittags", "Abends"],
-      "correct": "Vormittags"
-    },
-    {
-      "image": "Hobby.PNG",
-      "options": ["Morgens", "Mittags", "Nachmittags", "Abends"],
-      "correct": "Nachmittags"
-    },
-    {
-      "image": "Schlaf.PNG",
-      "options": ["Morgens", "Mittags", "Nachmittags", "Abends"],
-      "correct": "Abends"
+      "id": 2,
+      "title": "Tageszeiten zu Situationen erkennen",
+      "description": "Wähle die richtige Tageszeit zu jedem Bild.",
+      "tasks": [
+        {
+          "image": "Fruehstueck.PNG",
+          "options": ["Morgens", "Mittags", "Nachmittags", "Abends"],
+          "correct": "Morgens"
+        },
+        {
+          "image": "Schule.PNG",
+          "options": ["Morgens", "Mittags", "Nachmittags", "Abends"],
+          "correct": "Vormittags"
+        },
+        {
+          "image": "Hobby.PNG",
+          "options": ["Morgens", "Mittags", "Nachmittags", "Abends"],
+          "correct": "Nachmittags"
+        },
+        {
+          "image": "Schlaf.PNG",
+          "options": ["Morgens", "Mittags", "Nachmittags", "Abends"],
+          "correct": "Abends"
+        }
+      ]
     }
   ]
 }
-  ]
-}
+
