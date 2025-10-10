@@ -259,7 +259,7 @@ async function startLevel2(onComplete) {
   container.innerHTML = "";
 
   const levels = await loadLevels();
-  const level = levels.find(l => l.id === 2);
+  level = levels.find(l => l.id === 2);
   if (!level) return console.error("Level 2 nicht gefunden!");
 
   let current = 0;
