@@ -38,38 +38,6 @@ async function startGameLevel(levelId, onComplete) {
   window.onComplete = onComplete;
 }
 
-// Sanfte Bewegung der Uhrzeiger von alter zu neuer Zeit
-function animateClockToTime(oldTime, newTime, duration = 1000) {
-  const [oldH, oldM] = oldTime.split(":").map(Number);
-  const [newH, newM] = newTime.split(":").map(Number);
-
-  const oldHourAngle = (oldH % 12) * 30 + oldM * 0.5;
-  const newHourAngle = (newH % 12) * 30 + newM * 0.5;
-  const oldMinuteAngle = oldM * 6;
-  const newMinuteAngle = newM * 6;
-
-  const hourHand = document.querySelector(".mini-stundenzeiger");
-  const minuteHand = document.querySelector(".mini-minutenzeiger");
-
-  if (!hourHand || !minuteHand) return Promise.resolve();
-
-  return new Promise(resolve => {
-    const start = performance.now();
-    function step(now) {
-      const t = Math.min((now - start) / duration, 1); // 0→1
-      const eased = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;    // easeInOut
-      const curH = oldHourAngle + (newHourAngle - oldHourAngle) * eased;
-      const curM = oldMinuteAngle + (newMinuteAngle - oldMinuteAngle) * eased;
-      hourHand.style.transform = `translate(-50%, -50%) rotate(${curH}deg)`;
-      minuteHand.style.transform = `translate(-50%, -50%) rotate(${curM}deg)`;
-      if (t < 1) requestAnimationFrame(step);
-      else resolve();
-    }
-    requestAnimationFrame(step);
-  });
-}
-
-
 /* =========================================================
    🧩 Einzelne Aufgaben anzeigen & prüfen
    ========================================================= */
@@ -231,9 +199,12 @@ dropZone.addEventListener("drop", async e => {
       container.appendChild(nextBtn);
     }
   }, 1200);
-}); 
-}
-// Sanfte Bewegung beider Uhrzeiger – Dauer abhängig von Stundenunterschied
+ }); 
+}  // 👈 Ende showTask()
+
+/* =========================================================
+   Sanfte Bewegung beider Uhrzeiger – Dauer abhängig von Stundenunterschied
+   ========================================================= */
 function animateClockToTime(oldTime, newTime, baseDuration = 1800) {
   const [oldH, oldM] = oldTime.split(":").map(Number);
   const [newH, newM] = newTime.split(":").map(Number);
