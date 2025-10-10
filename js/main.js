@@ -46,6 +46,7 @@ if (levelSelect) {
     startLevel(level);
   };
 
+  // Events für Klick oder Touch
   document.addEventListener("pointerup", delegate, { passive: false });
   document.addEventListener("click", delegate);
 
@@ -53,7 +54,7 @@ if (levelSelect) {
     console.log("▶️ Starte Level:", level);
     if (levelSelect) levelSelect.style.display = "none";
 
-    // 🟢 Richtige Aufrufe der Level-Startfunktionen
+    // 🟢 Level-Aufrufe nach Nummer
     if (level === 1 && typeof initLevel1 === "function") {
       initLevel1(showNextButton);
     } 
@@ -68,18 +69,14 @@ if (levelSelect) {
     }
   }
 
+  // 🟣 Wird nur genutzt, falls Level explizit einen Weiter-Button anzeigen will
   function showNextButton(nextLevel) {
     const btn = document.createElement("button");
     btn.className = "next-level-btn";
 
     if (nextLevel) {
       btn.textContent = `➡️ Weiter zu Level ${nextLevel}`;
-      btn.addEventListener("click", () => {
-        btn.remove();
-        container.innerHTML = "";
-        if (nextLevel === 2 && typeof startLevel2 === "function") startLevel2(showNextButton);
-        else if (nextLevel === 3 && typeof initLevel3 === "function") initLevel3(showNextButton);
-      });
+      btn.addEventListener("click", () => __startLevel(nextLevel));
     } else {
       btn.textContent = "🎉 Alle Level geschafft!";
       btn.disabled = true;
@@ -88,8 +85,9 @@ if (levelSelect) {
     container.appendChild(btn);
   }
 
+  // Ermöglicht globalen Zugriff auf Levelstart (z. B. von Level.js aus)
   window.__startLevel = (n) => startLevel(n);
-} 
+}
    /* ---------------------------------------------------------
    🔹 Uhr-Seite: Interaktive Uhrsteuerung (wenn vorhanden)
   --------------------------------------------------------- */
