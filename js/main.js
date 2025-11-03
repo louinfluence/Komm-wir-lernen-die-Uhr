@@ -7,47 +7,53 @@ window.addEventListener("DOMContentLoaded", () => {
 
    // Audio unlock 
 
-// === Erfolgston zentral vorbereiten (ohne Autoplay) ===
-(function setupSuccessSFX() {
-  const src = 'assets/sounds/erfolg.mp3'; // Pfad: exakt wie im Projekt (Groß-/Kleinschreibung!)
-  const audio = new Audio(src);
-  audio.preload = 'auto';
-  let unlocked = false;
+// === Zentrale SFX: success + wrong, mit globalem Event-Listener ===
+(function setupSFX() {
+  if (window.sfx && window.sfx.__ready) return; // already set
 
-  // iOS/Autoplay-Freigabe nach erster User-Geste
+  const makeAudio = (src) => {
+    const a = new Audio(src);
+    a.preload = 'auto';
+    return a;
+  };
+
+  const success = makeAudio('assets/sounds/erfolg.mp3');
+  const wrong   = makeAudio('assets/sounds/wrong.mp3'); // Platzhalter-Datei, kann leer sein
+
+  let unlocked = false;
   const unlock = () => {
-    // kurzes stummes Play/Stop → Browser „erlaubt“ danach Audio
-    audio.muted = true;
-    audio.play()
-      .then(() => {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.muted = false;
-        unlocked = true;
-      })
-      .catch(() => {/* ignorieren – nächster Tap versucht erneut */})
-      .finally(() => {
-        window.removeEventListener('pointerdown', unlock);
-        window.removeEventListener('keydown', unlock);
-      });
+    // beide einmal „stumm“ unlocken
+    const tryUnlock = (a) => a?.play().then(() => { a.pause(); a.currentTime = 0; }).catch(()=>{});
+    success.muted = true; wrong.muted = true;
+    Promise.all([tryUnlock(success), tryUnlock(wrong)]).finally(() => {
+      success.muted = false; wrong.muted = false;
+      unlocked = true;
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+    });
   };
   window.addEventListener('pointerdown', unlock, { once: true });
   window.addEventListener('keydown',   unlock, { once: true });
 
-  // Globale, überall aufrufbare Helper-Funktion – spielt nur bei Bedarf
-  window.sfx = window.sfx || {};
-  window.sfx.playSuccess = async function() {
-    try {
-      // Wenn noch nicht „unlocked“, still abbrechen (kein Autoplay beim Laden!)
-      if (!unlocked) return;
-      audio.pause();
-      audio.currentTime = 0;   // immer von vorne
-      await audio.play();
-    } catch (e) {
-      // z. B. ohne vorausgehende Geste: einfach leise ignorieren
-      // console.debug('playSuccess blocked:', e?.message || e);
-    }
+  // kleine Schutzbremse (Throttling), falls Events doppelt feuern
+  let lastAt = 0;
+  async function play(a) {
+    if (!unlocked || !a) return;
+    const now = performance.now();
+    if (now - lastAt < 120) return; // 120ms debounce
+    lastAt = now;
+    try { a.pause(); a.currentTime = 0; await a.play(); } catch {}
+  }
+
+  window.sfx = {
+    success: () => play(success),
+    wrong:   () => play(wrong),
+    __ready: true
   };
+
+  // 🔊 Globale Event-Hooks: Alle Level können nur Events dispatchen.
+  document.addEventListener('answer:correct', () => window.sfx.success());
+  document.addEventListener('answer:wrong',   () => window.sfx.wrong());
 })();
 
   /* ---------------------------------------------------------
