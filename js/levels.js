@@ -9,12 +9,18 @@ let current = 0;
 /* ---------------------------------------------------------
    🔊 Zentraler Feedback-Helfer
    - Triggert globale Sound-Events, die in main.js abgefangen werden.
-   - So spielt bei jeder richtigen/falschen Antwort automatisch
-     der passende Sound, ohne dass hier Audio-Code steht.
+   - Kein Audio-Code in Level-Logik nötig.
 --------------------------------------------------------- */
 function reportAnswer(isCorrect) {
   const evt = new CustomEvent(isCorrect ? "answer:correct" : "answer:wrong");
   document.dispatchEvent(evt);
+}
+
+// Lädt Leveldaten aus der JSON-Datei
+async function loadLevels() {
+  const res = await fetch("data/levels.json");
+  const data = await res.json();
+  return data.levels;
 }
 
 /* =========================================================
@@ -42,7 +48,7 @@ async function startGameLevel(levelId, onComplete) {
 }
 
 /* =========================================================
-   🧩 Einzelne Aufgaben anzeigen & prüfen
+   🧩 Einzelne Aufgaben anzeigen & prüfen (Level 1)
    ========================================================= */
 function showTask(task) {
   const container = document.getElementById("gameContainer");
@@ -90,7 +96,7 @@ function showTask(task) {
     img.draggable = true;
     img.className = "draggable-option";
 
-    // normales Drag & Drop
+    // normales Drag & Drop (Desktop)
     img.addEventListener("dragstart", e => {
       e.dataTransfer.setData("text/plain", opt);
     });
@@ -130,16 +136,15 @@ function showTask(task) {
             dropZone.textContent = "✅ Richtig!";
             dropZone.classList.add("correct");
             if (!task.__scored) {
-              task.__scored = true;
-              reportAnswer(true);   // zentraler Event -> Erfolgston
+              task.__scored = true;               // Mehrfach-Trigger vermeiden
+              reportAnswer(true);                  // zentraler Event -> Erfolgston
             }
           } else {
             dropZone.textContent = "❌ Falsch!";
             dropZone.classList.add("wrong");
-            reportAnswer(false);    // zentraler Event -> Fehlerton
+            reportAnswer(false);                   // zentraler Event -> Fehlerton
           }
 
-          // Nächste Aufgabe laden
           setTimeout(async () => {
             const oldTime = task.time;
             current++;
@@ -181,7 +186,6 @@ function showTask(task) {
       reportAnswer(false);    // zentraler Fehlerton
     }
 
-    // Nächste Aufgabe
     setTimeout(async () => {
       const oldTime = task.time;
       current++;
@@ -262,10 +266,73 @@ function showLevelComplete(level, onComplete) {
 }
 
 /* =========================================================
-   Level 1 & 2 Aliase (unverändert)
+   🕓 Level 2 – Tageszeit anhand eines Bildes erkennen
+   ========================================================= */
+async function startLevel2(onComplete) {
+  const container = document.getElementById("gameContainer");
+  container.innerHTML = "";
+
+  const levels = await loadLevels();
+  level = levels.find(l => l.id === 2);
+  if (!level || !level.tasks) {
+    console.error("Level 2 nicht gefunden oder fehlerhaft:", level);
+    container.innerHTML = "<p>❌ Fehler beim Laden des Levels.</p>";
+    return;
+  }
+
+  let current = 0;
+  showTask2(level.tasks[current]);
+
+  function showTask2(task) {
+    container.innerHTML = `
+      <div class="task-block">
+        <div class="image-preview">
+          <img src="assets/images/${task.image}" alt="Situation" class="situation-img">
+        </div>
+        <div class="options-grid" id="optionsGrid"></div>
+      </div>
+    `;
+
+    const grid = document.getElementById("optionsGrid");
+    const shuffled = [...task.options].sort(() => Math.random() - 0.5);
+
+    shuffled.forEach(option => {
+      const btn = document.createElement("button");
+      btn.textContent = option;
+      btn.className = "option-btn";
+      btn.addEventListener("click", () => handleAnswer(option, task.correct, btn));
+      grid.appendChild(btn);
+    });
+  }
+
+  async function handleAnswer(selected, correct, btn) {
+    const buttons = document.querySelectorAll(".option-btn");
+    buttons.forEach(b => (b.disabled = true));
+
+    if (selected === correct) {
+      btn.classList.add("correct");
+      reportAnswer(true);
+    } else {
+      btn.classList.add("wrong");
+      reportAnswer(false);
+    }
+
+    setTimeout(async () => {
+      current++;
+      if (current < level.tasks.length) {
+        showTask2(level.tasks[current]);
+      } else {
+        showLevelComplete(level, onComplete);
+      }
+    }, 1000);
+  }
+}
+
+/* =========================================================
+   Aliase, damit main.js kompatibel bleibt
    ========================================================= */
 function initLevel1(cb) { startGameLevel(1, cb); }
-async function startLevel2(onComplete) {
-  // ... (dein Level 2-Code bleibt unverändert)
-}
 function initLevel2(cb) { startLevel2(cb); }
+
+// ⚠️ WICHTIG: KEIN Top-Level-Block für Level 3 hier.
+// initLevel3(cb) wird später implementiert, wenn Level 3 genutzt wird.
