@@ -127,7 +127,7 @@ function showTask(task) {
   if (!task.__scored) {
     task.__scored = true;               // Mehrfach-Trigger vermeiden
     if (window.sfx?.playSuccess) window.sfx.playSuccess();
-  
+  }
         
         } else {
             dropZone.textContent = "❌ Falsch!";
