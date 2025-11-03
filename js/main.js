@@ -7,11 +7,48 @@ window.addEventListener("DOMContentLoaded", () => {
 
    // Audio unlock 
 
-document.body.addEventListener("pointerdown", () => {
-  const unlock = new Audio("assets/sounds/erfolg.mp3");
-  unlock.play().then(a => unlock.pause()).catch(()=>{});
-}, { once: true });
+// === Erfolgston zentral vorbereiten (ohne Autoplay) ===
+(function setupSuccessSFX() {
+  const src = 'assets/sounds/erfolg.mp3'; // Pfad: exakt wie im Projekt (Groß-/Kleinschreibung!)
+  const audio = new Audio(src);
+  audio.preload = 'auto';
+  let unlocked = false;
 
+  // iOS/Autoplay-Freigabe nach erster User-Geste
+  const unlock = () => {
+    // kurzes stummes Play/Stop → Browser „erlaubt“ danach Audio
+    audio.muted = true;
+    audio.play()
+      .then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.muted = false;
+        unlocked = true;
+      })
+      .catch(() => {/* ignorieren – nächster Tap versucht erneut */})
+      .finally(() => {
+        window.removeEventListener('pointerdown', unlock);
+        window.removeEventListener('keydown', unlock);
+      });
+  };
+  window.addEventListener('pointerdown', unlock, { once: true });
+  window.addEventListener('keydown',   unlock, { once: true });
+
+  // Globale, überall aufrufbare Helper-Funktion – spielt nur bei Bedarf
+  window.sfx = window.sfx || {};
+  window.sfx.playSuccess = async function() {
+    try {
+      // Wenn noch nicht „unlocked“, still abbrechen (kein Autoplay beim Laden!)
+      if (!unlocked) return;
+      audio.pause();
+      audio.currentTime = 0;   // immer von vorne
+      await audio.play();
+    } catch (e) {
+      // z. B. ohne vorausgehende Geste: einfach leise ignorieren
+      // console.debug('playSuccess blocked:', e?.message || e);
+    }
+  };
+})();
 
   /* ---------------------------------------------------------
      🔹 Globale Variablen & Selektoren
