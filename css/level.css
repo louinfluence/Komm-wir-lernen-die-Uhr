@@ -220,6 +220,7 @@ h1, h2, h3 {
 }
 
 .mini-ziffernblatt {
+  filter: brightness(1.2);
   width: 100%;
   height: auto;
 }
