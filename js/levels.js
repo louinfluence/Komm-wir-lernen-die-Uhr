@@ -61,6 +61,8 @@ function showTask(task) {
       <div class="options-area" id="optionsArea"></div>
     </div>
   `;
+  
+  task.__scored = false;
 
   // 🕒 Zeigerstellung
   const [hours, minutes] = task.time.split(":").map(Number);
@@ -120,12 +122,14 @@ function showTask(task) {
         const dropZone = document.getElementById("dropZone");
         if (target && dropZone.contains(target)) {
           if (opt === task.correct) {
-            dropZone.textContent = "✅ Richtig!";
-            dropZone.classList.add("correct");
-         const successSound = new Audio("assets/sounds/erfolg.mp3");
-            successSound.play().catch(() => {});
-
-          } else {
+  dropZone.textContent = "✅ Richtig!";
+  dropZone.classList.add("correct");
+  if (!task.__scored) {
+    task.__scored = true;               // Mehrfach-Trigger vermeiden
+    if (window.sfx?.playSuccess) window.sfx.playSuccess();
+  
+        
+        } else {
             dropZone.textContent = "❌ Falsch!";
             dropZone.classList.add("wrong");
           }
@@ -159,13 +163,17 @@ function showTask(task) {
     e.preventDefault();
     const selected = e.dataTransfer.getData("text/plain");
 
-    if (selected === task.correct) {
-      dropZone.textContent = "✅ Richtig!";
-      dropZone.classList.add("correct");
-    } else {
-      dropZone.textContent = "❌ Falsch!";
-      dropZone.classList.add("wrong");
-    }
+  if (selected === task.correct) {
+  dropZone.textContent = "✅ Richtig!";
+  dropZone.classList.add("correct");
+  if (!task.__scored) {
+    task.__scored = true;
+    if (window.sfx?.playSuccess) window.sfx.playSuccess();
+  }
+} else {
+  dropZone.textContent = "❌ Falsch!";
+  dropZone.classList.add("wrong");
+}
 
     setTimeout(async () => {
       const oldTime = task.time;
