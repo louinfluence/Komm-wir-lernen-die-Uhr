@@ -48,7 +48,7 @@
         {
           "image": "Schule.PNG",
           "options": ["Morgens", "Mittags", "Nachmittags", "Abends"],
-          "correct": "Vormittags"
+          "correct": "Mittags"
         },
         {
           "image": "Hobby.PNG",
