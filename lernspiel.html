@@ -63,11 +63,21 @@
   <div class="video-modal__dialog" role="dialog" aria-modal="true" aria-label="Lernvideo: Volle Stunde">
     <button class="video-modal__close" data-close aria-label="Schließen">×</button>
 
-    <video id="lessonVideo" controls playsinline preload="metadata"
-           poster="assets/images/video_poster.png" width="960" height="540">
-      <source src="assets/videos/volle_stunde.mp4" type="video/mp4">
-      Dein Browser unterstützt das Video-Tag nicht.
-    </video>
+  <div class="video-frame">
+  <!-- Ladebalken -->
+  <div class="video-loader" id="videoLoader">
+    <div class="loader-bar" id="loaderBar"></div>
+    <p>Lernvideo wird geladen …</p>
+  </div>
+
+  <!-- Video selbst -->
+  <video id="lessonVideo" controls playsinline preload="metadata"
+         poster="assets/images/video_poster.png" width="960" height="540">
+    <source src="assets/videos/volle_stunde.mp4" type="video/mp4">
+    Dein Browser unterstützt das Video-Tag nicht.
+  </video>
+</div>
+
 
     <div class="video-modal__actions">
       <button id="markWatched" class="btn-done">Als gesehen markieren</button>
@@ -168,6 +178,21 @@
   doneBtn?.addEventListener('click', () => { markSeen(); hide(); });
   video?.addEventListener('ended', markSeen);
 })();
+      // === Video-Loader ===
+  const loader = document.getElementById('videoLoader');
+  const hideLoader = () => {
+    if (loader) loader.classList.add('hidden');
+  };
+
+  // Video zeigt "geladen" an, sobald es ready ist
+  if (video) {
+    video.addEventListener('canplaythrough', hideLoader, { once: true });
+    video.addEventListener('loadeddata', hideLoader, { once: true });
+    video.addEventListener('error', () => {
+      if (loader) loader.innerHTML = "<p>⚠️ Fehler beim Laden des Videos.</p>";
+    });
+  }
+
 </script>
 
 
