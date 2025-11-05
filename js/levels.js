@@ -411,9 +411,18 @@ async function initLevel3(onComplete) {
   }
 
   function makeEchoSentence(q, hh, mm) {
-    const core = q.replace(/^Wann\s+/i, "").replace(/\?$/, "");
-    return `Du ${core} um ${pad2(hh)}:${pad2(mm)} Uhr.`;
-  }
+  // Frage bereinigen
+  let core = q.trim().replace(/\?$/, "");
+
+  // führendes "Wann " und ggf. doppeltes "du " entfernen
+  core = core.replace(/^Wann\s+/i, "").replace(/^du\s+/i, "");
+
+  // kleine Umformulierungen
+  core = core.replace(/zu Abend/gi, "am Abend");   // „zu Abend“ → „am Abend“
+  core = core.replace(/zur schule/gi, "zur Schule");
+
+  return `Du ${core} um ${String(hh).padStart(2,"0")}:${String(mm).padStart(2,"0")} Uhr.`;
+}
 
   function updateFromPicker() {
     if (!timeInput.value) return;
