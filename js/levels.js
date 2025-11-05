@@ -362,7 +362,7 @@ async function initLevel3(onComplete) {
       <p id="clockQuestion"></p>
 
       <div class="clock-wrapper">
-        <img id="clockFace"   src="${level.assets.clockFace}"  alt="Ziffernblatt">
+        <img id="clockFace"   src="${level.assets.clockFace}"  alt="Ziffernblatt 24 h">
         <img id="hourHand"    src="${level.assets.hourHand}"   alt="Stundenzeiger">
         <img id="minuteHand"  src="${level.assets.minuteHand}" alt="Minutenzeiger">
       </div>
