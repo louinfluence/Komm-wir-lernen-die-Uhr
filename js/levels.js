@@ -398,46 +398,69 @@ async function initLevel3(onComplete) {
   const nextBtn    = document.getElementById("nextQuestionBtn");
   const progressEl = document.getElementById("progressInfo");
 
-  const pad2 = n => String(n).padStart(2, "0");
+  // ---- Live-Update für iOS/Keyboard ----
+const pad2 = n => String(n).padStart(2, "0");
 
-  function setClock(h, m) {
-    const hourAngle   = (h % 12) * 30 + m * 0.5;
-    const minuteAngle = m * 6;
-    hourHand.style.transform   = `rotate(${hourAngle}deg)`;
-    minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
-    if (level.background === "daynight") {
-      document.body.classList.toggle("night-mode", h < 6 || h >= 20);
-    }
+function setClock(h, m) {
+  const hourAngle   = (h % 12) * 30 + m * 0.5;
+  const minuteAngle = m * 6;
+  hourHand.style.transform   = `rotate(${hourAngle}deg)`;
+  minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
+  if (level.background === "daynight") {
+    document.body.classList.toggle("night-mode", h < 6 || h >= 20);
   }
-
-  function makeEchoSentence(q, hh, mm) {
-  // Frage bereinigen
-  let core = q.trim().replace(/\?$/, "");
-
-  // führendes "Wann " und ggf. doppeltes "du " entfernen
-  core = core.replace(/^Wann\s+/i, "").replace(/^du\s+/i, "");
-
-  // kleine Umformulierungen
-  core = core.replace(/zu Abend/gi, "am Abend");   // „zu Abend“ → „am Abend“
-  core = core.replace(/zur schule/gi, "zur Schule");
-
-  return `Du ${core} um ${String(hh).padStart(2,"0")}:${String(mm).padStart(2,"0")} Uhr.`;
 }
 
-  function updateFromPicker() {
-    if (!timeInput.value) return;
-    const [hh, mm] = timeInput.value.split(":").map(v => parseInt(v, 10));
-    setClock(hh, mm);
-    echoEl.textContent = makeEchoSentence(questionEl.textContent, hh, mm);
-  }
+function makeEchoSentence(q, hh, mm) {
+  let core = q.trim().replace(/\?$/, "");
+  core = core.replace(/^Wann\s+/i, "").replace(/^du\s+/i, "");
+  core = core.replace(/zu Abend/gi, "am Abend").replace(/zur schule/gi, "zur Schule");
+  return `Du ${core} um ${pad2(hh)}:${pad2(mm)} Uhr.`;
+}
 
-  function renderStep() {
-    const qIdx = picked[step];
-    questionEl.textContent = level.questions[qIdx];
-    progressEl.textContent = `Frage ${step + 1} / ${picked.length}`;
-    if (step === 0) timeInput.value = "07:00";
+function updateFromPicker() {
+  if (!timeInput.value) return;
+  const [hh, mm] = timeInput.value.split(":").map(v => parseInt(v, 10));
+  setClock(hh, mm);
+  echoEl.textContent = makeEchoSentence(questionEl.textContent, hh, mm);
+}
+
+// ► normale Events (reichen oft schon)
+timeInput.addEventListener("input",  updateFromPicker);
+timeInput.addEventListener("change", updateFromPicker);
+timeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") nextBtn.click(); });
+
+// ► Zusatz: Polling, solange der iOS-Picker offen ist
+let _syncTimer = null;
+let _lastVal   = "";
+function _tickSync() {
+  if (timeInput.value && timeInput.value !== _lastVal) {
+    _lastVal = timeInput.value;
     updateFromPicker();
   }
+}
+function _startSync() {
+  if (_syncTimer) return;
+  _lastVal = timeInput.value || "";
+  _syncTimer = setInterval(_tickSync, 80); // angenehm flüssig, ressourcenschonend
+}
+function _stopSync() {
+  if (_syncTimer) { clearInterval(_syncTimer); _syncTimer = null; }
+}
+timeInput.addEventListener("focus", _startSync);
+timeInput.addEventListener("blur",  _stopSync);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) _stopSync();
+});
+
+// beim Seiten-/Schritt-Start initial stellen
+function renderStep() {
+  const qIdx = picked[step];
+  questionEl.textContent = level.questions[qIdx];
+  progressEl.textContent = `Frage ${step + 1} / ${picked.length}`;
+  if (step === 0) timeInput.value = "07:00";
+  updateFromPicker();
+}
 
   // Events
   timeInput.addEventListener("input",  updateFromPicker);
