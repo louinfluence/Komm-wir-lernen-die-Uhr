@@ -358,134 +358,95 @@ async function initLevel3(onComplete) {
   let step = 0;
 
   // UI
-  container.innerHTML = `
-    <div class="clockInput-container level3-contrast">
-      <h2>${level.title}</h2>
-      <p id="clockQuestion"></p>
+container.innerHTML = `
+  <div class="clockInput-container">
+    <h2>${level.title}</h2>
 
-      <div class="clock-wrapper">
-        <img id="clockFace"   src="${level.assets.clockFace}"  alt="Ziffernblatt">
-        <img id="hourHand"    src="${level.assets.hourHand}"   alt="Stundenzeiger">
-        <img id="minuteHand"  src="${level.assets.minuteHand}" alt="Minutenzeiger">
+    <div class="clock-layout">
+      <!-- linke Spalte: Frage + Time-Picker -->
+      <div class="time-col">
+        <p id="clockQuestion" class="question"></p>
+
+        <div class="time-input time-input--ios">
+          <label class="visually-hidden" for="timeInput">Uhrzeit wählen</label>
+          <input id="timeInput" type="time" min="00:00" max="23:59" step="60" aria-label="Uhrzeit">
+        </div>
+
+        <p id="selectionEcho" class="selection-echo" aria-live="polite"></p>
+
+        <div class="clockInput-actions">
+          <button id="nextQuestionBtn" type="button">Nächste Frage</button>
+          <span id="progressInfo" class="progress" aria-live="polite"></span>
+        </div>
       </div>
 
-      <div class="time-input time-input--ios">
-        <label class="visually-hidden" for="timeInput">Uhrzeit wählen</label>
-        <input id="timeInput" type="time" min="00:00" max="23:59" step="60" aria-label="Uhrzeit">
-      </div>
-
-      <p id="level3Sentence" class="level3-sentence" aria-live="polite"></p>
-
-      <div class="clockInput-actions" style="text-align:center; margin-top:8px;">
-        <button id="nextQuestionBtn" type="button">Nächste Frage</button>
-        <span id="progressInfo" aria-live="polite" style="margin-left:8px;"></span>
+      <!-- rechte Spalte: Uhr -->
+      <div class="clock-col">
+        <div class="clock-wrapper">
+          <img id="clockFace"   src="${level.assets.clockFace}"  alt="Ziffernblatt 24-Stunden">
+          <img id="hourHand"    src="${level.assets.hourHand}"   alt="Stundenzeiger">
+          <img id="minuteHand"  src="${level.assets.minuteHand}" alt="Minutenzeiger">
+        </div>
       </div>
     </div>
-  `;
+  </div>
+`;
 
-  // Elemente
-  const timeInput  = document.getElementById("timeInput");
-  const hourHand   = document.getElementById("hourHand");
-  const minuteHand = document.getElementById("minuteHand");
-  const questionEl = document.getElementById("clockQuestion");
-  const nextBtn    = document.getElementById("nextQuestionBtn");
-  const progressEl = document.getElementById("progressInfo");
-  const sentenceEl = document.getElementById("level3Sentence");
+// Elemente
+const timeInput   = document.getElementById("timeInput");
+const hourHand    = document.getElementById("hourHand");
+const minuteHand  = document.getElementById("minuteHand");
+const questionEl  = document.getElementById("clockQuestion");
+const echoEl      = document.getElementById("selectionEcho");
+const nextBtn     = document.getElementById("nextQuestionBtn");
+const progressEl  = document.getElementById("progressInfo");
 
-  // Helpers
-  const pad2 = (n) => String(n).padStart(2, "0");
+const pad2 = (n) => String(n).padStart(2, "0");
 
-  // Zeiger stellen (12h-Winkel)
-  function setClock(h, m) {
-    const hourAngle   = (h % 12) * 30 + m * 0.5;
-    const minuteAngle = m * 6;
-    hourHand.style.transform   = `rotate(${hourAngle}deg)`;
-    minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
-
-    if (level.background === "daynight") {
-      document.body.classList.toggle("night-mode", h < 6 || h >= 20);
-    }
+function setClock(h, m) {
+  const hourAngle   = (h % 12) * 30 + m * 0.5;
+  const minuteAngle = m * 6;
+  hourHand.style.transform   = `rotate(${hourAngle}deg)`;
+  minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
+  if (level.background === "daynight") {
+    document.body.classList.toggle("night-mode", h < 6 || h >= 20);
   }
-
-  // Satz abhängig von der Frage
-  function sentenceFor(question, h, m) {
-    const hhmm = `${pad2(h)}:${pad2(m)} Uhr`;
-    const q = (question || "").toLowerCase();
-
-    if (q.includes("auf"))        return `Du stehst um ${hhmm} auf.`;
-    if (q.includes("schul"))      return `Du gehst um ${hhmm} zur Schule.`;
-    if (q.includes("frühstück"))  return `Du frühstückst um ${hhmm}.`;
-    if (q.includes("hausauf"))    return `Du machst um ${hhmm} Hausaufgaben.`;
-    if (q.includes("abend"))      return `Du isst um ${hhmm} zu Abend.`;
-    if (q.includes("schlaf"))     return `Du gehst um ${hhmm} schlafen.`;
-    return `Du machst das um ${hhmm}.`;
-  }
-
-  // 24h-Innenring (rein visuell)
-  (function addInner24hRing(){
-    const wrapper = document.querySelector(".clock-wrapper");
-    if (!wrapper || wrapper.querySelector(".inner-24-ring")) return;
-
-    const ring = document.createElement("div");
-    ring.className = "inner-24-ring";
-    wrapper.appendChild(ring);
-
-    const radius = 0.36; // 36% der kürzesten Seite – bei Bedarf anpassen
-    for (let i = 0; i < 12; i++) {
-      const label = document.createElement("div");
-      label.className = "inner-24h-label";
-      label.textContent = String(13 + i); // 13..24
-
-      const deg = i * 30 - 90;              // 12 oben
-      const rad = deg * Math.PI / 180;
-      label.style.left = `${50 + Math.cos(rad) * radius * 100}%`;
-      label.style.top  = `${50 + Math.sin(rad) * radius * 100}%`;
-
-      ring.appendChild(label);
-    }
-  })();
-
-  function updateFromPicker() {
-    if (!timeInput.value) return;
-    const [hh, mm] = timeInput.value.split(":").map(v => parseInt(v, 10));
-    setClock(hh, mm);
-    sentenceEl.textContent = sentenceFor(questionEl.textContent, hh, mm);
-  }
-
-  function renderStep() {
-    const qIdx = picked[step];
-    const q = level.questions[qIdx];
-    questionEl.textContent = q;
-    progressEl.textContent = `Frage ${step + 1} / ${picked.length}`;
-
-    if (step === 0) timeInput.value = "07:00";
-    updateFromPicker();
-  }
-
-  // Events
-  timeInput.addEventListener("input",  updateFromPicker);
-  timeInput.addEventListener("change", updateFromPicker);
-  timeInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") nextBtn.click();
-  });
-
-  nextBtn.addEventListener("click", () => {
-    step++;
-    if (step < picked.length) {
-      renderStep();
-    } else {
-      showLevelComplete(level, onComplete);
-    }
-  });
-
-  // Start
-  renderStep();
 }
 
+function makeEchoSentence(q, hh, mm) {
+  // „Wann stehst du auf?“ -> „Du stehst um HH:MM Uhr auf.“
+  let core = q.replace(/^Wann\s+/i, "").replace(/\?$/, "");
+  // Kleines kosmetisches: erstes Wort klein, „Du “ davor
+  return `Du ${core} um ${pad2(hh)}:${pad2(mm)} Uhr.`;
+}
 
+function updateFromPicker() {
+  if (!timeInput.value) return;
+  const [hh, mm] = timeInput.value.split(":").map(v => parseInt(v, 10));
+  setClock(hh, mm);
+  echoEl.textContent = makeEchoSentence(questionEl.textContent, hh, mm);
+}
 
-/* =========================================================
-   Aliase, damit main.js kompatibel bleibt
+function renderStep() {
+  const qIdx = picked[step];
+  questionEl.textContent = level.questions[qIdx];
+  progressEl.textContent = `Frage ${step + 1} / ${picked.length}`;
+  if (step === 0) timeInput.value = "07:00";
+  updateFromPicker();
+}
+
+// Events
+timeInput.addEventListener("input",  updateFromPicker);
+timeInput.addEventListener("change", updateFromPicker);
+timeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") nextBtn.click(); });
+
+nextBtn.addEventListener("click", () => {
+  step++;
+  if (step < picked.length) renderStep();
+  else showLevelComplete(level, onComplete);
+});
+
+renderStep();t main.js kompatibel bleibt
    ========================================================= */
 function initLevel1(cb) { startGameLevel(1, cb); }
 function initLevel2(cb) { startLevel2(cb); }
