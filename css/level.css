@@ -355,20 +355,6 @@ body.night-mode {
   transition: background 1s;
 }
 
-/* Layout: Time-Picker links, Uhr rechts (ab Tablet nebeneinander) */
-.clock-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.2rem;
-  align-items: start;
-}
-
-@media (min-width: 820px) {
-  .clock-layout {
-    grid-template-columns: 0.9fr 1.1fr; /* links Picker, rechts Uhr */
-    align-items: center;
-  }
-}
 
 .time-col .question {
   margin: 0 0 .6rem 0;
