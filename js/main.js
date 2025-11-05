@@ -89,13 +89,14 @@ window.addEventListener("DOMContentLoaded", () => {
   if (levelSelect) {
     console.log("🎮 Lernspiel: Levelauswahl aktiv");
 
-    const delegate = (e) => {
-      const card = e.target.closest(".level-card");
-      if (!card || !container.contains(card)) return;
-      e.preventDefault();
-      const level = parseInt(card.dataset.level, 10);
-      startLevel(level);
-    };
+   const delegate = (e) => {
+  const card = e.target.closest('.level-card[data-level]');
+  if (!card || !container.contains(card)) return;
+  const level = Number(card.dataset.level);
+  if (!Number.isFinite(level)) return;  // Schutz
+  startLevel(level);
+};
+
 
     // Events für Klick oder Touch
     document.addEventListener("pointerup", delegate, { passive: false });
