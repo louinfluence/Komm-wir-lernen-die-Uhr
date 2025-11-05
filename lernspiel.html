@@ -162,34 +162,68 @@
   const loader   = document.getElementById('videoLoader');
   const KEY      = 'volle_stunde_video_seen';
 
-  const show = () => {
-    modal.hidden = false;
-    document.body.style.overflow = 'hidden';
-    if (loader) loader.classList.remove('hidden'); // 🔄 Beim Öffnen Loader wieder anzeigen
-  };
-
-  const hide = () => {
-    modal.hidden = true;
-    document.body.style.overflow = '';
-    video?.pause();
-  };
-
   openBtn?.addEventListener('click', show);
   closeEls.forEach(el => el.addEventListener('click', hide));
   modal?.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
 
-  // === 🎬 Ladebalken ===
-  const hideLoader = () => {
-    if (loader) loader.classList.add('hidden');
+   // === 🎬 Ladebalken & Prozentanzeige ===
+  const bar   = document.getElementById('loaderBar');
+  const pctEl = document.getElementById('loaderPct');
+  let metaReady = false;
+
+  const resetLoader = () => {
+    if (!loader) return;
+    loader.classList.remove('hidden');
+    if (bar)   bar.style.width = '0%';
+    if (pctEl) pctEl.textContent = '0%';
   };
 
+  const hideLoader = () => {
+    if (!loader) return;
+    // einmal vollziehen, dann erst ausblenden → wirkt „fertig“
+    if (bar)   bar.style.width = '100%';
+    if (pctEl) pctEl.textContent = '100%';
+    setTimeout(() => loader.classList.add('hidden'), 120);
+  };
+
+  // Prozent anhand gepufferter Daten (ohne Springen, dank CSS-Transition)
+  function updateProgress() {
+    if (!video || !metaReady || !isFinite(video.duration) || video.duration <= 0) return;
+
+    // größtes gepuffertes Ende nehmen
+    let bufferedEnd = 0;
+    for (let i = 0; i < video.buffered.length; i++) {
+      bufferedEnd = Math.max(bufferedEnd, video.buffered.end(i));
+    }
+    const ratio = Math.min(bufferedEnd / video.duration, 1);
+    const pct   = Math.floor(ratio * 100);
+
+    if (bar)   bar.style.width = pct + '%';
+    if (pctEl) pctEl.textContent = pct + '%';
+
+    // fertig?
+    if (pct >= 100 || video.readyState >= 3 /* HAVE_FUTURE_DATA */) {
+      hideLoader();
+    }
+  }
+
+  // Events binden
   if (video) {
+    video.addEventListener('loadedmetadata', () => { metaReady = true; updateProgress(); }, { once: true });
+    video.addEventListener('progress', updateProgress);
     video.addEventListener('canplaythrough', hideLoader, { once: true });
-    video.addEventListener('loadeddata', hideLoader, { once: true });
     video.addEventListener('error', () => {
-      if (loader) loader.innerHTML = "<p>⚠️ Fehler beim Laden des Videos.</p>";
+      if (loader) loader.innerHTML = '<p>⚠️ Fehler beim Laden des Videos.</p>';
     });
   }
+
+  // Beim Öffnen des Modals Loader sichtbar & zurücksetzen
+  const show = () => {
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    resetLoader();
+  };
+
 
   // === 🎯 Als gesehen markieren ===
   const markSeen = () => {
