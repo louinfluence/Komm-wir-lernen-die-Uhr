@@ -450,13 +450,7 @@ async function initLevel3(onComplete) {
    ========================================================= */
 function initLevel1(cb){ startGameLevel(1, cb); }
 function initLevel2(cb){ startLevel2(cb); }
-/* =========================================================
-   Aliase, damit main.js kompatibel bleibt
-   ========================================================= */
-function initLevel1(cb){ startGameLevel(1, cb); }
-function initLevel2(cb){ startLevel2(cb); }
-function initLevel1(cb) { startGameLevel(1, cb); }
-function initLevel2(cb) { startLevel2(cb); }
+
 
 
 
