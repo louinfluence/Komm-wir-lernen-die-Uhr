@@ -391,6 +391,33 @@ body.night-mode {
 .clockInput-container h2 { color: #16395f; }
 .clockInput-container .question { color: #1c2a3a; }
 
+/* =========================================================
+   🌟 Kapitel-Design
+   ========================================================= */
+.intro-header,
+.chapter-header {
+  width: 100%;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin-top: 2rem;
+  color: #0d47a1;
+}
+
+/* 🟢 Einsteiger-Level optisch abheben */
+.intro-level {
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  border: 3px solid #66bb6a;
+  color: #1b5e20;
+  box-shadow: 0 4px 12px rgba(0, 128, 0, 0.15);
+}
+
+.intro-level:hover {
+  background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+  border-color: #43a047;
+  transform: translateY(-6px) scale(1.05);
+}
+
 
 
 
