@@ -330,8 +330,10 @@ async function startLevel2(onComplete) {
 
 /* =========================================================
    🕒 Level 3 – iOS-Time-Picker (HH:MM) → analoge Uhr stellt sich
-   - 4 zufällige Fragen (wie gehabt)
-   - iPad/iOS zeigt Wheel-UI für <input type="time">
+   - 4 zufällige Fragen
+   - Time-Picker UNTER der Uhr
+   - Dynamischer Satz „Du … um HH:MM Uhr …“
+   - 24h-Innenring (rein visuell), Zeiger bleiben 12h-Winkel
 ========================================================= */
 async function initLevel3(onComplete) {
   const container = document.getElementById("gameContainer");
@@ -357,12 +359,12 @@ async function initLevel3(onComplete) {
 
   // UI
   container.innerHTML = `
-    <div class="clockInput-container">
+    <div class="clockInput-container level3-contrast">
       <h2>${level.title}</h2>
       <p id="clockQuestion"></p>
 
       <div class="clock-wrapper">
-        <img id="clockFace"   src="${level.assets.clockFace}"  alt="Ziffernblatt 24 h">
+        <img id="clockFace"   src="${level.assets.clockFace}"  alt="Ziffernblatt">
         <img id="hourHand"    src="${level.assets.hourHand}"   alt="Stundenzeiger">
         <img id="minuteHand"  src="${level.assets.minuteHand}" alt="Minutenzeiger">
       </div>
@@ -372,9 +374,11 @@ async function initLevel3(onComplete) {
         <input id="timeInput" type="time" min="00:00" max="23:59" step="60" aria-label="Uhrzeit">
       </div>
 
-      <div class="clockInput-actions">
+      <p id="level3Sentence" class="level3-sentence" aria-live="polite"></p>
+
+      <div class="clockInput-actions" style="text-align:center; margin-top:8px;">
         <button id="nextQuestionBtn" type="button">Nächste Frage</button>
-        <span id="progressInfo" aria-live="polite"></span>
+        <span id="progressInfo" aria-live="polite" style="margin-left:8px;"></span>
       </div>
     </div>
   `;
@@ -386,10 +390,12 @@ async function initLevel3(onComplete) {
   const questionEl = document.getElementById("clockQuestion");
   const nextBtn    = document.getElementById("nextQuestionBtn");
   const progressEl = document.getElementById("progressInfo");
+  const sentenceEl = document.getElementById("level3Sentence");
 
   // Helpers
   const pad2 = (n) => String(n).padStart(2, "0");
 
+  // Zeiger stellen (12h-Winkel)
   function setClock(h, m) {
     const hourAngle   = (h % 12) * 30 + m * 0.5;
     const minuteAngle = m * 6;
@@ -401,19 +407,57 @@ async function initLevel3(onComplete) {
     }
   }
 
+  // Satz abhängig von der Frage
+  function sentenceFor(question, h, m) {
+    const hhmm = `${pad2(h)}:${pad2(m)} Uhr`;
+    const q = (question || "").toLowerCase();
+
+    if (q.includes("auf"))        return `Du stehst um ${hhmm} auf.`;
+    if (q.includes("schul"))      return `Du gehst um ${hhmm} zur Schule.`;
+    if (q.includes("frühstück"))  return `Du frühstückst um ${hhmm}.`;
+    if (q.includes("hausauf"))    return `Du machst um ${hhmm} Hausaufgaben.`;
+    if (q.includes("abend"))      return `Du isst um ${hhmm} zu Abend.`;
+    if (q.includes("schlaf"))     return `Du gehst um ${hhmm} schlafen.`;
+    return `Du machst das um ${hhmm}.`;
+  }
+
+  // 24h-Innenring (rein visuell)
+  (function addInner24hRing(){
+    const wrapper = document.querySelector(".clock-wrapper");
+    if (!wrapper || wrapper.querySelector(".inner-24-ring")) return;
+
+    const ring = document.createElement("div");
+    ring.className = "inner-24-ring";
+    wrapper.appendChild(ring);
+
+    const radius = 0.36; // 36% der kürzesten Seite – bei Bedarf anpassen
+    for (let i = 0; i < 12; i++) {
+      const label = document.createElement("div");
+      label.className = "inner-24h-label";
+      label.textContent = String(13 + i); // 13..24
+
+      const deg = i * 30 - 90;              // 12 oben
+      const rad = deg * Math.PI / 180;
+      label.style.left = `${50 + Math.cos(rad) * radius * 100}%`;
+      label.style.top  = `${50 + Math.sin(rad) * radius * 100}%`;
+
+      ring.appendChild(label);
+    }
+  })();
+
   function updateFromPicker() {
-    // Fallback: wenn leer, nichts tun
     if (!timeInput.value) return;
     const [hh, mm] = timeInput.value.split(":").map(v => parseInt(v, 10));
     setClock(hh, mm);
+    sentenceEl.textContent = sentenceFor(questionEl.textContent, hh, mm);
   }
 
   function renderStep() {
     const qIdx = picked[step];
-    questionEl.textContent = level.questions[qIdx];
+    const q = level.questions[qIdx];
+    questionEl.textContent = q;
     progressEl.textContent = `Frage ${step + 1} / ${picked.length}`;
 
-    // Startwert sinnvoll setzen
     if (step === 0) timeInput.value = "07:00";
     updateFromPicker();
   }
@@ -434,9 +478,11 @@ async function initLevel3(onComplete) {
     }
   });
 
-  // Init
+  // Start
   renderStep();
 }
+
+
 
 /* =========================================================
    Aliase, damit main.js kompatibel bleibt
