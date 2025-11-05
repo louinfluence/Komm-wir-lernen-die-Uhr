@@ -77,7 +77,7 @@
       ],
       "showFeedback": false,
       "assets": {
-        "clockFace": "assets/images/Ziffernblatt.png",
+        "clockFace": "assets/images/Ziffernblatt_24h.png",
         "hourHand": "assets/images/Stundenzeiger.png",
         "minuteHand": "assets/images/Minutenzeiger.png"
       },
