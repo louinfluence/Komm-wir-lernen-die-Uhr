@@ -385,40 +385,12 @@ body.night-mode {
   color: #0b0b0b;
 }
 
-/* Uhr sicher „sauber“ anzeigen */
-.clock-wrapper {
-  position: relative;
-  width: min(68vw, 440px);
-  margin: 0 auto;
-  line-height: 0;   /* verhindert Text-Artefakte */
-  overflow: hidden; /* falls irgendein Element übersteht */
-}
 
-.clock-wrapper img {
-  display: block;
-  width: 100%;
-  height: auto;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
-#hourHand, #minuteHand {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform-origin: 50% 50%;
-  pointer-events: none;
-}
 
 /* Kontrast für Titel/Frage verbessern (auf hellem Hintergrund) */
 .clockInput-container h2 { color: #16395f; }
 .clockInput-container .question { color: #1c2a3a; }
 
-/* iOS-Popover soll Platz haben: rechts der Uhr vermeiden */
-@media (min-width: 820px) {
-  .time-col { justify-self: end; }
-  .clock-col { justify-self: start; }
-}
 
 
 
