@@ -333,6 +333,10 @@ async function startLevel2(onComplete) {
    ========================================================= */
 function initLevel1(cb) { startGameLevel(1, cb); }
 function initLevel2(cb) { startLevel2(cb); }
+function initLevel3(cb) { return initLevel3_hoursOnly(cb); }
+
+
+
 
 // ⚠️ WICHTIG: KEIN Top-Level-Block für Level 3 hier.
 // initLevel3(cb) wird später implementiert, wenn Level 3 genutzt wird.
