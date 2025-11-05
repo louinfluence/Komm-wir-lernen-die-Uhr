@@ -90,11 +90,12 @@ window.addEventListener("DOMContentLoaded", () => {
     console.log("🎮 Lernspiel: Levelauswahl aktiv");
 
    const delegate = (e) => {
-  const card = e.target.closest('.level-card[data-level]');
+  const card = e.target.closest(".level-card");
   if (!card || !container.contains(card)) return;
-  const level = Number(card.dataset.level);
-  if (!Number.isFinite(level)) return;  // Schutz
-  startLevel(level);
+  const raw = card.dataset.level;
+  if (!raw || isNaN(parseInt(raw, 10))) return; // ← ignoriert Video-Karte
+  e.preventDefault();
+  startLevel(parseInt(raw, 10));
 };
 
 
