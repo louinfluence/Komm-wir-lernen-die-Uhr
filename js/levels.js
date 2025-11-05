@@ -445,9 +445,128 @@ nextBtn.addEventListener("click", () => {
   if (step < picked.length) renderStep();
   else showLevelComplete(level, onComplete);
 });
+/* =========================================================
+   🕒 Level 3 – iOS-Time-Picker (HH:MM) → analoge Uhr stellt sich
+   - 4 zufällige Fragen
+   - Time-Picker links, Uhr rechts
+   - Dynamischer Satz „Du … um HH:MM Uhr …“
+========================================================= */
+async function initLevel3(onComplete) {
+  const container = document.getElementById("gameContainer");
+  container.innerHTML = "";
 
-renderStep();t main.js kompatibel bleibt
+  // Level 3 laden
+  const levels = await loadLevels();
+  level = levels.find(l => l.id === 3 && l.type === "clockInput");
+  if (!level) {
+    console.error("Level 3 (clockInput) nicht gefunden.");
+    container.innerHTML = "<p>❌ Fehler beim Laden von Level 3.</p>";
+    return;
+  }
+
+  // 4 zufällige Fragen wählen
+  const idx = Array.from({ length: level.questions.length }, (_, i) => i);
+  for (let i = idx.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  const picked = idx.slice(0, 4);
+  let step = 0;
+
+  // UI
+  container.innerHTML = `
+    <div class="clockInput-container">
+      <h2>${level.title}</h2>
+
+      <div class="clock-layout">
+        <div class="time-col">
+          <p id="clockQuestion" class="question"></p>
+
+          <div class="time-input time-input--ios">
+            <label class="visually-hidden" for="timeInput">Uhrzeit wählen</label>
+            <input id="timeInput" type="time" min="00:00" max="23:59" step="60" aria-label="Uhrzeit">
+          </div>
+
+          <p id="selectionEcho" class="selection-echo" aria-live="polite"></p>
+
+          <div class="clockInput-actions">
+            <button id="nextQuestionBtn" type="button">Nächste Frage</button>
+            <span id="progressInfo" class="progress" aria-live="polite"></span>
+          </div>
+        </div>
+
+        <div class="clock-col">
+          <div class="clock-wrapper">
+            <img id="clockFace"   src="${level.assets.clockFace}"  alt="Ziffernblatt 24-Stunden">
+            <img id="hourHand"    src="${level.assets.hourHand}"   alt="Stundenzeiger">
+            <img id="minuteHand"  src="${level.assets.minuteHand}" alt="Minutenzeiger">
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Elemente
+  const timeInput  = document.getElementById("timeInput");
+  const hourHand   = document.getElementById("hourHand");
+  const minuteHand = document.getElementById("minuteHand");
+  const questionEl = document.getElementById("clockQuestion");
+  const echoEl     = document.getElementById("selectionEcho");
+  const nextBtn    = document.getElementById("nextQuestionBtn");
+  const progressEl = document.getElementById("progressInfo");
+
+  const pad2 = n => String(n).padStart(2, "0");
+
+  function setClock(h, m) {
+    const hourAngle   = (h % 12) * 30 + m * 0.5;
+    const minuteAngle = m * 6;
+    hourHand.style.transform   = `rotate(${hourAngle}deg)`;
+    minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
+    if (level.background === "daynight") {
+      document.body.classList.toggle("night-mode", h < 6 || h >= 20);
+    }
+  }
+
+  function makeEchoSentence(q, hh, mm) {
+    const core = q.replace(/^Wann\s+/i, "").replace(/\?$/, "");
+    return `Du ${core} um ${pad2(hh)}:${pad2(mm)} Uhr.`;
+  }
+
+  function updateFromPicker() {
+    if (!timeInput.value) return;
+    const [hh, mm] = timeInput.value.split(":").map(v => parseInt(v, 10));
+    setClock(hh, mm);
+    echoEl.textContent = makeEchoSentence(questionEl.textContent, hh, mm);
+  }
+
+  function renderStep() {
+    const qIdx = picked[step];
+    questionEl.textContent = level.questions[qIdx];
+    progressEl.textContent = `Frage ${step + 1} / ${picked.length}`;
+    if (step === 0) timeInput.value = "07:00";
+    updateFromPicker();
+  }
+
+  // Events
+  timeInput.addEventListener("input",  updateFromPicker);
+  timeInput.addEventListener("change", updateFromPicker);
+  timeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") nextBtn.click(); });
+
+  nextBtn.addEventListener("click", () => {
+    step++;
+    if (step < picked.length) renderStep();
+    else showLevelComplete(level, onComplete);
+  });
+
+  // Init
+  renderStep();
+}
+
+/* =========================================================
+   Aliase, damit main.js kompatibel bleibt
    ========================================================= */
+function initLevel1(cb){ startGameLevel(1, cb); }
+function initLevel2(cb){ startLevel2(cb); }
 function initLevel1(cb) { startGameLevel(1, cb); }
 function initLevel2(cb) { startLevel2(cb); }
 
