@@ -142,54 +142,42 @@
 
 <script>
 (() => {
-  // --- Elemente einsammeln ---
   const openBtn  = document.getElementById('openVideo');
   const modal    = document.getElementById('videoModal');
   const closeEls = modal ? modal.querySelectorAll('[data-close]') : [];
   const video    = document.getElementById('lessonVideo');
   const doneBtn  = document.getElementById('markWatched');
   const seenPill = document.getElementById('videoWatched');
-  const KEY = 'volle_stunde_video_seen';
-  let metaReady = false;
+  const KEY      = 'volle_stunde_video_seen';
 
-  // --- Jetzt show/hide definieren (nutzen resetLoader) ---
+  // 🔹 Öffnen und Schließen des Modals
   function show() {
-    if (!modal) return;
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
-    resetLoader(); // beim Öffnen neu starten
   }
 
   function hide() {
-    if (!modal) return;
     modal.hidden = true;
     document.body.style.overflow = '';
     video?.pause();
   }
 
-  // --- Events binden (nachdem show/hide existieren) ---
-  openBtn?.addEventListener('click', show);
-  closeEls.forEach(el => el.addEventListener('click', hide));
-  modal?.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
-
-  if (video) {
-    video.addEventListener('loadedmetadata', () => { metaReady = true; updateProgress(); }, { once: true });
-    video.addEventListener('progress',        updateProgress);
-    video.addEventListener('canplaythrough',  hideLoader, { once: true });
-    video.addEventListener('error', () => {
-      if (loader) loader.innerHTML = '<p>⚠️ Fehler beim Laden des Videos.</p>';
-    });
-  }
-
-  // --- „Gesehen“-Status ---
+  // 🔹 Als gesehen markieren + automatisch schließen
   function markSeen() {
     localStorage.setItem(KEY, '1');
     if (seenPill) seenPill.hidden = false;
+    hide(); // ← Fenster wird direkt geschlossen
   }
-  if (localStorage.getItem(KEY) === '1') seenPill.hidden = false;
 
-  doneBtn?.addEventListener('click', () => { markSeen(); hide(); });
+  // 🔹 Event-Listener
+  openBtn?.addEventListener('click', show);
+  closeEls.forEach(el => el.addEventListener('click', hide));
+  modal?.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+  doneBtn?.addEventListener('click', markSeen);
   video?.addEventListener('ended', markSeen);
+
+  // 🔹 Status beim Laden wiederherstellen
+  if (localStorage.getItem(KEY) === '1') seenPill.hidden = false;
 })();
 </script>
 
