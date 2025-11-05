@@ -329,6 +329,132 @@ async function startLevel2(onComplete) {
 }
 
 /* =========================================================
+   🕒 Level 3 – Digital eingeben (HH:MM) → analoge Uhr stellt sich
+   - 4 zufällige Fragen aus level.questions
+   - Keine Richtig/Falsch-Logik, nur Visualisierung
+   - Nutzt assets / timeRange / background aus levels.json
+========================================================= */
+async function initLevel3(onComplete) {
+  const container = document.getElementById("gameContainer");
+  container.innerHTML = "";
+
+  // Level 3 laden
+  const levels = await loadLevels();
+  level = levels.find(l => l.id === 3 && l.type === "clockInput");
+  if (!level) {
+    console.error("Level 3 (clockInput) nicht gefunden.");
+    container.innerHTML = "<p>❌ Fehler beim Laden von Level 3.</p>";
+    return;
+  }
+
+  // 4 zufällige Fragen wählen
+  const idx = Array.from({length: level.questions.length}, (_, i) => i);
+  for (let i = idx.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  const picked = idx.slice(0, 4);
+  let step = 0;
+
+  // UI-Gerüst
+  container.innerHTML = `
+    <div class="clockInput-container">
+      <h2>${level.title}</h2>
+      <p id="clockQuestion"></p>
+
+      <div class="clock-wrapper">
+        <img id="clockFace"   src="${level.assets.clockFace}"  alt="Ziffernblatt">
+        <img id="hourHand"    src="${level.assets.hourHand}"   alt="Stundenzeiger">
+        <img id="minuteHand"  src="${level.assets.minuteHand}" alt="Minutenzeiger">
+      </div>
+
+      <div class="time-input">
+        <label class="visually-hidden" for="hoursInput">Stunden</label>
+        <input id="hoursInput" type="number"
+               min="${level.timeRange.minHour}" max="${level.timeRange.maxHour}"
+               value="7" inputmode="numeric" pattern="[0-9]*" aria-label="Stunden">
+        <span>:</span>
+        <label class="visually-hidden" for="minutesInput">Minuten</label>
+        <input id="minutesInput" type="number"
+               min="0" max="59" value="0" inputmode="numeric" pattern="[0-9]*" aria-label="Minuten">
+      </div>
+
+      <div class="clockInput-actions">
+        <button id="nextQuestionBtn" type="button">Nächste Frage</button>
+        <span id="progressInfo" aria-live="polite"></span>
+      </div>
+    </div>
+  `;
+
+  // Elemente holen
+  const hourInput  = document.getElementById("hoursInput");
+  const minuteInput= document.getElementById("minutesInput");
+  const hourHand   = document.getElementById("hourHand");
+  const minuteHand = document.getElementById("minuteHand");
+  const questionEl = document.getElementById("clockQuestion");
+  const nextBtn    = document.getElementById("nextQuestionBtn");
+  const progressEl = document.getElementById("progressInfo");
+
+  // Hilfsfunktionen
+  const clamp = (v, min, max) => Math.min(max, Math.max(min, Number.isFinite(v) ? v : min));
+  const pad2  = n => String(n).padStart(2, "0");
+
+  function updateClockFromInputs() {
+    let h = clamp(parseInt(hourInput.value),  level.timeRange.minHour, level.timeRange.maxHour);
+    let m = clamp(parseInt(minuteInput.value), 0, 59);
+
+    // Werte normalisieren/visual fix
+    hourInput.value   = pad2(h);
+    minuteInput.value = pad2(m);
+
+    // Zeiger stellen
+    const hourAngle   = (h % 12) * 30 + m * 0.5;
+    const minuteAngle = m * 6;
+    hourHand.style.transform   = `rotate(${hourAngle}deg)`;
+    minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
+
+    // Optional: Hintergrund Tag/Nacht
+    if (level.background === "daynight") {
+      document.body.classList.toggle("night-mode", h < 6 || h >= 20);
+    }
+  }
+
+  function renderStep() {
+    const qIdx = picked[step];
+    questionEl.textContent = level.questions[qIdx];
+    progressEl.textContent = `Frage ${step + 1} / ${picked.length}`;
+
+    // sinnvolle Startwerte je nach Frage (optional minimal)
+    if (step === 0) { hourInput.value = "07"; minuteInput.value = "00"; }
+    updateClockFromInputs();
+  }
+
+  // Eingaben live verarbeiten
+  hourInput.addEventListener("input", updateClockFromInputs);
+  minuteInput.addEventListener("input", updateClockFromInputs);
+
+  // Enter → nächste Frage (komfortabel auf iPad mit Tastatur)
+  [hourInput, minuteInput].forEach(inp => {
+    inp.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") nextBtn.click();
+    });
+  });
+
+  // Weiter
+  nextBtn.addEventListener("click", () => {
+    step++;
+    if (step < picked.length) {
+      renderStep();
+    } else {
+      showLevelComplete(level, onComplete);
+    }
+  });
+
+  // Initial
+  renderStep();
+}
+
+/* =========================================================
    Aliase, damit main.js kompatibel bleibt
    ========================================================= */
 function initLevel1(cb) { startGameLevel(1, cb); }
