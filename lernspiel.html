@@ -132,8 +132,36 @@
 </div>    
   </main>
 
+  <script>
+(() => {
+  const openBtn  = document.getElementById('openVideo');
+  const modal    = document.getElementById('videoModal');
+  const closeEls = modal ? modal.querySelectorAll('[data-close]') : [];
+  const video    = document.getElementById('lessonVideo');
+  const doneBtn  = document.getElementById('markWatched');
+  const seenPill = document.getElementById('videoWatched');
+  const KEY      = 'intro_full_hours_watched';
+
+  const show = () => { modal.hidden = false; document.body.style.overflow = 'hidden'; };
+  const hide = () => { modal.hidden = true; document.body.style.overflow = ''; video?.pause(); };
+
+  openBtn?.addEventListener('click', show);
+  closeEls.forEach(el => el.addEventListener('click', hide));
+  modal?.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+
+  // „gesehen“ merken
+  const markSeen = () => { localStorage.setItem(KEY, '1'); seenPill.hidden = false; };
+  if (localStorage.getItem(KEY) === '1') seenPill.hidden = false;
+
+  doneBtn?.addEventListener('click', () => { markSeen(); hide(); });
+  video?.addEventListener('ended', markSeen);
+})();
+</script>
+
+
   <!-- Wichtig: Reihenfolge! Erst levels.js, dann main.js -->
   <script src="js/levels.js"></script>
   <script src="js/main.js"></script>
 </body>
+
 </html>
