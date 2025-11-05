@@ -651,5 +651,35 @@ body.night-mode {
     max-width: 95%;
   }
 }
+/* Video-Loader */
+.video-loader { 
+  padding: 12px 14px; 
+  background: rgba(0,0,0,.06); 
+  border-radius: 12px; 
+  display: grid; 
+  gap: .35rem;
+}
+.video-loader.hidden { display: none; }
+
+.loader-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: .6rem; }
+.loader-track {
+  height: 10px; 
+  width: 100%; 
+  background: rgba(0,0,0,.12); 
+  border-radius: 999px; 
+  overflow: hidden;
+}
+.loader-bar {
+  height: 100%;
+  width: 0%;                /* wird per JS gesetzt */
+  background: linear-gradient(90deg, #42a5f5, #7e57c2);
+  transition: width .2s linear;   /* -> fließend, ohne Springen */
+}
+.loader-pct { 
+  min-width: 3.2ch; 
+  font-variant-numeric: tabular-nums; 
+  color: #1c2a3a; 
+  font-weight: 700;
+}
 
 
