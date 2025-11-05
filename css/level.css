@@ -394,30 +394,76 @@ body.night-mode {
 /* =========================================================
    🌟 Kapitel-Design
    ========================================================= */
-.intro-header,
-.chapter-header {
+/* ==============================================
+   📚 Kapitel-Container
+   ============================================== */
+.chapter-container {
   width: 100%;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem 1rem;
+  border-radius: 20px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chapter-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+/* Titel im Kapitel */
+.chapter-header {
   text-align: center;
   font-weight: 700;
-  font-size: 1.3rem;
-  margin-top: 2rem;
-  color: #0d47a1;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
 }
 
-/* 🟢 Einsteiger-Level optisch abheben */
-.intro-level {
+/* Farbige Themenhintergründe */
+.chapter-intro {
   background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
   border: 3px solid #66bb6a;
-  color: #1b5e20;
-  box-shadow: 0 4px 12px rgba(0, 128, 0, 0.15);
 }
 
-.intro-level:hover {
-  background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
-  border-color: #43a047;
-  transform: translateY(-6px) scale(1.05);
+.chapter-hours {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border: 3px solid #64b5f6;
 }
 
+.chapter-quarter {
+  background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+  border: 3px solid #ba68c8;
+}
 
+.chapter-minutes {
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  border: 3px solid #ffb74d;
+}
 
+/* Spezifische Levelkarten für jedes Kapitel */
+.intro-level {
+  background: linear-gradient(135deg, #ffffff, #f1f8e9);
+  border: 2px solid #81c784;
+}
 
+.hours-level {
+  background: linear-gradient(135deg, #ffffff, #e3f2fd);
+  border: 2px solid #42a5f5;
+}
+
+.quarter-level {
+  background: linear-gradient(135deg, #ffffff, #f3e5f5);
+  border: 2px solid #ab47bc;
+}
+
+.minutes-level {
+  background: linear-gradient(135deg, #ffffff, #fff8e1);
+  border: 2px solid #ffa726;
+}
+
+/* Einheitliches Hover-Verhalten */
+.level-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
