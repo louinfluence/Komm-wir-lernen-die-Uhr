@@ -355,5 +355,84 @@ body.night-mode {
   transition: background 1s;
 }
 
+/* Layout: Time-Picker links, Uhr rechts (ab Tablet nebeneinander) */
+.clock-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+  align-items: start;
+}
+
+@media (min-width: 820px) {
+  .clock-layout {
+    grid-template-columns: 0.9fr 1.1fr; /* links Picker, rechts Uhr */
+    align-items: center;
+  }
+}
+
+.time-col .question {
+  margin: 0 0 .6rem 0;
+  font-weight: 600;
+}
+
+.time-input--ios {
+  position: relative;
+  z-index: 2;           /* Popover-Anker eindeutig links */
+  display: inline-block;
+}
+
+.time-input--ios input[type="time"] {
+  font-size: 1.25rem;
+  padding: .4rem .6rem;
+  border-radius: .6rem;
+  border: 1px solid rgba(0,0,0,.15);
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(2px);
+}
+
+/* Satz mit der gewählten Zeit – gut lesbar auf hellem BG */
+.selection-echo {
+  margin: .6rem 0 1rem;
+  padding: .5rem .75rem;
+  border-radius: .5rem;
+  background: rgba(0,0,0,.08);
+  color: #0b0b0b;
+}
+
+/* Uhr sicher „sauber“ anzeigen */
+.clock-wrapper {
+  position: relative;
+  width: min(68vw, 440px);
+  margin: 0 auto;
+  line-height: 0;   /* verhindert Text-Artefakte */
+  overflow: hidden; /* falls irgendein Element übersteht */
+}
+
+.clock-wrapper img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+#hourHand, #minuteHand {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+
+/* Kontrast für Titel/Frage verbessern (auf hellem Hintergrund) */
+.clockInput-container h2 { color: #16395f; }
+.clockInput-container .question { color: #1c2a3a; }
+
+/* iOS-Popover soll Platz haben: rechts der Uhr vermeiden */
+@media (min-width: 820px) {
+  .time-col { justify-self: end; }
+  .clock-col { justify-self: start; }
+}
+
 
 
