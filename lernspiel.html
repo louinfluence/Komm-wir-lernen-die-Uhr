@@ -61,10 +61,16 @@
 
   <div class="video-frame">
   <!-- Ladebalken -->
-  <div class="video-loader" id="videoLoader">
-    <div class="loader-bar" id="loaderBar"></div>
-    <p>Lernvideo wird geladen …</p>
+ <div class="video-loader" id="videoLoader">
+  <div class="loader-row">
+    <div class="loader-track">
+      <div class="loader-bar" id="loaderBar" style="width:0%"></div>
+    </div>
+    <span class="loader-pct" id="loaderPct">0%</span>
   </div>
+  <p>Lernvideo wird geladen …</p>
+</div>
+
 
   <!-- Video selbst -->
   <video id="lessonVideo" controls playsinline preload="metadata"
