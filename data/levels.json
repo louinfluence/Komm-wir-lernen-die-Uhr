@@ -64,7 +64,7 @@
     },
     {
       "id": 3,
-      "title": "Stell deine eigene Uhrzeit!",
+      "title": "Um wie viel Uhr?",
       "description": "Experimentiere mit der Uhr und finde heraus, wann du verschiedene Dinge am Tag machst.",
       "type": "clockInput",
       "questions": [
