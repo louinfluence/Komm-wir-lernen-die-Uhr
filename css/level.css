@@ -467,3 +467,45 @@ body.night-mode {
   transform: translateY(-4px) scale(1.03);
   box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
+
+/* ===== Lernvideo-Karte ===== */
+.level-card--video {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-color: #64b5f6;
+  color: #0d47a1;
+}
+
+.video-card-head {
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:.4rem;
+}
+
+.pill {
+  display:inline-block; padding:.15rem .5rem; border-radius:999px; font-size:.8rem; font-weight:700;
+}
+.pill--new  { background:#fff59d; color:#5d4037; border:1px solid #ffca28; }
+.pill--seen { background:#c8e6c9; color:#1b5e20; border:1px solid #66bb6a; }
+
+.btn-watch, .btn-done {
+  margin-top:.6rem; padding:.55rem .9rem; border:none; border-radius:12px; font-weight:700;
+  background:linear-gradient(135deg, #42a5f5, #64b5f6); color:#fff; cursor:pointer;
+}
+.btn-watch:hover, .btn-done:hover { transform:translateY(-1px); }
+
+/* ===== Modal ===== */
+.video-modal[hidden] { display:none; }
+.video-modal { position:fixed; inset:0; z-index:1000; }
+.video-modal__backdrop {
+  position:absolute; inset:0; background:rgba(0,0,0,.45);
+}
+.video-modal__dialog {
+  position:relative; max-width:min(960px, 92vw); margin:6vh auto; background:#fff; border-radius:18px;
+  padding:1rem; box-shadow:0 20px 60px rgba(0,0,0,.3);
+}
+.video-modal__close {
+  position:absolute; top:.5rem; right:.6rem; width:36px; height:36px; border:none;
+  background:#e3f2fd; color:#0d47a1; border-radius:50%; font-size:1.2rem; cursor:pointer;
+}
+.video-modal__actions { display:flex; justify-content:flex-end; gap:.5rem; margin-top:.6rem; }
+
+/* iPad: Video schön fluid */
+.video-modal video { width:100%; height:auto; border-radius:12px; }
