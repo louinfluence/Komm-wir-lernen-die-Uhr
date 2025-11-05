@@ -613,3 +613,43 @@ body.night-mode {
   pointer-events: none;
 }
 
+/* ===== 📐 Flex-Anordnung: Lernvideo + Kapitelbox ===== */
+.chapter-flex-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* 🎬 Linke Spalte: Video */
+.chapter-flex-video {
+  flex: 1 1 20%;
+  min-width: 260px;
+  display: flex;
+  justify-content: center;
+}
+
+/* 📘 Rechte Spalte: Kapitelcontainer */
+.chapter-flex-content {
+  flex: 1 1 78%;
+}
+
+/* Für kleine Bildschirme unter 800 px: untereinander */
+@media (max-width: 800px) {
+  .chapter-flex-row {
+    flex-direction: column;
+    align-items: center;
+  }
+  .chapter-flex-video,
+  .chapter-flex-content {
+    flex: 1 1 100%;
+    max-width: 95%;
+  }
+}
+
+
