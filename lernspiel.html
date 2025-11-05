@@ -153,83 +153,84 @@
 
 <script>
 (() => {
+  // --- Elemente einsammeln ---
   const openBtn  = document.getElementById('openVideo');
   const modal    = document.getElementById('videoModal');
   const closeEls = modal ? modal.querySelectorAll('[data-close]') : [];
-  const video    = document.getElementById('lessonVideo'); // 💡 Hier wird "video" sauber definiert
+  const video    = document.getElementById('lessonVideo');
   const doneBtn  = document.getElementById('markWatched');
   const seenPill = document.getElementById('videoWatched');
   const loader   = document.getElementById('videoLoader');
-  const KEY      = 'volle_stunde_video_seen';
 
-  openBtn?.addEventListener('click', show);
-  closeEls.forEach(el => el.addEventListener('click', hide));
-  modal?.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
-
-   // === 🎬 Ladebalken & Prozentanzeige ===
+  // Loader-Bits
   const bar   = document.getElementById('loaderBar');
   const pctEl = document.getElementById('loaderPct');
+
+  const KEY = 'volle_stunde_video_seen';
   let metaReady = false;
 
-  const resetLoader = () => {
+  // --- Loader-Helfer zuerst definieren ---
+  function resetLoader() {
     if (!loader) return;
     loader.classList.remove('hidden');
     if (bar)   bar.style.width = '0%';
     if (pctEl) pctEl.textContent = '0%';
-  };
+  }
 
-  const hideLoader = () => {
+  function hideLoader() {
     if (!loader) return;
-    // einmal vollziehen, dann erst ausblenden → wirkt „fertig“
     if (bar)   bar.style.width = '100%';
     if (pctEl) pctEl.textContent = '100%';
     setTimeout(() => loader.classList.add('hidden'), 120);
-  };
+  }
 
-  // Prozent anhand gepufferter Daten (ohne Springen, dank CSS-Transition)
   function updateProgress() {
     if (!video || !metaReady || !isFinite(video.duration) || video.duration <= 0) return;
-
-    // größtes gepuffertes Ende nehmen
     let bufferedEnd = 0;
     for (let i = 0; i < video.buffered.length; i++) {
       bufferedEnd = Math.max(bufferedEnd, video.buffered.end(i));
     }
     const ratio = Math.min(bufferedEnd / video.duration, 1);
-    const pct   = Math.floor(ratio * 100);
-
+    const pct = Math.floor(ratio * 100);
     if (bar)   bar.style.width = pct + '%';
     if (pctEl) pctEl.textContent = pct + '%';
-
-    // fertig?
-    if (pct >= 100 || video.readyState >= 3 /* HAVE_FUTURE_DATA */) {
-      hideLoader();
-    }
+    if (pct >= 100 || video.readyState >= 3) hideLoader();
   }
 
-  // Events binden
+  // --- Jetzt show/hide definieren (nutzen resetLoader) ---
+  function show() {
+    if (!modal) return;
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    resetLoader(); // beim Öffnen neu starten
+  }
+
+  function hide() {
+    if (!modal) return;
+    modal.hidden = true;
+    document.body.style.overflow = '';
+    video?.pause();
+  }
+
+  // --- Events binden (nachdem show/hide existieren) ---
+  openBtn?.addEventListener('click', show);
+  closeEls.forEach(el => el.addEventListener('click', hide));
+  modal?.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+
   if (video) {
     video.addEventListener('loadedmetadata', () => { metaReady = true; updateProgress(); }, { once: true });
-    video.addEventListener('progress', updateProgress);
-    video.addEventListener('canplaythrough', hideLoader, { once: true });
+    video.addEventListener('progress',        updateProgress);
+    video.addEventListener('canplaythrough',  hideLoader, { once: true });
     video.addEventListener('error', () => {
       if (loader) loader.innerHTML = '<p>⚠️ Fehler beim Laden des Videos.</p>';
     });
   }
 
-  // Beim Öffnen des Modals Loader sichtbar & zurücksetzen
-  const show = () => {
-    modal.hidden = false;
-    document.body.style.overflow = 'hidden';
-    resetLoader();
-  };
-
-
-  // === 🎯 Als gesehen markieren ===
-  const markSeen = () => {
+  // --- „Gesehen“-Status ---
+  function markSeen() {
     localStorage.setItem(KEY, '1');
-    seenPill.hidden = false;
-  };
+    if (seenPill) seenPill.hidden = false;
+  }
   if (localStorage.getItem(KEY) === '1') seenPill.hidden = false;
 
   doneBtn?.addEventListener('click', () => { markSeen(); hide(); });
