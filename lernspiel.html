@@ -60,19 +60,8 @@
     <button class="video-modal__close" data-close aria-label="Schließen">×</button>
 
   <div class="video-frame">
-  <!-- Ladebalken -->
- <div class="video-loader" id="videoLoader">
-  <div class="loader-row">
-    <div class="loader-track">
-      <div class="loader-bar" id="loaderBar" style="width:0%"></div>
-    </div>
-    <span class="loader-pct" id="loaderPct">0%</span>
-  </div>
-  <p>Lernvideo wird geladen …</p>
-</div>
 
-
-  <!-- Video selbst -->
+    <!-- Video selbst -->
   <video id="lessonVideo" controls playsinline preload="metadata"
          poster="assets/images/video_poster.png" width="960" height="540">
     <source src="assets/videos/volle_stunde.mp4" type="video/mp4">
@@ -160,42 +149,8 @@
   const video    = document.getElementById('lessonVideo');
   const doneBtn  = document.getElementById('markWatched');
   const seenPill = document.getElementById('videoWatched');
-  const loader   = document.getElementById('videoLoader');
-
-  // Loader-Bits
-  const bar   = document.getElementById('loaderBar');
-  const pctEl = document.getElementById('loaderPct');
-
   const KEY = 'volle_stunde_video_seen';
   let metaReady = false;
-
-  // --- Loader-Helfer zuerst definieren ---
-  function resetLoader() {
-    if (!loader) return;
-    loader.classList.remove('hidden');
-    if (bar)   bar.style.width = '0%';
-    if (pctEl) pctEl.textContent = '0%';
-  }
-
-  function hideLoader() {
-    if (!loader) return;
-    if (bar)   bar.style.width = '100%';
-    if (pctEl) pctEl.textContent = '100%';
-    setTimeout(() => loader.classList.add('hidden'), 120);
-  }
-
-  function updateProgress() {
-    if (!video || !metaReady || !isFinite(video.duration) || video.duration <= 0) return;
-    let bufferedEnd = 0;
-    for (let i = 0; i < video.buffered.length; i++) {
-      bufferedEnd = Math.max(bufferedEnd, video.buffered.end(i));
-    }
-    const ratio = Math.min(bufferedEnd / video.duration, 1);
-    const pct = Math.floor(ratio * 100);
-    if (bar)   bar.style.width = pct + '%';
-    if (pctEl) pctEl.textContent = pct + '%';
-    if (pct >= 100 || video.readyState >= 3) hideLoader();
-  }
 
   // --- Jetzt show/hide definieren (nutzen resetLoader) ---
   function show() {
