@@ -145,20 +145,23 @@
 </div>    
   </main>
 
-  <script>
+<script>
 (() => {
   const openBtn  = document.getElementById('openVideo');
   const modal    = document.getElementById('videoModal');
   const closeEls = modal ? modal.querySelectorAll('[data-close]') : [];
-  const video    = document.getElementById('lessonVideo');
+  const video    = document.getElementById('lessonVideo'); // 💡 Hier wird "video" sauber definiert
   const doneBtn  = document.getElementById('markWatched');
   const seenPill = document.getElementById('videoWatched');
+  const loader   = document.getElementById('videoLoader');
   const KEY      = 'volle_stunde_video_seen';
 
   const show = () => {
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
+    if (loader) loader.classList.remove('hidden'); // 🔄 Beim Öffnen Loader wieder anzeigen
   };
+
   const hide = () => {
     modal.hidden = true;
     document.body.style.overflow = '';
@@ -169,6 +172,20 @@
   closeEls.forEach(el => el.addEventListener('click', hide));
   modal?.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
 
+  // === 🎬 Ladebalken ===
+  const hideLoader = () => {
+    if (loader) loader.classList.add('hidden');
+  };
+
+  if (video) {
+    video.addEventListener('canplaythrough', hideLoader, { once: true });
+    video.addEventListener('loadeddata', hideLoader, { once: true });
+    video.addEventListener('error', () => {
+      if (loader) loader.innerHTML = "<p>⚠️ Fehler beim Laden des Videos.</p>";
+    });
+  }
+
+  // === 🎯 Als gesehen markieren ===
   const markSeen = () => {
     localStorage.setItem(KEY, '1');
     seenPill.hidden = false;
@@ -178,23 +195,7 @@
   doneBtn?.addEventListener('click', () => { markSeen(); hide(); });
   video?.addEventListener('ended', markSeen);
 })();
-      // === Video-Loader ===
-  const loader = document.getElementById('videoLoader');
-  const hideLoader = () => {
-    if (loader) loader.classList.add('hidden');
-  };
-
-  // Video zeigt "geladen" an, sobald es ready ist
-  if (video) {
-    video.addEventListener('canplaythrough', hideLoader, { once: true });
-    video.addEventListener('loadeddata', hideLoader, { once: true });
-    video.addEventListener('error', () => {
-      if (loader) loader.innerHTML = "<p>⚠️ Fehler beim Laden des Videos.</p>";
-    });
-  }
-
 </script>
-
 
   <!-- Wichtig: Reihenfolge! Erst levels.js, dann main.js -->
   <script src="js/levels.js"></script>
