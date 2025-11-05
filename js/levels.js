@@ -410,14 +410,44 @@ function setClock(h, m) {
     document.body.classList.toggle("night-mode", h < 6 || h >= 20);
   }
 }
-
 function makeEchoSentence(q, hh, mm) {
-  let core = q.trim().replace(/\?$/, "");
-  core = core.replace(/^Wann\s+/i, "").replace(/^du\s+/i, "");
-  core = core.replace(/zu Abend/gi, "am Abend").replace(/zur schule/gi, "zur Schule");
+  // Basis: Frage aufbereiten
+  let core = q.trim()
+    .replace(/^Wann\s+/i, "")   // "Wann " entfernen
+    .replace(/\?$/, "")         // Fragezeichen weg
+    .replace(/\bdu\b/i, "")     // überflüssiges "du" löschen
+    .replace(/\s{2,}/g, " ")    // doppelte Leerzeichen aufräumen
+    .trim();
+
+  // Kleine grammatische Korrekturen
+  core = core
+    .replace(/^isst\s+du/i, "isst")        // "isst du" → "isst"
+    .replace(/^machst\s+du/i, "machst")    // "machst du" → "machst"
+    .replace(/^gehst\s+du/i, "gehst")      // "gehst du" → "gehst"
+    .replace(/^stehst\s+du/i, "stehst")    // "stehst du" → "stehst"
+    .replace(/^spielst\s+du/i, "spielst"); // "spielst du" → "spielst"
+
   return `Du ${core} um ${pad2(hh)}:${pad2(mm)} Uhr.`;
 }
+function makeEchoSentence(q, hh, mm) {
+  // Basis: Frage aufbereiten
+  let core = q.trim()
+    .replace(/^Wann\s+/i, "")   // "Wann " entfernen
+    .replace(/\?$/, "")         // Fragezeichen weg
+    .replace(/\bdu\b/i, "")     // überflüssiges "du" löschen
+    .replace(/\s{2,}/g, " ")    // doppelte Leerzeichen aufräumen
+    .trim();
 
+  // Kleine grammatische Korrekturen
+  core = core
+    .replace(/^isst\s+du/i, "isst")        // "isst du" → "isst"
+    .replace(/^machst\s+du/i, "machst")    // "machst du" → "machst"
+    .replace(/^gehst\s+du/i, "gehst")      // "gehst du" → "gehst"
+    .replace(/^stehst\s+du/i, "stehst")    // "stehst du" → "stehst"
+    .replace(/^spielst\s+du/i, "spielst"); // "spielst du" → "spielst"
+
+  return `Du ${core} um ${pad2(hh)}:${pad2(mm)} Uhr.`;
+}
 function updateFromPicker() {
   if (!timeInput.value) return;
   const [hh, mm] = timeInput.value.split(":").map(v => parseInt(v, 10));
