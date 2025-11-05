@@ -329,10 +329,9 @@ async function startLevel2(onComplete) {
 }
 
 /* =========================================================
-   🕒 Level 3 – Digital eingeben (HH:MM) → analoge Uhr stellt sich
-   - 4 zufällige Fragen aus level.questions
-   - Keine Richtig/Falsch-Logik, nur Visualisierung
-   - Nutzt assets / timeRange / background aus levels.json
+   🕒 Level 3 – iOS-Time-Picker (HH:MM) → analoge Uhr stellt sich
+   - 4 zufällige Fragen (wie gehabt)
+   - iPad/iOS zeigt Wheel-UI für <input type="time">
 ========================================================= */
 async function initLevel3(onComplete) {
   const container = document.getElementById("gameContainer");
@@ -356,7 +355,7 @@ async function initLevel3(onComplete) {
   const picked = idx.slice(0, 4);
   let step = 0;
 
-  // UI-Gerüst
+  // UI
   container.innerHTML = `
     <div class="clockInput-container">
       <h2>${level.title}</h2>
@@ -368,15 +367,9 @@ async function initLevel3(onComplete) {
         <img id="minuteHand"  src="${level.assets.minuteHand}" alt="Minutenzeiger">
       </div>
 
-      <div class="time-input">
-        <label class="visually-hidden" for="hoursInput">Stunden</label>
-        <input id="hoursInput" type="number"
-               min="${level.timeRange.minHour}" max="${level.timeRange.maxHour}"
-               value="7" inputmode="numeric" pattern="[0-9]*" aria-label="Stunden">
-        <span>:</span>
-        <label class="visually-hidden" for="minutesInput">Minuten</label>
-        <input id="minutesInput" type="number"
-               min="0" max="59" value="0" inputmode="numeric" pattern="[0-9]*" aria-label="Minuten">
+      <div class="time-input time-input--ios">
+        <label class="visually-hidden" for="timeInput">Uhrzeit wählen</label>
+        <input id="timeInput" type="time" min="00:00" max="23:59" step="60" aria-label="Uhrzeit">
       </div>
 
       <div class="clockInput-actions">
@@ -386,37 +379,33 @@ async function initLevel3(onComplete) {
     </div>
   `;
 
-  // Elemente holen
-  const hourInput  = document.getElementById("hoursInput");
-  const minuteInput= document.getElementById("minutesInput");
+  // Elemente
+  const timeInput  = document.getElementById("timeInput");
   const hourHand   = document.getElementById("hourHand");
   const minuteHand = document.getElementById("minuteHand");
   const questionEl = document.getElementById("clockQuestion");
   const nextBtn    = document.getElementById("nextQuestionBtn");
   const progressEl = document.getElementById("progressInfo");
 
-  // Hilfsfunktionen
-  const clamp = (v, min, max) => Math.min(max, Math.max(min, Number.isFinite(v) ? v : min));
-  const pad2  = n => String(n).padStart(2, "0");
+  // Helpers
+  const pad2 = (n) => String(n).padStart(2, "0");
 
-  function updateClockFromInputs() {
-    let h = clamp(parseInt(hourInput.value),  level.timeRange.minHour, level.timeRange.maxHour);
-    let m = clamp(parseInt(minuteInput.value), 0, 59);
-
-    // Werte normalisieren/visual fix
-    hourInput.value   = pad2(h);
-    minuteInput.value = pad2(m);
-
-    // Zeiger stellen
+  function setClock(h, m) {
     const hourAngle   = (h % 12) * 30 + m * 0.5;
     const minuteAngle = m * 6;
     hourHand.style.transform   = `rotate(${hourAngle}deg)`;
     minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
 
-    // Optional: Hintergrund Tag/Nacht
     if (level.background === "daynight") {
       document.body.classList.toggle("night-mode", h < 6 || h >= 20);
     }
+  }
+
+  function updateFromPicker() {
+    // Fallback: wenn leer, nichts tun
+    if (!timeInput.value) return;
+    const [hh, mm] = timeInput.value.split(":").map(v => parseInt(v, 10));
+    setClock(hh, mm);
   }
 
   function renderStep() {
@@ -424,23 +413,18 @@ async function initLevel3(onComplete) {
     questionEl.textContent = level.questions[qIdx];
     progressEl.textContent = `Frage ${step + 1} / ${picked.length}`;
 
-    // sinnvolle Startwerte je nach Frage (optional minimal)
-    if (step === 0) { hourInput.value = "07"; minuteInput.value = "00"; }
-    updateClockFromInputs();
+    // Startwert sinnvoll setzen
+    if (step === 0) timeInput.value = "07:00";
+    updateFromPicker();
   }
 
-  // Eingaben live verarbeiten
-  hourInput.addEventListener("input", updateClockFromInputs);
-  minuteInput.addEventListener("input", updateClockFromInputs);
-
-  // Enter → nächste Frage (komfortabel auf iPad mit Tastatur)
-  [hourInput, minuteInput].forEach(inp => {
-    inp.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") nextBtn.click();
-    });
+  // Events
+  timeInput.addEventListener("input",  updateFromPicker);
+  timeInput.addEventListener("change", updateFromPicker);
+  timeInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") nextBtn.click();
   });
 
-  // Weiter
   nextBtn.addEventListener("click", () => {
     step++;
     if (step < picked.length) {
@@ -450,7 +434,7 @@ async function initLevel3(onComplete) {
     }
   });
 
-  // Initial
+  // Init
   renderStep();
 }
 
