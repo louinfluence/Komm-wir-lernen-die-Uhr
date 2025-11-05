@@ -43,27 +43,29 @@
   <div class="chapter-container chapter-hours">
     <h2 class="chapter-header">🔵 Kapitel 2: Volle Stunden</h2>
 
-    <!-- 🎬 Lernvideo: Volle Stunden -->
+<!-- 🎬 Lernvideo: Volle Stunde -->
 <div class="level-card level-card--video" id="introVideoCard">
   <div class="video-card-head">
     <span class="pill pill--new">Neu</span>
     <span class="pill pill--seen" id="videoWatched" hidden>✓ angesehen</span>
   </div>
-  <h3>🎬 Lernvideo: Volle Stunden</h3>
-  <small>45 Sek. • Einstieg</small>
+
+  <h3>🎬 Lernvideo: Volle Stunde</h3>
+  <small>45 Sek. • Einstieg in die Uhr</small>
+
   <button class="btn-watch" id="openVideo">Ansehen</button>
 </div>
 
-<!-- Modal -->
+<!-- 🎥 Modal-Fenster für das Video -->
 <div id="videoModal" class="video-modal" hidden>
   <div class="video-modal__backdrop" data-close></div>
-  <div class="video-modal__dialog" role="dialog" aria-modal="true" aria-label="Lernvideo: Volle Stunden">
+
+  <div class="video-modal__dialog" role="dialog" aria-modal="true" aria-label="Lernvideo: Volle Stunde">
     <button class="video-modal__close" data-close aria-label="Schließen">×</button>
 
     <video id="lessonVideo" controls playsinline preload="metadata"
            poster="assets/images/video_poster.png" width="960" height="540">
-      <source src="assets/videos/volle-stunden-intro.mp4" type="video/mp4">
-      <!-- optional: <source src="assets/videos/volle-stunden-intro.webm" type="video/webm"> -->
+      <source src="assets/videos/volle_stunde.mp4" type="video/mp4">
       Dein Browser unterstützt das Video-Tag nicht.
     </video>
 
@@ -72,6 +74,7 @@
     </div>
   </div>
 </div>
+
 
     <div class="level-grid">
       <div class="level-card hours-level" data-level="4">
@@ -140,17 +143,26 @@
   const video    = document.getElementById('lessonVideo');
   const doneBtn  = document.getElementById('markWatched');
   const seenPill = document.getElementById('videoWatched');
-  const KEY      = 'intro_full_hours_watched';
+  const KEY      = 'volle_stunde_video_seen';
 
-  const show = () => { modal.hidden = false; document.body.style.overflow = 'hidden'; };
-  const hide = () => { modal.hidden = true; document.body.style.overflow = ''; video?.pause(); };
+  const show = () => {
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  };
+  const hide = () => {
+    modal.hidden = true;
+    document.body.style.overflow = '';
+    video?.pause();
+  };
 
   openBtn?.addEventListener('click', show);
   closeEls.forEach(el => el.addEventListener('click', hide));
   modal?.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
 
-  // „gesehen“ merken
-  const markSeen = () => { localStorage.setItem(KEY, '1'); seenPill.hidden = false; };
+  const markSeen = () => {
+    localStorage.setItem(KEY, '1');
+    seenPill.hidden = false;
+  };
   if (localStorage.getItem(KEY) === '1') seenPill.hidden = false;
 
   doneBtn?.addEventListener('click', () => { markSeen(); hide(); });
