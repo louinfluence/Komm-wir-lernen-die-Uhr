@@ -576,6 +576,10 @@ function startLevel4(onComplete) {
   // kleine Intro-Stunde (z.B. 3 Uhr) zum Erklären anzeigen
   setClock(3, 0, /*blinkHour=*/true);
 
+// 🔧 Korrektur nur für Intro-Demo
+const hourHand = document.getElementById("l4Hour");
+if (hourHand) hourHand.style.transform += " rotate(90deg)";
+
   // --- Quiz-Parameter ---
   const TOTAL = 6;      // Anzahl Aufgaben
   let step = 0;
