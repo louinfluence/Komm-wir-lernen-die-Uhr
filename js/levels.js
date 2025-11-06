@@ -529,9 +529,9 @@ async function initLevel4(onComplete) {
       <p class="l4-intro l4-info">Merke: <strong>Der rote Stundenzeiger</strong> zeigt auf die Zahl – <em>das ist die Stunde</em>.</p>
 
       <div class="l4-clock">
-        <img class="l4-face" src="assets/images/zbuhr.PNG" alt="Zifferblatt">
-        <img class="l4-hour" src="assets/images/roterzeiger.PNG" alt="Stundenzeiger">
-        <img class="l4-minute" src="assets/images/schwarzerzeiger.PNG" alt="Minutenzeiger">
+        <img class="l4-face" src="assets/images/zbuhr.png" alt="Zifferblatt">
+        <img class="l4-hour" src="assets/images/roterzeiger.png" alt="Stundenzeiger">
+        <img class="l4-minute" src="assets/images/schwarzerzeiger.png" alt="Minutenzeiger">
       </div>
 
       <div class="l4-actions">
