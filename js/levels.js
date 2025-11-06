@@ -667,150 +667,214 @@ function startLevel4(onComplete) {
 }
 
 /* =========================================================
-   🕓 Level 5 – Volle Stunden ohne Zahlen (MCQ)
-   - 6 Zufallsaufgaben aus 1..12
-   - Intro mit nur Stundenzeiger, dann Spiel mit 4 Antwortoptionen
+   🕒 LEVEL 5 – Volle Stunden ohne Ziffern
+   - Intro: Zeiger zeigt 12→3→6→9 mit Einblendung
+   - 6 Runden, jede Runde zufällige volle Stunde (1–12)
+   - 4 Antwortoptionen, 1 korrekt
 ========================================================= */
+
+function initLevel5(cb) { startLevel5(cb); }
+
 async function startLevel5(onComplete) {
   const container = document.getElementById("gameContainer");
-  container.innerHTML = "";
+  if (!container) return;
 
-  // ⚙️ Lokale Konfiguration (kein JSON nötig)
-  const cfg = {
-    id: 5,
-    title: "Uhren ohne Zahlen",
-    introText: "Manche Uhren haben keine Zahlen. Das ist okay! 🕒 Oben ist 12, unten 6, rechts 3, links 9. Merke dir die Position des roten Stundenzeigers – so erkennst du die Stunde.",
-    assets: {
-      clockFace: "assets/images/kzuhr.png",
-      hourHand:  "assets/images/roterzeiger.png",
-      minuteHand:"assets/images/schwarzerzeiger.png"
-    },
-    hours: [1,2,3,4,5,6,7,8,9,10,11,12],
-    numTasks: 6
-  };
+  // ---------- Helfer ----------
+  const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
 
-  // --- Intro: Uhr ohne Zahlen, nur Stundenzeiger sichtbar ---
-  container.innerHTML = `
-    <div class="task-block">
-      <h2>${cfg.title}</h2>
-      <p style="max-width:600px;margin:0 auto 1rem;">${cfg.introText}</p>
-
-      <div class="clock-wrapper" style="width:260px;height:260px;position:relative;margin:1rem auto;">
-        <img src="${cfg.assets.clockFace}"  alt="Uhr ohne Zahlen" style="position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;">
-        <img id="lv5Hour" src="${cfg.assets.hourHand}"   alt="Stundenzeiger" style="position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;animation:blink 1s step-end infinite;">
-      </div>
-
-      <button id="lv5Start" class="next-level-btn">Los geht’s</button>
-    </div>
-  `;
-
-  // Stundenzeiger ins Intro auf 12 Uhr setzen (deutlich)
-  const hIntro = document.getElementById("lv5Hour");
-  if (hIntro) hIntro.style.transform = `rotate(0deg)`; // 12 Uhr
-
-  // kleine Blink-Animation, falls nicht vorhanden
-  const styleId = "lv5BlinkStyle";
-  if (!document.getElementById(styleId)) {
-    const st = document.createElement("style");
-    st.id = styleId;
-    st.textContent = `@keyframes blink { 50% { opacity: .25 } }`;
-    document.head.appendChild(st);
+  function hourToAngle(h) {
+    // 12 → 0°, 3 → 90°, 6 → 180°, 9 → 270°
+    return (h % 12) * 30;
   }
 
-  document.getElementById("lv5Start")?.addEventListener("click", () => runGame(cfg, onComplete));
+  function buildClockDOM({ face = "assets/images/kzuhr.png", hour = "assets/images/roterzeiger.png" } = {}) {
+    const wrap = document.createElement("div");
+    wrap.className = "clock-wrapper";
+    wrap.innerHTML = `
+      <img id="lv5Face" src="${face}" alt="Ziffernblatt ohne Zahlen">
+      <img id="lv5Hour" src="${hour}" alt="Stundenzeiger">
+    `;
+    return wrap;
+  }
 
-  function runGame(cfg, onComplete) {
-    // — Spielaufbau
-    const hours = [...cfg.hours]; // 1..12
-    // shuffle
-    for (let i = hours.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [hours[i], hours[j]] = [hours[j], hours[i]];
+  // ---------- Intro ----------
+  container.innerHTML = "";
+  const intro = document.createElement("div");
+  intro.className = "task-block";
+  intro.innerHTML = `
+    <h2>Level 5: Uhr ohne Zahlen</h2>
+    <p class="explain">
+      Manche Uhren haben keine Ziffern. Merke dir:
+      <strong>oben = 12</strong>, <strong>rechts = 3</strong>,
+      <strong>unten = 6</strong>, <strong>links = 9</strong>.
+    </p>
+  `;
+  const clock = buildClockDOM();
+  const label = document.createElement("p");
+  label.id = "lv5IntroLabel";
+  label.className = "intro-label";
+  label.setAttribute("aria-live", "polite");
+  label.style.opacity = 0;
+
+  const goBtn = document.createElement("button");
+  goBtn.className = "next-level-btn";
+  goBtn.textContent = "Los geht’s";
+
+  intro.appendChild(clock);
+  intro.appendChild(label);
+  intro.appendChild(goBtn);
+  container.appendChild(intro);
+
+  const hourHandIntro = clock.querySelector("#lv5Hour");
+
+  function setHour(handEl, h) {
+    handEl.style.transform = `rotate(${hourToAngle(h)}deg)`;
+    handEl.style.transformOrigin = "50% 50%";
+  }
+
+  function showLabel(text) {
+    label.textContent = text;
+    label.style.opacity = 1;
+    setTimeout(() => (label.style.opacity = 0), 900);
+  }
+
+  // Intro-Sequenz 12 → 3 → 6 → 9
+  (function animateIntro() {
+    const seq = [
+      { h: 12, t: "12 Uhr" },
+      { h: 3,  t: "3 Uhr"  },
+      { h: 6,  t: "6 Uhr"  },
+      { h: 9,  t: "9 Uhr"  },
+    ];
+    let i = 0;
+    function step() {
+      const p = seq[i];
+      setHour(hourHandIntro, p.h);
+      showLabel(p.t);
+      i++;
+      if (i < seq.length) setTimeout(step, 1200);
     }
-    const picked = hours.slice(0, Math.max(1, Math.min(cfg.numTasks || 6, hours.length)));
+    step();
+  })();
 
-    let index = 0;
+  // ---------- Spielzustand ----------
+  const ROUNDS = 6;
+  const used = new Set(); // genutzte Stunden
 
-    container.innerHTML = `
-      <div class="task-block">
-        <h2>${cfg.title}</h2>
-        <p id="lv5Progress" style="margin-top:-.5rem;"></p>
+  function pickHour() {
+    // Zufällige volle Stunde 1..12, möglichst ohne Wiederholung
+    if (used.size >= 12) used.clear();
+    let h;
+    let tries = 0;
+    do {
+      h = rnd(1, 12);
+      tries++;
+      if (tries > 30) break; // Fallback
+    } while (used.has(h));
+    used.add(h);
+    return h;
+  }
 
-        <div class="clock-wrapper" style="width:260px;height:260px;position:relative;margin:1rem auto;">
-          <img src="${cfg.assets.clockFace}"  alt="Uhr ohne Zahlen" style="position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;">
-          <img id="lv5HourG" src="${cfg.assets.hourHand}"   alt="Stundenzeiger" style="position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;">
-          <img id="lv5MinG"  src="${cfg.assets.minuteHand}" alt="Minutenzeiger" style="position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;">
-        </div>
+  function makeOptions(correctHour) {
+    const opts = new Set([correctHour]);
+    while (opts.size < 4) {
+      const cand = rnd(1, 12);
+      if (!opts.has(cand)) opts.add(cand);
+    }
+    return shuffle([...opts]); // z.B. [7, 3, 11, 1]
+  }
 
-        <p style="font-weight:600">Wie spät ist es?</p>
-        <div id="lv5Options" class="options-grid" style="max-width:520px;"></div>
-      </div>
+  // ---------- Rundenanzeige ----------
+  let roundIndex = 0;
+
+  function renderRound() {
+    const h = pickHour();
+    const options = makeOptions(h);
+
+    container.innerHTML = "";
+    const block = document.createElement("div");
+    block.className = "task-block";
+    block.innerHTML = `
+      <h3>Welche Uhrzeit ist das?</h3>
+      <p class="explain">Tipp: Merke dir die Positionen (oben 12, rechts 3, unten 6, links 9).</p>
     `;
 
-    const hourImg  = document.getElementById("lv5HourG");
-    const minuteImg= document.getElementById("lv5MinG");
-    const optsWrap = document.getElementById("lv5Options");
-    const prog     = document.getElementById("lv5Progress");
+    // Uhr (ohne Zahlen)
+    const clock = buildClockDOM();
+    const hourHand = clock.querySelector("#lv5Hour");
+    setHour(hourHand, h);
+    block.appendChild(clock);
 
-    function showRound() {
-      const h = picked[index];            // 1..12
-      const m = 0;                        // volle Stunde
-      // Minutenzeiger wird zur Spielrunde eingeblendet (Wunsch aus L4)
-      if (minuteImg) minuteImg.style.display = "block";
+    // Antwort-Buttons
+    const grid = document.createElement("div");
+    grid.className = "options-grid";
+    options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.textContent = `${opt} Uhr`;
+      btn.addEventListener("click", () => handleAnswer(opt === h, btn));
+      grid.appendChild(btn);
+    });
+    block.appendChild(grid);
 
-      // Zeiger stellen
-      const hourAngle   = (h % 12) * 30 + m * 0.5;
-      const minuteAngle = m * 6;
-      if (hourImg)   hourImg.style.transform   = `rotate(${hourAngle}deg)`;
-      if (minuteImg) minuteImg.style.transform = `rotate(${minuteAngle}deg)`;
+    // Fortschritt
+    const prog = document.createElement("p");
+    prog.style.marginTop = "0.6rem";
+    prog.style.opacity = "0.8";
+    prog.textContent = `Aufgabe ${roundIndex + 1} / ${ROUNDS}`;
+    block.appendChild(prog);
 
-      // Fortschritt
-      if (prog) prog.textContent = `Aufgabe ${index + 1} / ${picked.length}`;
+    container.appendChild(block);
 
-      // 4 Antwortoptionen (eine korrekt, drei falsch)
-      const pool = [1,2,3,4,5,6,7,8,9,10,11,12].filter(x => x !== h);
-      // 3 zufällige falsche Antworten
-      for (let i = pool.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [pool[i], pool[j]] = [pool[j], pool[i]];
-      }
-      const wrongs = pool.slice(0, 3);
-      const options = [h, ...wrongs].sort(() => Math.random() - 0.5);
-
-      optsWrap.innerHTML = "";
-      options.forEach(val => {
-        const btn = document.createElement("button");
-        btn.className = "option-btn";
-        btn.textContent = `${val} Uhr`;
-        btn.addEventListener("click", () => handle(val === h, btn));
-        optsWrap.appendChild(btn);
-      });
-    }
-
-    function handle(correct, btn) {
-      // Buttons sperren
-      optsWrap.querySelectorAll("button").forEach(b => b.disabled = true);
-
-      if (correct) {
+    function handleAnswer(ok, btn) {
+      // Disable all
+      block.querySelectorAll(".option-btn").forEach(b => (b.disabled = true));
+      if (ok) {
         btn.classList.add("correct");
         reportAnswer(true);
       } else {
         btn.classList.add("wrong");
         reportAnswer(false);
       }
-
       setTimeout(() => {
-        index++;
-        if (index < picked.length) {
-          showRound();
-        } else {
-          showLevelComplete({ id: 5, title: cfg.title }, onComplete);
-        }
+        roundIndex++;
+        if (roundIndex < ROUNDS) renderRound();
+        else finish();
       }, 900);
     }
-
-    showRound();
   }
+
+  function finish() {
+    // Versuche, dein vorhandenes Weiter-Handling zu nutzen
+    if (typeof onComplete === "function") {
+      // „Weiter zu Level 6“
+      onComplete(6);
+    } else {
+      // Fallback: eigener Abschlussbildschirm
+      const done = document.createElement("div");
+      done.className = "task-block";
+      done.innerHTML = `<h2>🎉 Super gemacht!</h2><p>Du kannst Uhrzeiten auch ohne Ziffern erkennen.</p>`;
+      const btn = document.createElement("button");
+      btn.className = "next-level-btn";
+      btn.textContent = "➡️ Weiter zu Level 6";
+      btn.addEventListener("click", () => {
+        if (typeof window.__startLevel === "function") {
+          window.__startLevel(6);
+        }
+      });
+      done.appendChild(btn);
+      container.innerHTML = "";
+      container.appendChild(done);
+    }
+  }
+
+  // ---------- Los geht’s ----------
+  goBtn.addEventListener("click", () => {
+    // Start: Erste Runde
+    roundIndex = 0;
+    renderRound();
+  });
 }
 
 
