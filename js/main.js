@@ -116,7 +116,10 @@ window.addEventListener("DOMContentLoaded", () => {
       } 
       else if (level === 3 && typeof initLevel3 === "function") {
         initLevel3(showNextButton);
-      } 
+      }
+      else if (level === 4 && typeof initLevel4 === "function") {
+ 			 initLevel4(showNextButton);
+			} 
       else {
         console.warn("⚠️ Level-Funktion fehlt oder wurde nicht geladen:", level);
       }
