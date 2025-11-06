@@ -508,6 +508,127 @@ function renderStep() {
 }
 
 /* =========================================================
+   🕓 Level 4 – Volle Stunden (MCQ)
+   - Zifferblatt: zbuhr.png
+   - Minutenzeiger: schwarzerzeiger.png (wird versteckt)
+   - Stundenzeiger: roterzeiger.png (blinkt in der Intro)
+   - User tippt aus 4 Optionen die richtige Stunde (1–12)
+========================================================= */
+async function initLevel4(onComplete) {
+  const container = document.getElementById("gameContainer");
+  container.innerHTML = "";
+
+  // Falls du (noch) keinen Eintrag in levels.json hast:
+  // Wir verwenden lokal ein "Pseudo-Level"-Objekt für den Abschlussbildschirm.
+  const fauxLevel = { id: 4, title: "Volle Stunden 1" };
+
+  // --- UI Grundgerüst ---
+  container.innerHTML = `
+    <div class="l4-wrap">
+      <h2 class="l4-title">Volle Stunden</h2>
+      <p class="l4-intro l4-info">Merke: <strong>Der rote Stundenzeiger</strong> zeigt auf die Zahl – <em>das ist die Stunde</em>.</p>
+
+      <div class="l4-clock">
+        <img class="l4-face" src="assets/images/zbuhr.png" alt="Zifferblatt">
+        <img class="l4-hour" src="assets/images/roterzeiger.png" alt="Stundenzeiger">
+        <img class="l4-minute" src="assets/images/schwarzerzeiger.png" alt="Minutenzeiger">
+      </div>
+
+      <div class="l4-actions">
+        <button id="l4StartBtn" class="l4-btn">Los geht’s</button>
+      </div>
+
+      <div id="l4Question" class="l4-question" hidden></div>
+      <div id="l4Answers"  class="l4-answers" hidden></div>
+      <div id="l4Progress" class="l4-progress" hidden></div>
+    </div>
+  `;
+
+  const hourHand   = container.querySelector(".l4-hour");
+  const minuteHand = container.querySelector(".l4-minute");
+  const startBtn   = container.querySelector("#l4StartBtn");
+  const qEl        = container.querySelector("#l4Question");
+  const answersEl  = container.querySelector("#l4Answers");
+  const progressEl = container.querySelector("#l4Progress");
+
+  // Minutenzeiger ausblenden (Intro erklärt: wir schauen NUR die Stunde an)
+  minuteHand.style.opacity = "0";
+
+  // Kleine Blink-Animation für den Stundenzeiger (CSS-Klasse .l4-blink kommt gleich)
+  function blinkHourHand(ms = 1600) {
+    hourHand.classList.add("l4-blink");
+    setTimeout(() => hourHand.classList.remove("l4-blink"), ms);
+  }
+
+  // Hilfen
+  const setHour = (h /*1..12*/) => {
+    const angle = (h % 12) * 30; // volle Stunde → Minuten = 0
+    hourHand.style.transform = `rotate(${angle}deg)`;
+  };
+  const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+
+  // Quiz-Parameter
+  const TOTAL = 6;     // Anzahl Fragen (volle Stunden)
+  let step = 0;
+
+  function nextRound() {
+    step++;
+    if (step > TOTAL) {
+      // Abschluss
+      showLevelComplete(fauxLevel, onComplete);
+      return;
+    }
+
+    // Zufällige Stunde 1..12
+    const correct = Math.floor(Math.random() * 12) + 1;
+    setHour(correct);
+
+    // Antworten erzeugen (3 Distraktoren ≠ correct)
+    const pool = [1,2,3,4,5,6,7,8,9,10,11,12].filter(n => n !== correct);
+    shuffle(pool);
+    const opts = shuffle([correct, ...pool.slice(0,3)]);
+
+    // UI anzeigen
+    qEl.textContent = "Wie spät ist es?";
+    qEl.hidden = false;
+    answersEl.innerHTML = "";
+    answersEl.hidden = false;
+    progressEl.textContent = `Frage ${step} / ${TOTAL}`;
+    progressEl.hidden = false;
+
+    opts.forEach(h => {
+      const btn = document.createElement("button");
+      btn.className = "l4-answerBtn";
+      btn.textContent = `${h} Uhr`;
+      btn.addEventListener("click", () => {
+        // Feedback + Sound
+        const isCorrect = (h === correct);
+        if (isCorrect) {
+          btn.classList.add("correct");
+          reportAnswer(true);
+        } else {
+          btn.classList.add("wrong");
+          reportAnswer(false);
+        }
+
+        // Buttons deaktivieren
+        [...answersEl.querySelectorAll("button")].forEach(b => (b.disabled = true));
+
+        setTimeout(nextRound, 900);
+      });
+      answersEl.appendChild(btn);
+    });
+  }
+
+  // Intro: Stundenzeiger blinkt → Start
+  blinkHourHand();
+  startBtn.addEventListener("click", () => {
+    startBtn.disabled = true;
+    startBtn.classList.add("hidden");
+    nextRound();
+  });
+}
+/* =========================================================
    Aliase, damit main.js kompatibel bleibt
    ========================================================= */
 function initLevel1(cb){ startGameLevel(1, cb); }
