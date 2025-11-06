@@ -675,13 +675,19 @@ async function startLevel5(onComplete) {
   const container = document.getElementById("gameContainer");
   container.innerHTML = "";
 
-  const levels = await loadLevels();
-  const cfg = levels.find(l => l.id === 5 && l.type === "hours-mcq");
-  if (!cfg) {
-    console.error("Level 5 (hours-mcq) nicht gefunden.");
-    container.innerHTML = "<p>❌ Fehler beim Laden von Level 5.</p>";
-    return;
-  }
+  // ⚙️ Lokale Konfiguration (kein JSON nötig)
+  const cfg = {
+    id: 5,
+    title: "Uhren ohne Zahlen",
+    introText: "Manche Uhren haben keine Zahlen. Das ist okay! 🕒 Oben ist 12, unten 6, rechts 3, links 9. Merke dir die Position des roten Stundenzeigers – so erkennst du die Stunde.",
+    assets: {
+      clockFace: "assets/images/kzuhr.png",
+      hourHand:  "assets/images/roterzeiger.png",
+      minuteHand:"assets/images/schwarzerzeiger.png"
+    },
+    hours: [1,2,3,4,5,6,7,8,9,10,11,12],
+    numTasks: 6
+  };
 
   // --- Intro: Uhr ohne Zahlen, nur Stundenzeiger sichtbar ---
   container.innerHTML = `
@@ -692,7 +698,6 @@ async function startLevel5(onComplete) {
       <div class="clock-wrapper" style="width:260px;height:260px;position:relative;margin:1rem auto;">
         <img src="${cfg.assets.clockFace}"  alt="Uhr ohne Zahlen" style="position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;">
         <img id="lv5Hour" src="${cfg.assets.hourHand}"   alt="Stundenzeiger" style="position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;animation:blink 1s step-end infinite;">
-        <!-- Minutenzeiger im Intro ausgeblendet -->
       </div>
 
       <button id="lv5Start" class="next-level-btn">Los geht’s</button>
