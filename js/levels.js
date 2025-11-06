@@ -545,7 +545,7 @@ function startLevel4(onComplete) {
 
     <div class="l4-intro" id="l4Intro">
       <p><strong>Merke:</strong> Der <span style="color:#d32f2f;">rote Zeiger</span> ist der <strong>Stundenzeiger</strong>.
-      Er zeigt auf die Zahl der <strong>Stunde</strong>. Steht er z.&nbsp;B. auf der 3, ist es <strong>3&nbsp;Uhr</strong>.</p>
+      Er zeigt auf die Zahl der <strong>Stunde</strong>. Steht er z.&nbsp;B. auf der 6, ist es <strong>6&nbsp;Uhr</strong>.</p>
       <div class="l4-actions"><button id="l4StartBtn" class="l4-btn">Los geht’s</button></div>
     </div>
 
@@ -576,9 +576,6 @@ function startLevel4(onComplete) {
   // kleine Intro-Stunde (z.B. 3 Uhr) zum Erklären anzeigen
   setClock(3, 0, /*blinkHour=*/true);
 
-// 🔧 Korrektur nur für Intro-Demo
-const hourHand = document.getElementById("l4Hour");
-if (hourHand) hourHand.style.transform += " rotate(90deg)";
 
   // --- Quiz-Parameter ---
   const TOTAL = 6;      // Anzahl Aufgaben
