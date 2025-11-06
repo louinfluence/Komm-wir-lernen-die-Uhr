@@ -685,7 +685,9 @@ async function startLevel5(onComplete) {
 
   function hourToAngle(h) {
     // 12 → 0°, 3 → 90°, 6 → 180°, 9 → 270°
-    return (h % 12) * 30;
+   // Stundenzeiger (DEIN Zeiger muss um 180° gespiegelt werden)
+    const hourAngle = (h % 12) * 30 + m * 0.5 + 180;
+    hourHand.style.transform = `rotate(${hourAngle}deg)`;
   }
 
   function buildClockDOM({ face = "assets/images/kzuhr.png", hour = "assets/images/roterzeiger.png" } = {}) {
