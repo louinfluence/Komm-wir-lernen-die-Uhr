@@ -666,15 +666,155 @@ function startLevel4(onComplete) {
   }
 }
 
-// Alias, damit main.js Level 4 starten kann:
-function initLevel4(cb) { startLevel4(cb); }
+/* =========================================================
+   🕓 Level 5 – Volle Stunden ohne Zahlen (MCQ)
+   - 6 Zufallsaufgaben aus 1..12
+   - Intro mit nur Stundenzeiger, dann Spiel mit 4 Antwortoptionen
+========================================================= */
+async function startLevel5(onComplete) {
+  const container = document.getElementById("gameContainer");
+  container.innerHTML = "";
+
+  const levels = await loadLevels();
+  const cfg = levels.find(l => l.id === 5 && l.type === "hours-mcq");
+  if (!cfg) {
+    console.error("Level 5 (hours-mcq) nicht gefunden.");
+    container.innerHTML = "<p>❌ Fehler beim Laden von Level 5.</p>";
+    return;
+  }
+
+  // --- Intro: Uhr ohne Zahlen, nur Stundenzeiger sichtbar ---
+  container.innerHTML = `
+    <div class="task-block">
+      <h2>${cfg.title}</h2>
+      <p style="max-width:600px;margin:0 auto 1rem;">${cfg.introText}</p>
+
+      <div class="clock-wrapper" style="width:260px;height:260px;position:relative;margin:1rem auto;">
+        <img src="${cfg.assets.clockFace}"  alt="Uhr ohne Zahlen" style="position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;">
+        <img id="lv5Hour" src="${cfg.assets.hourHand}"   alt="Stundenzeiger" style="position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;animation:blink 1s step-end infinite;">
+        <!-- Minutenzeiger im Intro ausgeblendet -->
+      </div>
+
+      <button id="lv5Start" class="next-level-btn">Los geht’s</button>
+    </div>
+  `;
+
+  // Stundenzeiger ins Intro auf 12 Uhr setzen (deutlich)
+  const hIntro = document.getElementById("lv5Hour");
+  if (hIntro) hIntro.style.transform = `rotate(0deg)`; // 12 Uhr
+
+  // kleine Blink-Animation, falls nicht vorhanden
+  const styleId = "lv5BlinkStyle";
+  if (!document.getElementById(styleId)) {
+    const st = document.createElement("style");
+    st.id = styleId;
+    st.textContent = `@keyframes blink { 50% { opacity: .25 } }`;
+    document.head.appendChild(st);
+  }
+
+  document.getElementById("lv5Start")?.addEventListener("click", () => runGame(cfg, onComplete));
+
+  function runGame(cfg, onComplete) {
+    // — Spielaufbau
+    const hours = [...cfg.hours]; // 1..12
+    // shuffle
+    for (let i = hours.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [hours[i], hours[j]] = [hours[j], hours[i]];
+    }
+    const picked = hours.slice(0, Math.max(1, Math.min(cfg.numTasks || 6, hours.length)));
+
+    let index = 0;
+
+    container.innerHTML = `
+      <div class="task-block">
+        <h2>${cfg.title}</h2>
+        <p id="lv5Progress" style="margin-top:-.5rem;"></p>
+
+        <div class="clock-wrapper" style="width:260px;height:260px;position:relative;margin:1rem auto;">
+          <img src="${cfg.assets.clockFace}"  alt="Uhr ohne Zahlen" style="position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;">
+          <img id="lv5HourG" src="${cfg.assets.hourHand}"   alt="Stundenzeiger" style="position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;">
+          <img id="lv5MinG"  src="${cfg.assets.minuteHand}" alt="Minutenzeiger" style="position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 50%;">
+        </div>
+
+        <p style="font-weight:600">Wie spät ist es?</p>
+        <div id="lv5Options" class="options-grid" style="max-width:520px;"></div>
+      </div>
+    `;
+
+    const hourImg  = document.getElementById("lv5HourG");
+    const minuteImg= document.getElementById("lv5MinG");
+    const optsWrap = document.getElementById("lv5Options");
+    const prog     = document.getElementById("lv5Progress");
+
+    function showRound() {
+      const h = picked[index];            // 1..12
+      const m = 0;                        // volle Stunde
+      // Minutenzeiger wird zur Spielrunde eingeblendet (Wunsch aus L4)
+      if (minuteImg) minuteImg.style.display = "block";
+
+      // Zeiger stellen
+      const hourAngle   = (h % 12) * 30 + m * 0.5;
+      const minuteAngle = m * 6;
+      if (hourImg)   hourImg.style.transform   = `rotate(${hourAngle}deg)`;
+      if (minuteImg) minuteImg.style.transform = `rotate(${minuteAngle}deg)`;
+
+      // Fortschritt
+      if (prog) prog.textContent = `Aufgabe ${index + 1} / ${picked.length}`;
+
+      // 4 Antwortoptionen (eine korrekt, drei falsch)
+      const pool = [1,2,3,4,5,6,7,8,9,10,11,12].filter(x => x !== h);
+      // 3 zufällige falsche Antworten
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      const wrongs = pool.slice(0, 3);
+      const options = [h, ...wrongs].sort(() => Math.random() - 0.5);
+
+      optsWrap.innerHTML = "";
+      options.forEach(val => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.textContent = `${val} Uhr`;
+        btn.addEventListener("click", () => handle(val === h, btn));
+        optsWrap.appendChild(btn);
+      });
+    }
+
+    function handle(correct, btn) {
+      // Buttons sperren
+      optsWrap.querySelectorAll("button").forEach(b => b.disabled = true);
+
+      if (correct) {
+        btn.classList.add("correct");
+        reportAnswer(true);
+      } else {
+        btn.classList.add("wrong");
+        reportAnswer(false);
+      }
+
+      setTimeout(() => {
+        index++;
+        if (index < picked.length) {
+          showRound();
+        } else {
+          showLevelComplete({ id: 5, title: cfg.title }, onComplete);
+        }
+      }, 900);
+    }
+
+    showRound();
+  }
+}
+
 
 /* =========================================================
    Aliase, damit main.js kompatibel bleibt
    ========================================================= */
 function initLevel1(cb){ startGameLevel(1, cb); }
 function initLevel2(cb){ startLevel2(cb); }
-
+function initLevel4(cb) { startLevel4(cb); }
 
 
 
