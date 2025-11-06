@@ -508,126 +508,166 @@ function renderStep() {
 }
 
 /* =========================================================
-   🕓 Level 4 – Volle Stunden (MCQ)
-   - Zifferblatt: zbuhr.png
-   - Minutenzeiger: schwarzerzeiger.png (wird versteckt)
-   - Stundenzeiger: roterzeiger.png (blinkt in der Intro)
-   - User tippt aus 4 Optionen die richtige Stunde (1–12)
+   🕑 Level 4 – Volle Stunden 1 (nur ganze Stunden)
+   Assets:
+    - assets/images/zbuhr.png           (Zifferblatt)
+    - assets/images/roterzeiger.png     (Stundenzeiger)
+    - assets/images/schwarzerzeiger.png (Minutenzeiger)
 ========================================================= */
-async function initLevel4(onComplete) {
+function startLevel4(onComplete) {
   const container = document.getElementById("gameContainer");
   container.innerHTML = "";
 
-  // Falls du (noch) keinen Eintrag in levels.json hast:
-  // Wir verwenden lokal ein "Pseudo-Level"-Objekt für den Abschlussbildschirm.
-  const fauxLevel = { id: 4, title: "Volle Stunden 1" };
+  // --- kleines Style-Snippet für Blinken, falls nicht vorhanden ---
+  if (!document.getElementById("l4-pulse-style")) {
+    const st = document.createElement("style");
+    st.id = "l4-pulse-style";
+    st.textContent = `
+      @keyframes l4pulse { 0%{opacity:.45; transform:scale(.98)} 100%{opacity:1; transform:scale(1)} }
+      .l4-blink { animation: l4pulse .6s ease-in-out infinite alternate; }
+      .l4-clock { position:relative; width:280px; height:280px; margin:12px auto; }
+      .l4-clock img { position:absolute; top:0; left:0; width:100%; transform-origin:50% 50%; pointer-events:none; }
+      .l4-intro { background:#ffffff; border-radius:14px; padding:16px 18px; box-shadow:0 6px 18px rgba(0,0,0,.12); margin:8px auto 14px; max-width:520px; }
+      .l4-actions { margin:10px 0 2px; display:flex; gap:10px; justify-content:center; align-items:center; }
+      .l4-btn { background:linear-gradient(135deg,#4caf50,#81c784); color:#fff; border:0; border-radius:12px; padding:10px 16px; font-weight:700; cursor:pointer; }
+      .l4-grid { display:grid; grid-template-columns:repeat(2, min(220px, 42vw)); gap:10px; justify-content:center; margin-top:10px; }
+      .l4-opt { padding:12px; border-radius:10px; border:2px solid var(--menu-border, #cdd5df); background:var(--menu-bg, #f6f8fb); font-size:1.2rem; cursor:pointer; }
+      .l4-opt.correct { background:#4caf50; color:#fff; border-color:#2e7d32; }
+      .l4-opt.wrong   { background:#e53935; color:#fff; border-color:#b71c1c; }
+      .l4-progress { margin-top:4px; font-size:.95rem; opacity:.75; }
+    `;
+    document.head.appendChild(st);
+  }
 
-  // --- UI Grundgerüst ---
+  // --- Grundgerüst ---
   container.innerHTML = `
-    <div class="l4-wrap">
-      <h2 class="l4-title">Volle Stunden</h2>
-      <p class="l4-intro l4-info">Merke: <strong>Der rote Stundenzeiger</strong> zeigt auf die Zahl – <em>das ist die Stunde</em>.</p>
+    <h2>Level 4 – Volle Stunden</h2>
 
-      <div class="l4-clock">
-        <img class="l4-face" src="assets/images/zbuhr.png" alt="Zifferblatt">
-        <img class="l4-hour" src="assets/images/roterzeiger.png" alt="Stundenzeiger">
-        <img class="l4-minute" src="assets/images/schwarzerzeiger.png" alt="Minutenzeiger">
-      </div>
+    <div class="l4-intro" id="l4Intro">
+      <p><strong>Merke:</strong> Der <span style="color:#d32f2f;">rote Zeiger</span> ist der <strong>Stundenzeiger</strong>.
+      Er zeigt auf die Zahl der <strong>Stunde</strong>. Steht er z.&nbsp;B. auf der 3, ist es <strong>3&nbsp;Uhr</strong>.</p>
+      <div class="l4-actions"><button id="l4StartBtn" class="l4-btn">Los geht’s</button></div>
+    </div>
 
-      <div class="l4-actions">
-        <button id="l4StartBtn" class="l4-btn">Los geht’s</button>
-      </div>
+    <div class="l4-clock">
+      <img id="l4Face" src="assets/images/zbuhr.png" alt="Zifferblatt">
+      <img id="l4Hour" src="assets/images/roterzeiger.png" alt="Stundenzeiger">
+      <img id="l4Min"  src="assets/images/schwarzerzeiger.png" alt="Minutenzeiger">
+    </div>
 
-      <div id="l4Question" class="l4-question" hidden></div>
-      <div id="l4Answers"  class="l4-answers" hidden></div>
-      <div id="l4Progress" class="l4-progress" hidden></div>
+    <div id="l4QA" style="display:none;">
+      <div class="l4-grid" id="l4Options"></div>
+      <div class="l4-progress" id="l4Prog"></div>
     </div>
   `;
 
-  const hourHand   = container.querySelector(".l4-hour");
-  const minuteHand = container.querySelector(".l4-minute");
-  const startBtn   = container.querySelector("#l4StartBtn");
-  const qEl        = container.querySelector("#l4Question");
-  const answersEl  = container.querySelector("#l4Answers");
-  const progressEl = container.querySelector("#l4Progress");
+  // --- Elemente holen ---
+  const hourHand = document.getElementById("l4Hour");
+  const minHand  = document.getElementById("l4Min");
+  const startBtn = document.getElementById("l4StartBtn");
+  const qaWrap   = document.getElementById("l4QA");
+  const optGrid  = document.getElementById("l4Options");
+  const progEl   = document.getElementById("l4Prog");
+  const introBox = document.getElementById("l4Intro");
 
-  // Minutenzeiger ausblenden (Intro erklärt: wir schauen NUR die Stunde an)
-  minuteHand.style.opacity = "0";
+  // Minutenzeiger fürs Intro verstecken
+  minHand.style.display = "none";
 
-  // Kleine Blink-Animation für den Stundenzeiger (CSS-Klasse .l4-blink kommt gleich)
-  function blinkHourHand(ms = 1600) {
-    hourHand.classList.add("l4-blink");
-    setTimeout(() => hourHand.classList.remove("l4-blink"), ms);
-  }
+  // kleine Intro-Stunde (z.B. 3 Uhr) zum Erklären anzeigen
+  setClock(3, 0, /*blinkHour=*/true);
 
-  // Hilfen
-  const setHour = (h /*1..12*/) => {
-    const angle = (h % 12) * 30; // volle Stunde → Minuten = 0
-    hourHand.style.transform = `rotate(${angle}deg)`;
-  };
-  const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
-
-  // Quiz-Parameter
-  const TOTAL = 6;     // Anzahl Fragen (volle Stunden)
+  // --- Quiz-Parameter ---
+  const TOTAL = 6;      // Anzahl Aufgaben
   let step = 0;
 
-  function nextRound() {
+  // Klick auf „Los geht’s“ → Minutenzeiger wieder zeigen + Quiz starten
+  startBtn.addEventListener("click", () => {
+    // Minutenzeiger sichtbar
+    minHand.style.display = "block";
+    // Blink vom Stundenzeiger beenden
+    hourHand.classList.remove("l4-blink");
+    // Intro ausblenden, Fragenbereich zeigen
+    introBox.style.display = "none";
+    qaWrap.style.display = "block";
+    nextQuestion();
+  });
+
+  // ---- Hilfen ----
+  function setClock(h, m, blinkHour=false) {
+    // Minutenzeiger
+    const minuteAngle = m * 6; // 60m → 360°
+    minHand.style.transform = `rotate(${minuteAngle}deg)`;
+
+    // Stundenzeiger (DEIN Zeiger muss um 180° gespiegelt werden)
+    const hourAngle = (h % 12) * 30 + m * 0.5 + 180;
+    hourHand.style.transform = `rotate(${hourAngle}deg)`;
+
+    if (blinkHour) hourHand.classList.add("l4-blink");
+    else           hourHand.classList.remove("l4-blink");
+  }
+
+  function randHour() {
+    return Math.floor(Math.random() * 12) + 1; // 1..12
+  }
+
+  function buildOptions(correctHour) {
+    const set = new Set([correctHour]);
+    while (set.size < 4) set.add(randHour());
+    const arr = Array.from(set);
+    // shuffle
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function nextQuestion() {
     step++;
     if (step > TOTAL) {
-      // Abschluss
-      showLevelComplete(fauxLevel, onComplete);
+      showLevelComplete({ title: "Volle Stunden 1", id: 4 }, onComplete);
       return;
     }
 
-    // Zufällige Stunde 1..12
-    const correct = Math.floor(Math.random() * 12) + 1;
-    setHour(correct);
+    const hour = randHour();
+    setClock(hour, 0);
 
-    // Antworten erzeugen (3 Distraktoren ≠ correct)
-    const pool = [1,2,3,4,5,6,7,8,9,10,11,12].filter(n => n !== correct);
-    shuffle(pool);
-    const opts = shuffle([correct, ...pool.slice(0,3)]);
-
-    // UI anzeigen
-    qEl.textContent = "Wie spät ist es?";
-    qEl.hidden = false;
-    answersEl.innerHTML = "";
-    answersEl.hidden = false;
-    progressEl.textContent = `Frage ${step} / ${TOTAL}`;
-    progressEl.hidden = false;
-
-    opts.forEach(h => {
+    const options = buildOptions(hour);
+    optGrid.innerHTML = "";
+    options.forEach(h => {
       const btn = document.createElement("button");
-      btn.className = "l4-answerBtn";
+      btn.className = "l4-opt";
       btn.textContent = `${h} Uhr`;
-      btn.addEventListener("click", () => {
-        // Feedback + Sound
-        const isCorrect = (h === correct);
-        if (isCorrect) {
-          btn.classList.add("correct");
-          reportAnswer(true);
-        } else {
-          btn.classList.add("wrong");
-          reportAnswer(false);
-        }
-
-        // Buttons deaktivieren
-        [...answersEl.querySelectorAll("button")].forEach(b => (b.disabled = true));
-
-        setTimeout(nextRound, 900);
-      });
-      answersEl.appendChild(btn);
+      btn.addEventListener("click", () => handleAnswer(h, hour, btn));
+      optGrid.appendChild(btn);
     });
+
+    progEl.textContent = `Frage ${step} / ${TOTAL}`;
   }
 
-  // Intro: Stundenzeiger blinkt → Start
-  blinkHourHand();
-  startBtn.addEventListener("click", () => {
-    startBtn.disabled = true;
-    startBtn.classList.add("hidden");
-    nextRound();
-  });
+  function handleAnswer(chosen, correct, btn) {
+    // Buttons sperren
+    optGrid.querySelectorAll("button").forEach(b => b.disabled = true);
+
+    if (chosen === correct) {
+      btn.classList.add("correct");
+      reportAnswer(true);
+    } else {
+      btn.classList.add("wrong");
+      reportAnswer(false);
+      // richtigen markieren
+      optGrid.querySelectorAll("button").forEach(b => {
+        if (b.textContent.startsWith(correct + " ")) b.classList.add("correct");
+      });
+    }
+
+    setTimeout(nextQuestion, 900);
+  }
 }
+
+// Alias, damit main.js Level 4 starten kann:
+function initLevel4(cb) { startLevel4(cb); }
+
 /* =========================================================
    Aliase, damit main.js kompatibel bleibt
    ========================================================= */
