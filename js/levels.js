@@ -679,29 +679,36 @@ async function startLevel5(onComplete) {
   const container = document.getElementById("gameContainer");
   if (!container) return;
 
-  // ---------- Helfer ----------
+  // ---------- Helpers ----------
   const rnd     = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
   const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
 
-// --- Winkel & Setzen (mit optionalen Umdrehungen) ---
-const HOUR_SPRITE_OFFSET = 180; // bei Bedarf 0/90/180/270 testen
+  // Falls dein Stundenzeiger-Sprite „gespiegelt“ wirkt, Offset anpassen (0 / 90 / 180 / 270 testen)
+  const HOUR_SPRITE_OFFSET = 180;
 
-function hourToAngle(h) {
-  return (h % 12) * 30 + HOUR_SPRITE_OFFSET;
-}
+  function hourToAngle(h) {
+    return (h % 12) * 30 + HOUR_SPRITE_OFFSET;
+  }
 
-function setHour(el, h, turns = 0) {
-  const angle = hourToAngle(h) + 360 * turns;
-  el.style.transformOrigin = "50% 50%";
-  el.style.transform = `rotate(${angle}deg)`;
-}
+  // EINDEUTIG: nur diese Version verwenden (mit turns für endlosen Vorwärtslauf)
+  function setHour(el, h, turns = 0) {
+    const angle = hourToAngle(h) + 360 * turns;
+    el.style.transformOrigin = "50% 50%";
+    el.style.transform = `rotate(${angle}deg)`;
+  }
 
-  function buildClockDOM({ face = "assets/images/kzuhr.png", hour = "assets/images/roterzeiger.png" } = {}) {
+  function buildClockDOM({
+    face   = "assets/images/kzuhr.png",
+    hour   = "assets/images/roterzeiger.png",
+    minute = "assets/images/schwarzerzeiger.png",
+    showMinute = false
+  } = {}) {
     const wrap = document.createElement("div");
     wrap.className = "clock-wrapper";
     wrap.innerHTML = `
-      <img id="lv5Face" src="${face}" alt="Ziffernblatt ohne Zahlen">
-      <img id="lv5Hour" src="${hour}" alt="Stundenzeiger" style="transform-origin:50% 50%;">
+      <img id="lv5Face"   src="${face}"   alt="Ziffernblatt ohne Zahlen">
+      ${showMinute ? `<img id="lv5Minute" src="${minute}" alt="Minutenzeiger">` : ``}
+      <img id="lv5Hour"   src="${hour}"   alt="Stundenzeiger">
     `;
     return wrap;
   }
@@ -718,7 +725,9 @@ function setHour(el, h, turns = 0) {
       <strong>unten = 6</strong>, <strong>links = 9</strong>.
     </p>
   `;
-  const clock = buildClockDOM();
+
+  // Intro OHNE Minutenzeiger
+  const introClock = buildClockDOM({ showMinute: false });
   const label = document.createElement("p");
   label.id = "lv5IntroLabel";
   label.className = "intro-label";
@@ -729,46 +738,39 @@ function setHour(el, h, turns = 0) {
   goBtn.className = "next-level-btn";
   goBtn.textContent = "Los geht’s";
 
-  intro.appendChild(clock);
+  intro.appendChild(introClock);
   intro.appendChild(label);
   intro.appendChild(goBtn);
   container.appendChild(intro);
 
-  const hourHandIntro = clock.querySelector("#lv5Hour");
+  const hourHandIntro = introClock.querySelector("#lv5Hour");
 
-  function setHour(handEl, h) {
-    handEl.style.transform = `rotate(${hourToAngle(h)}deg)`;
+  // Endloser Vorwärts-Loop: 12 -> 3 -> 6 -> 9 -> (wieder 12 mit +360°)
+  const seqHours = [12, 3, 6, 9];
+  let introAlive = true;
+  let introTimer = null;
+
+  function runIntro() {
+    let stepIndex = 0; // 0,1,2,3,4,...  → alle 4 Schritte +360°
+    const tick = () => {
+      if (!introAlive) return;
+      const h = seqHours[stepIndex % seqHours.length];
+      const turns = Math.floor(stepIndex / seqHours.length);
+      setHour(hourHandIntro, h, turns);
+
+      label.textContent = `${h} Uhr`;
+      label.style.opacity = 1;
+      setTimeout(() => { label.style.opacity = 0; }, 900);
+
+      stepIndex++;
+      introTimer = setTimeout(tick, 1200);
+    };
+    // Start nach 1 s (wirkt smoother) – beginnt bei 12 Uhr
+    introTimer = setTimeout(tick, 1000);
   }
 
-  function showLabel(text) {
-    label.textContent = text;
-    label.style.opacity = 1;
-    setTimeout(() => (label.style.opacity = 0), 900);
-  }
+  runIntro();
 
-  // Intro: 12 -> 3 -> 6 -> 9 in Endlosschleife, flüssig vorwärts
-const seqHours = [12, 3, 6, 9];
-let introAlive = true;
-let introTimer = null;
-
-function runIntro(hourHandIntro, labelEl) {
-  let stepIndex = 0; // zählt hoch (0,1,2,3,4,...)
-  const tick = () => {
-    if (!introAlive) return;
-    const h = seqHours[stepIndex % seqHours.length];
-    const turns = Math.floor(stepIndex / seqHours.length); // alle 4 Schritte +360°
-    setHour(hourHandIntro, h, turns);
-
-    labelEl.textContent = `${h} Uhr`;
-    labelEl.style.opacity = 1;
-    setTimeout(() => { labelEl.style.opacity = 0; }, 900);
-
-    stepIndex++;
-    introTimer = setTimeout(tick, 1200);
-  };
-  // Start nach 1 s auf 12 Uhr (sieht smoother aus)
-  introTimer = setTimeout(tick, 1000);
-}
   // ---------- Spielzustand ----------
   const ROUNDS = 6;
   const used = new Set();
@@ -809,11 +811,18 @@ function runIntro(hourHandIntro, labelEl) {
       <p class="explain">Tipp: oben=12, rechts=3, unten=6, links=9.</p>
     `;
 
-    const clock = buildClockDOM();
-    const hourHand = clock.querySelector("#lv5Hour");
-    setHour(hourHand, h);
+    // Aufgaben-Uhr MIT Minutenzeiger (auf :00)
+    const clock = buildClockDOM({ showMinute: true });
+    const hourHand   = clock.querySelector("#lv5Hour");
+    const minuteHand = clock.querySelector("#lv5Minute");
+    setHour(hourHand, h, 0);
+    if (minuteHand) {
+      minuteHand.style.transformOrigin = "50% 50%";
+      minuteHand.style.transform = "rotate(0deg)"; // :00
+    }
     block.appendChild(clock);
 
+    // Antwort-Buttons
     const grid = document.createElement("div");
     grid.className = "options-grid";
     options.forEach(opt => {
@@ -825,6 +834,7 @@ function runIntro(hourHandIntro, labelEl) {
     });
     block.appendChild(grid);
 
+    // Fortschritt
     const prog = document.createElement("p");
     prog.style.marginTop = "0.6rem";
     prog.style.opacity = "0.8";
@@ -835,7 +845,7 @@ function runIntro(hourHandIntro, labelEl) {
 
     function handleAnswer(ok, btn) {
       block.querySelectorAll(".option-btn").forEach(b => (b.disabled = true));
-      if (ok) { btn.classList.add("correct"); reportAnswer(true); }
+      if (ok) { btn.classList.add("correct"); reportAnswer(true);  }
       else    { btn.classList.add("wrong");   reportAnswer(false); }
       setTimeout(() => {
         roundIndex++;
@@ -864,14 +874,12 @@ function runIntro(hourHandIntro, labelEl) {
 
   // ---------- Los geht’s ----------
   goBtn.addEventListener("click", () => {
-    // Intro stoppen und Spiel starten
     introAlive = false;
     if (introTimer) clearTimeout(introTimer);
     roundIndex = 0;
-    renderRound();
+    setTimeout(renderRound, 150);
   });
 }
-
 
 /* =========================================================
    Aliase, damit main.js kompatibel bleibt
