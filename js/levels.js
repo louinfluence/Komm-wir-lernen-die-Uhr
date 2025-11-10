@@ -509,6 +509,8 @@ function renderStep() {
 
 /* =========================================================
    🕑 LEVEL 4 – Volle Stunden 1 (nur ganze Stunden)
+   Intro: Uhr steht auf 6 Uhr, Stundenzeiger pulsiert
+   Quiz: 6 Aufgaben, ganze Stunden 1–12, 4 Optionen
    Assets:
     - assets/images/zbuhr.png           (Zifferblatt)
     - assets/images/roterzeiger.png     (Stundenzeiger)
@@ -521,7 +523,7 @@ function startLevel4(onComplete) {
   if (!container) return;
   container.innerHTML = "";
 
-  // --- kleine Styles (Blinken & Button-Zentrierung wie in L5) ---
+  // --- Styles (Blinken & Layout wie in Level 5) ---
   if (!document.getElementById("l4-style")) {
     const st = document.createElement("style");
     st.id = "l4-style";
@@ -540,17 +542,15 @@ function startLevel4(onComplete) {
     document.head.appendChild(st);
   }
 
-  // --- Hilfsfunktionen ---
-  const HOUR_SPRITE_OFFSET = 180; // ggf. 0/90/180/270 je nach PNG
+  // --- Helfer für Winkel/Zeiger ---
+  const HOUR_SPRITE_OFFSET = 180; // ggf. 0/90/180/270 je nach PNG-Ausrichtung
   const rnd = (a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
-  const hourToAngle = (h,m=0) => (h%12)*30 + m*0.5 + HOUR_SPRITE_OFFSET;
-  const minuteToAngle = (m)=> m*6;
+  const hourToAngle   = (h,m=0) => (h%12)*30 + m*0.5 + HOUR_SPRITE_OFFSET;
+  const minuteToAngle = (m)    => m*6;
 
-  const setHour = (el,h,turns=0)=>{
-    el.style.transform = `rotate(${hourToAngle(h)+360*turns}deg)`;
-  };
-  const setMinute = (el,m)=> el.style.transform = `rotate(${minuteToAngle(m)}deg)`;
+  const setHour   = (el,h,turns=0)=> el.style.transform   = `rotate(${hourToAngle(h)+360*turns}deg)`;
+  const setMinute = (el,m)=>        el.style.transform     = `rotate(${minuteToAngle(m)}deg)`;
 
   const buildClock = ({showMinute=false}={})=>{
     const wrap = document.createElement("div");
@@ -563,27 +563,22 @@ function startLevel4(onComplete) {
     return wrap;
   };
 
-  // --- Intro ---
+  // --- Intro (statisch 6 Uhr, pulsierender Stundenzeiger) ---
   const intro = document.createElement("div");
   intro.className = "task-block";
   intro.innerHTML = `
     <h2>Level 4 – Volle Stunden</h2>
     <p><strong>Merke:</strong> Der <span style="color:#d32f2f;">rote Zeiger</span> ist der <strong>Stundenzeiger</strong>.
-       Er zeigt auf die Zahl der Stunde. Steht er z. B. auf der 6, ist es <strong>6 Uhr</strong>.</p>
+       Er zeigt auf die Zahl der Stunde. Steht er auf der 6, ist es <strong>6&nbsp;Uhr</strong>.</p>
   `;
 
-  const clockIntro = buildClock({showMinute:false}); // Minutenzeiger im Intro aus
-  const hourIntro  = () => clockIntro.querySelector("#l4Hour");
+  const clockIntro = buildClock({showMinute:false}); // Minutenzeiger im Intro ausgeblendet
+  const hourIntro  = clockIntro.querySelector("#l4Hour");
+  setHour(hourIntro, 6, 0);           // ← fest auf 6 Uhr stellen
+  hourIntro.classList.add("l4-blink"); // pulsieren lassen
 
   intro.appendChild(clockIntro);
 
-  // Label, das kurz einblendet
-  const lbl = document.createElement("p");
-  lbl.style.opacity = 0;
-  lbl.style.transition = "opacity .25s";
-  intro.appendChild(lbl);
-
-  // Button wie in Level 5
   const startBtn = document.createElement("button");
   startBtn.id = "l4StartBtn";
   startBtn.className = "next-level-btn";
@@ -595,7 +590,7 @@ function startLevel4(onComplete) {
 
   container.appendChild(intro);
 
-  // --- Quiz ---
+  // --- Quiz (6 Aufgaben) ---
   const TOTAL = 6;
   let step = 0;
 
@@ -653,23 +648,17 @@ function startLevel4(onComplete) {
     step++;
     if (step < TOTAL) buildRound();
     else {
-      // Weiter-Flow wie gewohnt
       showLevelComplete({ title:"Volle Stunden 1", id:4 }, onComplete);
     }
   }
 
-  // Start-Button
+  // Start-Button: Intro → Quiz
   startBtn.addEventListener("click", ()=>{
-    // Intro stoppen
-    hourIntro().classList.remove("l4-blink");
-    if (introTimer) clearTimeout(introTimer);
-    // Quiz
+    hourIntro.classList.remove("l4-blink");
     step = 0;
     buildRound();
   });
 }
-
-
 /* =========================================================
    🕒 LEVEL 5 – Volle Stunden ohne Ziffern
    - Intro: Zeiger zeigt 12→3→6→9 (loop), 1s Startdelay
