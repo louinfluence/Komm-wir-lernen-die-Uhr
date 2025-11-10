@@ -595,27 +595,6 @@ function startLevel4(onComplete) {
 
   container.appendChild(intro);
 
-  // laufende Intro-Animation 12 → 3 → 6 → 9 → 12 → … (flüssig, ohne Zurückspringen)
-  const seq = [12,3,6,9];
-  let introIdx = 0;
-  let introTurns = 0;
-  let introTimer = null;
-  function tickIntro() {
-    const h = seq[introIdx];
-    setHour(hourIntro(), h, introTurns);
-    lbl.textContent = `${h} Uhr`;
-    lbl.style.opacity = 1;
-    setTimeout(()=>lbl.style.opacity=0, 900);
-
-    introIdx++;
-    if (introIdx >= seq.length) { introIdx = 0; introTurns++; }
-    introTimer = setTimeout(tickIntro, 1200);
-  }
-  // Start sofort sichtbar auf 12, dann animieren
-  setHour(hourIntro(), 12, 0);
-  hourIntro().classList.add("l4-blink");
-  setTimeout(tickIntro, 1000);
-
   // --- Quiz ---
   const TOTAL = 6;
   let step = 0;
