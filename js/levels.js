@@ -508,163 +508,188 @@ function renderStep() {
 }
 
 /* =========================================================
-   🕑 Level 4 – Volle Stunden 1 (nur ganze Stunden)
+   🕑 LEVEL 4 – Volle Stunden 1 (nur ganze Stunden)
    Assets:
     - assets/images/zbuhr.png           (Zifferblatt)
     - assets/images/roterzeiger.png     (Stundenzeiger)
     - assets/images/schwarzerzeiger.png (Minutenzeiger)
 ========================================================= */
+function initLevel4(cb){ startLevel4(cb); }
+
 function startLevel4(onComplete) {
   const container = document.getElementById("gameContainer");
+  if (!container) return;
   container.innerHTML = "";
 
-  // --- kleines Style-Snippet für Blinken, falls nicht vorhanden ---
-  if (!document.getElementById("l4-pulse-style")) {
+  // --- kleine Styles (Blinken & Button-Zentrierung wie in L5) ---
+  if (!document.getElementById("l4-style")) {
     const st = document.createElement("style");
-    st.id = "l4-pulse-style";
+    st.id = "l4-style";
     st.textContent = `
-      @keyframes l4pulse { 0%{opacity:.45; transform:scale(.98)} 100%{opacity:1; transform:scale(1)} }
-      .l4-blink { animation: l4pulse .6s ease-in-out infinite alternate; }
-      .l4-clock { position:relative; width:280px; height:280px; margin:12px auto; }
-      .l4-clock img { position:absolute; top:0; left:0; width:100%; transform-origin:50% 50%; pointer-events:none; }
-      .l4-intro { background:#ffffff; border-radius:14px; padding:16px 18px; box-shadow:0 6px 18px rgba(0,0,0,.12); margin:8px auto 14px; max-width:520px; }
-      .l4-actions { margin:10px 0 2px; display:flex; gap:10px; justify-content:center; align-items:center; }
-      .l4-btn { background:linear-gradient(135deg,#4caf50,#81c784); color:#fff; border:0; border-radius:12px; padding:10px 16px; font-weight:700; cursor:pointer; }
-      .l4-grid { display:grid; grid-template-columns:repeat(2, min(220px, 42vw)); gap:10px; justify-content:center; margin-top:10px; }
-      .l4-opt { padding:12px; border-radius:10px; border:2px solid var(--menu-border, #cdd5df); background:var(--menu-bg, #f6f8fb); font-size:1.2rem; cursor:pointer; }
-      .l4-opt.correct { background:#4caf50; color:#fff; border-color:#2e7d32; }
-      .l4-opt.wrong   { background:#e53935; color:#fff; border-color:#b71c1c; }
-      .l4-progress { margin-top:4px; font-size:.95rem; opacity:.75; }
+      @keyframes l4pulse{0%{opacity:.45;transform:scale(.98)}100%{opacity:1;transform:scale(1)}}
+      .l4-blink{animation:l4pulse .6s ease-in-out infinite alternate}
+      .l4-clock{position:relative;width:280px;height:280px;margin:12px auto}
+      .l4-clock img{position:absolute;top:0;left:0;width:100%;transform-origin:50% 50%;pointer-events:none}
+      .l4-actions{display:flex;justify-content:center;margin-top:10px}
+      .options-grid{display:grid;grid-template-columns:repeat(2,min(220px,42vw));gap:10px;justify-content:center;margin-top:10px}
+      .option-btn{padding:12px;border-radius:10px;border:2px solid var(--menu-border,#cdd5df);background:var(--menu-bg,#f6f8fb);font-size:1.2rem;cursor:pointer}
+      .option-btn.correct{background:#4caf50;color:#fff;border-color:#2e7d32}
+      .option-btn.wrong{background:#e53935;color:#fff;border-color:#b71c1c}
+      .l4-progress{margin-top:6px;opacity:.75}
     `;
     document.head.appendChild(st);
   }
 
-  // --- Grundgerüst ---
-  container.innerHTML = `
-    <h2>Level 4 – Volle Stunden</h2>
+  // --- Hilfsfunktionen ---
+  const HOUR_SPRITE_OFFSET = 180; // ggf. 0/90/180/270 je nach PNG
+  const rnd = (a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
-    <div class="l4-intro" id="l4Intro">
-      <p><strong>Merke:</strong> Der <span style="color:#d32f2f;">rote Zeiger</span> ist der <strong>Stundenzeiger</strong>.
-      Er zeigt auf die Zahl der <strong>Stunde</strong>. Steht er z.&nbsp;B. auf der 6, ist es <strong>6&nbsp;Uhr</strong>.</p>
-      <div class="l4-actions"><button id="l4StartBtn" class="l4-btn">Los geht’s</button></div>
-    </div>
+  const hourToAngle = (h,m=0) => (h%12)*30 + m*0.5 + HOUR_SPRITE_OFFSET;
+  const minuteToAngle = (m)=> m*6;
 
-    <div class="l4-clock">
+  const setHour = (el,h,turns=0)=>{
+    el.style.transform = `rotate(${hourToAngle(h)+360*turns}deg)`;
+  };
+  const setMinute = (el,m)=> el.style.transform = `rotate(${minuteToAngle(m)}deg)`;
+
+  const buildClock = ({showMinute=false}={})=>{
+    const wrap = document.createElement("div");
+    wrap.className = "l4-clock";
+    wrap.innerHTML = `
       <img id="l4Face" src="assets/images/zbuhr.png" alt="Zifferblatt">
-      <img id="l4Hour" src="assets/images/roterzeiger.png" alt="Stundenzeiger">
-      <img id="l4Min"  src="assets/images/schwarzerzeiger.png" alt="Minutenzeiger">
-    </div>
+      ${showMinute ? `<img id="l4Min"  src="assets/images/schwarzerzeiger.png" alt="Minutenzeiger">` : ``}
+      <img id="l4Hour" src="assets/images/roterzeiger.png"     alt="Stundenzeiger">
+    `;
+    return wrap;
+  };
 
-    <div id="l4QA" style="display:none;">
-      <div class="l4-grid" id="l4Options"></div>
-      <div class="l4-progress" id="l4Prog"></div>
-    </div>
+  // --- Intro ---
+  const intro = document.createElement("div");
+  intro.className = "task-block";
+  intro.innerHTML = `
+    <h2>Level 4 – Volle Stunden</h2>
+    <p><strong>Merke:</strong> Der <span style="color:#d32f2f;">rote Zeiger</span> ist der <strong>Stundenzeiger</strong>.
+       Er zeigt auf die Zahl der Stunde. Steht er z. B. auf der 6, ist es <strong>6 Uhr</strong>.</p>
   `;
 
-  // --- Elemente holen ---
-  const hourHand = document.getElementById("l4Hour");
-  const minHand  = document.getElementById("l4Min");
-  const startBtn = document.getElementById("l4StartBtn");
-  const qaWrap   = document.getElementById("l4QA");
-  const optGrid  = document.getElementById("l4Options");
-  const progEl   = document.getElementById("l4Prog");
-  const introBox = document.getElementById("l4Intro");
+  const clockIntro = buildClock({showMinute:false}); // Minutenzeiger im Intro aus
+  const hourIntro  = () => clockIntro.querySelector("#l4Hour");
 
-  // Minutenzeiger fürs Intro verstecken
-  minHand.style.display = "none";
+  intro.appendChild(clockIntro);
 
-  // kleine Intro-Stunde (z.B. 3 Uhr) zum Erklären anzeigen
-  setClock(3, 0, /*blinkHour=*/true);
+  // Label, das kurz einblendet
+  const lbl = document.createElement("p");
+  lbl.style.opacity = 0;
+  lbl.style.transition = "opacity .25s";
+  intro.appendChild(lbl);
 
+  // Button wie in Level 5
+  const startBtn = document.createElement("button");
+  startBtn.id = "l4StartBtn";
+  startBtn.className = "next-level-btn";
+  startBtn.textContent = "Los geht’s";
+  const actions = document.createElement("div");
+  actions.className = "l4-actions";
+  actions.appendChild(startBtn);
+  intro.appendChild(actions);
 
-  // --- Quiz-Parameter ---
-  const TOTAL = 6;      // Anzahl Aufgaben
+  container.appendChild(intro);
+
+  // laufende Intro-Animation 12 → 3 → 6 → 9 → 12 → … (flüssig, ohne Zurückspringen)
+  const seq = [12,3,6,9];
+  let introIdx = 0;
+  let introTurns = 0;
+  let introTimer = null;
+  function tickIntro() {
+    const h = seq[introIdx];
+    setHour(hourIntro(), h, introTurns);
+    lbl.textContent = `${h} Uhr`;
+    lbl.style.opacity = 1;
+    setTimeout(()=>lbl.style.opacity=0, 900);
+
+    introIdx++;
+    if (introIdx >= seq.length) { introIdx = 0; introTurns++; }
+    introTimer = setTimeout(tickIntro, 1200);
+  }
+  // Start sofort sichtbar auf 12, dann animieren
+  setHour(hourIntro(), 12, 0);
+  hourIntro().classList.add("l4-blink");
+  setTimeout(tickIntro, 1000);
+
+  // --- Quiz ---
+  const TOTAL = 6;
   let step = 0;
 
-  // Klick auf „Los geht’s“ → Minutenzeiger wieder zeigen + Quiz starten
-  startBtn.addEventListener("click", () => {
-    // Minutenzeiger sichtbar
-    minHand.style.display = "block";
-    // Blink vom Stundenzeiger beenden
-    hourHand.classList.remove("l4-blink");
-    // Intro ausblenden, Fragenbereich zeigen
-    introBox.style.display = "none";
-    qaWrap.style.display = "block";
-    nextQuestion();
-  });
+  function buildRound() {
+    container.innerHTML = "";
+    const block = document.createElement("div");
+    block.className = "task-block";
 
-  // ---- Hilfen ----
-  function setClock(h, m, blinkHour=false) {
-    // Minutenzeiger
-    const minuteAngle = m * 6; // 60m → 360°
-    minHand.style.transform = `rotate(${minuteAngle}deg)`;
+    block.innerHTML = `
+      <h3>Welche Uhrzeit ist das?</h3>
+      <p class="explain">Tipp: oben=12, rechts=3, unten=6, links=9.</p>
+    `;
 
-    // Stundenzeiger (DEIN Zeiger muss um 180° gespiegelt werden)
-    const hourAngle = (h % 12) * 30 + m * 0.5 + 180;
-    hourHand.style.transform = `rotate(${hourAngle}deg)`;
+    // Uhr MIT Minutenzeiger (auf 12)
+    const clock = buildClock({showMinute:true});
+    const hEl = clock.querySelector("#l4Hour");
+    const mEl = clock.querySelector("#l4Min");
+    const hour = rnd(1,12);
+    setHour(hEl, hour, 0);
+    setMinute(mEl, 0);
+    block.appendChild(clock);
 
-    if (blinkHour) hourHand.classList.add("l4-blink");
-    else           hourHand.classList.remove("l4-blink");
-  }
-
-  function randHour() {
-    return Math.floor(Math.random() * 12) + 1; // 1..12
-  }
-
-  function buildOptions(correctHour) {
-    const set = new Set([correctHour]);
-    while (set.size < 4) set.add(randHour());
-    const arr = Array.from(set);
-    // shuffle
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }
-
-  function nextQuestion() {
-    step++;
-    if (step > TOTAL) {
-      showLevelComplete({ title: "Volle Stunden 1", id: 4 }, onComplete);
-      return;
-    }
-
-    const hour = randHour();
-    setClock(hour, 0);
-
-    const options = buildOptions(hour);
-    optGrid.innerHTML = "";
-    options.forEach(h => {
-      const btn = document.createElement("button");
-      btn.className = "l4-opt";
-      btn.textContent = `${h} Uhr`;
-      btn.addEventListener("click", () => handleAnswer(h, hour, btn));
-      optGrid.appendChild(btn);
+    // Optionen
+    const optsWrap = document.createElement("div");
+    optsWrap.className = "options-grid";
+    const opts = new Set([hour]);
+    while (opts.size < 4) opts.add(rnd(1,12));
+    const options = [...opts].sort(()=>Math.random()-0.5);
+    options.forEach(val=>{
+      const b = document.createElement("button");
+      b.className = "option-btn";
+      b.textContent = `${val} Uhr`;
+      b.addEventListener("click",()=>handleAnswer(val===hour,b,optsWrap,()=>next()));
+      optsWrap.appendChild(b);
     });
+    block.appendChild(optsWrap);
 
-    progEl.textContent = `Frage ${step} / ${TOTAL}`;
+    // Fortschritt
+    const prog = document.createElement("p");
+    prog.className = "l4-progress";
+    prog.textContent = `Frage ${step+1} / ${TOTAL}`;
+    block.appendChild(prog);
+
+    container.appendChild(block);
   }
 
-  function handleAnswer(chosen, correct, btn) {
-    // Buttons sperren
-    optGrid.querySelectorAll("button").forEach(b => b.disabled = true);
+  function handleAnswer(ok, btn, scope, after){
+    scope.querySelectorAll("button").forEach(b=>b.disabled=true);
+    if (ok){ btn.classList.add("correct"); reportAnswer(true); }
+    else   { btn.classList.add("wrong");   reportAnswer(false); }
+    setTimeout(after, 900);
+  }
 
-    if (chosen === correct) {
-      btn.classList.add("correct");
-      reportAnswer(true);
-    } else {
-      btn.classList.add("wrong");
-      reportAnswer(false);
-      // richtigen markieren
-      optGrid.querySelectorAll("button").forEach(b => {
-        if (b.textContent.startsWith(correct + " ")) b.classList.add("correct");
-      });
+  function next(){
+    step++;
+    if (step < TOTAL) buildRound();
+    else {
+      // Weiter-Flow wie gewohnt
+      showLevelComplete({ title:"Volle Stunden 1", id:4 }, onComplete);
     }
-
-    setTimeout(nextQuestion, 900);
   }
+
+  // Start-Button
+  startBtn.addEventListener("click", ()=>{
+    // Intro stoppen
+    hourIntro().classList.remove("l4-blink");
+    if (introTimer) clearTimeout(introTimer);
+    // Quiz
+    step = 0;
+    buildRound();
+  });
 }
+
 
 /* =========================================================
    🕒 LEVEL 5 – Volle Stunden ohne Ziffern
@@ -770,6 +795,8 @@ async function startLevel5(onComplete) {
   }
 
   runIntro();
+  
+  
 
   // ---------- Spielzustand ----------
   const ROUNDS = 6;
