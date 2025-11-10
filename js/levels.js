@@ -683,13 +683,18 @@ async function startLevel5(onComplete) {
   const rnd     = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
   const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
 
-  // Falls dein Zeiger-Asset um 180° „verkehrt herum“ ist: Offset hier anpassen (0 oder 180).
-  const HOUR_SPRITE_OFFSET = 180;
+// --- Winkel & Setzen (mit optionalen Umdrehungen) ---
+const HOUR_SPRITE_OFFSET = 180; // bei Bedarf 0/90/180/270 testen
 
-  function hourToAngle(h) {
-    // 12 → 0°, 3 → 90°, 6 → 180°, 9 → 270°
-    return (h % 12) * 30 + HOUR_SPRITE_OFFSET;
-  }
+function hourToAngle(h) {
+  return (h % 12) * 30 + HOUR_SPRITE_OFFSET;
+}
+
+function setHour(el, h, turns = 0) {
+  const angle = hourToAngle(h) + 360 * turns;
+  el.style.transformOrigin = "50% 50%";
+  el.style.transform = `rotate(${angle}deg)`;
+}
 
   function buildClockDOM({ face = "assets/images/kzuhr.png", hour = "assets/images/roterzeiger.png" } = {}) {
     const wrap = document.createElement("div");
@@ -741,28 +746,29 @@ async function startLevel5(onComplete) {
     setTimeout(() => (label.style.opacity = 0), 900);
   }
 
-  // Intro-Sequenz 12 → 3 → 6 → 9 (loop), Start nach 1s
-  const seq = [
-    { h: 12, t: "12 Uhr" },
-    { h: 3,  t: "3 Uhr"  },
-    { h: 6,  t: "6 Uhr"  },
-    { h: 9,  t: "9 Uhr"  },
-  ];
-  let introIdx = 0;
-  let introAlive = true;
-  let introTimer = null;
+  // Intro: 12 -> 3 -> 6 -> 9 in Endlosschleife, flüssig vorwärts
+const seqHours = [12, 3, 6, 9];
+let introAlive = true;
+let introTimer = null;
 
-  function introStep() {
+function runIntro(hourHandIntro, labelEl) {
+  let stepIndex = 0; // zählt hoch (0,1,2,3,4,...)
+  const tick = () => {
     if (!introAlive) return;
-    const p = seq[introIdx];
-    setHour(hourHandIntro, p.h);
-    showLabel(p.t);
-    introIdx = (introIdx + 1) % seq.length;
-    introTimer = setTimeout(introStep, 1200);
-  }
-  // 1s Delay vor dem ersten Step
-  setTimeout(introStep, 1000);
+    const h = seqHours[stepIndex % seqHours.length];
+    const turns = Math.floor(stepIndex / seqHours.length); // alle 4 Schritte +360°
+    setHour(hourHandIntro, h, turns);
 
+    labelEl.textContent = `${h} Uhr`;
+    labelEl.style.opacity = 1;
+    setTimeout(() => { labelEl.style.opacity = 0; }, 900);
+
+    stepIndex++;
+    introTimer = setTimeout(tick, 1200);
+  };
+  // Start nach 1 s auf 12 Uhr (sieht smoother aus)
+  introTimer = setTimeout(tick, 1000);
+}
   // ---------- Spielzustand ----------
   const ROUNDS = 6;
   const used = new Set();
