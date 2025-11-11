@@ -338,31 +338,57 @@ function initClock() {
   }
 }
 
-/* Lernvideo links neben Kapitel 2 anordnen (iPad-sicher) */
-(function arrangeVideoNextToChapter2(){
-  function mount(){
-    const video = document.getElementById('learnVideoCard');
-    const kap2  = document.getElementById('chapter2');
-    if (!video || !kap2) return false;
+/* Lernvideo links neben Kapitel 2 anordnen (iPad-sicher & robust) */
+(function arrangeLearnVideoNextToChapter2(){
+  const $ = (s) => document.querySelector(s);
 
-    // Schon gruppiert?
-    if (kap2.previousElementSibling?.classList?.contains('section-row--kap2')) return true;
+  function findVideo() {
+    return $('#learnVideoCard')                // bevorzugte ID
+        || $('.level-card--video')             // alternative Klasse
+        || $('[data-type="learnvideo"]');      // Fallback-Attribut
+  }
+  function findChapter2() {
+    return $('#chapter2')                      // bevorzugte ID
+        || document.querySelector('.chapter-container.chapter-hours') // Kap.2-Box
+        || $('[data-chapter="2"]');            // Fallback-Attribut
+  }
+
+  function alreadyMounted(video, kap2){
+    const p = kap2.parentElement;
+    return p && p.classList.contains('section-row--kap2') && p.contains(video);
+  }
+
+  function mount(){
+    const video = findVideo();
+    const kap2  = findChapter2();
+    if (!video || !kap2) return false;
+    if (alreadyMounted(video, kap2)) return true;
 
     const row = document.createElement('div');
     row.className = 'section-row section-row--kap2';
+    row.style.width = '100%';       // gegen Body-Zentrierung
+    row.style.alignSelf = 'stretch';
+
+    // Wrapper direkt VOR Kapitel 2 einfügen und beide hinein schieben
     kap2.parentNode.insertBefore(row, kap2);
-    row.appendChild(video); // links
-    row.appendChild(kap2);  // rechts
+    row.appendChild(video);         // links
+    row.appendChild(kap2);          // rechts
+
+    // angleichen, falls Videokarte kein Card-Look hat
+    video.classList.add('video-card');
     return true;
   }
 
-  // sofort & wiederholt versuchen (Safari/iPad lädt DOM manchmal spät)
-  function tryMount(){ if (!mount()) setTimeout(tryMount, 120); }
+  // Safari/iPad: mehrfach versuchen, bis DOM stabil ist
+  function tryMount(tries=0){
+    if (mount()) return;
+    if (tries < 25) setTimeout(() => tryMount(tries+1), 120);
+  }
   tryMount();
 
-  // falls Inhalte nachträglich eingefügt werden
+  // Reagieren auf nachträgliche DOM-Änderungen
   const mo = new MutationObserver(() => mount());
-  mo.observe(document.body, { childList:true, subtree:true });
+  mo.observe(document.body, { childList: true, subtree: true });
 })();
 
 /* -----------------------------------------------------------
