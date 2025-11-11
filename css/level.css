@@ -756,6 +756,17 @@ body.night-mode {
   .section-row #chapter2   { order: 1; }
 }
 
+.section-row{
+  display:grid;
+  grid-template-columns:minmax(260px,360px) 1fr;
+  gap:16px; align-items:start; margin:20px 0;
+}
+@media (max-width:900px){
+  .section-row{ grid-template-columns:1fr; }
+  .section-row #chapter2{ order:1; }
+  .section-row .video-card{ order:2; }
+}
+
 
 
 
