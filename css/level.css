@@ -728,3 +728,34 @@ body.night-mode {
   transition: opacity .4s ease;
   opacity: 0;
 }
+
+.section-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) 1fr; /* links Karte, rechts Inhalt */
+  gap: 16px;
+  align-items: start;
+  margin: 20px 0;
+}
+
+/* Karten-Optik angleichen (optional) */
+.section-row .video-card {
+  display: block;
+  background: var(--card-bg, #fff);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  padding: 16px;
+}
+
+/* Mobile: untereinander stapeln – zuerst Kapitel, dann Video oder umgekehrt */
+@media (max-width: 800px) {
+  .section-row {
+    grid-template-columns: 1fr;
+  }
+  /* Wenn du auf Mobile zuerst Kapitel sehen willst: */
+  .section-row .video-card { order: 2; }
+  .section-row #chapter2   { order: 1; }
+}
+
+
+
+
