@@ -746,25 +746,31 @@ body.night-mode {
   padding: 16px;
 }
 
-/* Mobile: untereinander stapeln – zuerst Kapitel, dann Video oder umgekehrt */
-@media (max-width: 800px) {
-  .section-row {
-    grid-template-columns: 1fr;
-  }
-  /* Wenn du auf Mobile zuerst Kapitel sehen willst: */
-  .section-row .video-card { order: 2; }
-  .section-row #chapter2   { order: 1; }
+/* Zweispaltiger Wrapper: links Video, rechts Kapitel 2 */
+.section-row{
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  margin: 20px 0;
+  width: 100%;
+  align-self: stretch;   /* wichtig gegen zentriertes <body> */
 }
 
-.section-row{
-  display:grid;
-  grid-template-columns:minmax(260px,360px) 1fr;
-  gap:16px; align-items:start; margin:20px 0;
+/* Video-Karte Angleichen + max Breite */
+.section-row .video-card,
+.level-card--video{
+  display: block;
+  max-width: 360px;
 }
-@media (max-width:900px){
-  .section-row{ grid-template-columns:1fr; }
-  .section-row #chapter2{ order:1; }
-  .section-row .video-card{ order:2; }
+
+/* Mobil: untereinander */
+@media (max-width: 800px){
+  .section-row{ grid-template-columns: 1fr; }
+  .section-row #chapter2,
+  .section-row .chapter-container.chapter-hours{ order: 1; }
+  .section-row .video-card,
+  .section-row .level-card--video{ order: 2; }
 }
 
 
