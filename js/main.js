@@ -337,21 +337,33 @@ function initClock() {
     });
   }
 }
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const videoCard = document.getElementById('learnVideoCard');   // ← gib deiner Videokarte diese ID
-  const kap2      = document.getElementById('chapter2');         // ← gib dem Kapitel-2-Block diese ID
-  if (!videoCard || !kap2) return;
 
-  // Wrapper für die 2-Spalten-Ansicht erzeugen und einfügen
-  const row = document.createElement('div');
-  row.className = 'section-row section-row--kap2';
-  kap2.parentNode.insertBefore(row, kap2);  // Row vor Kapitel 2 einfügen
-  row.appendChild(videoCard);               // links: Video
-  row.appendChild(kap2);                    // rechts: Kapitel 2
-});
-</script>
+/* Lernvideo links neben Kapitel 2 anordnen (iPad-sicher) */
+(function arrangeVideoNextToChapter2(){
+  function mount(){
+    const video = document.getElementById('learnVideoCard');
+    const kap2  = document.getElementById('chapter2');
+    if (!video || !kap2) return false;
 
+    // Schon gruppiert?
+    if (kap2.previousElementSibling?.classList?.contains('section-row--kap2')) return true;
+
+    const row = document.createElement('div');
+    row.className = 'section-row section-row--kap2';
+    kap2.parentNode.insertBefore(row, kap2);
+    row.appendChild(video); // links
+    row.appendChild(kap2);  // rechts
+    return true;
+  }
+
+  // sofort & wiederholt versuchen (Safari/iPad lädt DOM manchmal spät)
+  function tryMount(){ if (!mount()) setTimeout(tryMount, 120); }
+  tryMount();
+
+  // falls Inhalte nachträglich eingefügt werden
+  const mo = new MutationObserver(() => mount());
+  mo.observe(document.body, { childList:true, subtree:true });
+})();
 
 /* -----------------------------------------------------------
    Dark Mode Umschalter (global)
