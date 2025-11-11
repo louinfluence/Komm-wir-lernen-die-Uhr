@@ -337,6 +337,20 @@ function initClock() {
     });
   }
 }
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const videoCard = document.getElementById('learnVideoCard');   // ← gib deiner Videokarte diese ID
+  const kap2      = document.getElementById('chapter2');         // ← gib dem Kapitel-2-Block diese ID
+  if (!videoCard || !kap2) return;
+
+  // Wrapper für die 2-Spalten-Ansicht erzeugen und einfügen
+  const row = document.createElement('div');
+  row.className = 'section-row section-row--kap2';
+  kap2.parentNode.insertBefore(row, kap2);  // Row vor Kapitel 2 einfügen
+  row.appendChild(videoCard);               // links: Video
+  row.appendChild(kap2);                    // rechts: Kapitel 2
+});
+</script>
 
 
 /* -----------------------------------------------------------
