@@ -636,35 +636,29 @@ function startLevel4(onComplete) {
     buildRound();
   });
 }
+
 /* =========================================================
    🕒 LEVEL 5 – Volle Stunden ohne Ziffern
-   - Intro: Zeiger zeigt 12→3→6→9 (loop), 1s Startdelay
-   - 6 Runden, jede Runde zufällige volle Stunde (1–12)
+   - Intro: Zeiger 12→3→6→9 (loop), 1s Startdelay
+   - 6 Runden, zufällige volle Stunde (1–12)
    - 4 Antwortoptionen, 1 korrekt
 ========================================================= */
-
 function initLevel5(cb) { startLevel5(cb); }
 
-function finish() {
-  // Einheitlich über unseren Router weiter
-  showLevelComplete({ title: "Volle Stunden 2", id: 5 });
-}
-// async function startLevel5(onComplete) {
- // const container = document.getElementById("gameContainer");
-  //if (!container) return;
+async function startLevel5(onComplete) {
+  const container = document.getElementById("gameContainer");
+  if (!container) return;
 
   // ---------- Helpers ----------
   const rnd     = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
   const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
 
-  // Falls dein Stundenzeiger-Sprite „gespiegelt“ wirkt, Offset anpassen (0 / 90 / 180 / 270 testen)
+  // Falls der Stundenzeiger „spiegelverkehrt“ wirkt, Offset anpassen (0/90/180/270)
   const HOUR_SPRITE_OFFSET = 180;
 
   function hourToAngle(h) {
     return (h % 12) * 30 + HOUR_SPRITE_OFFSET;
   }
-
-  // EINDEUTIG: nur diese Version verwenden (mit turns für endlosen Vorwärtslauf)
   function setHour(el, h, turns = 0) {
     const angle = hourToAngle(h) + 360 * turns;
     el.style.transformOrigin = "50% 50%";
@@ -700,7 +694,7 @@ function finish() {
     </p>
   `;
 
-  // Intro OHNE Minutenzeiger
+  // Intro ohne Minutenzeiger
   const introClock = buildClockDOM({ showMinute: false });
   const label = document.createElement("p");
   label.id = "lv5IntroLabel";
@@ -719,33 +713,28 @@ function finish() {
 
   const hourHandIntro = introClock.querySelector("#lv5Hour");
 
-  // Endloser Vorwärts-Loop: 12 -> 3 -> 6 -> 9 -> (wieder 12 mit +360°)
+  // Endlos vorwärts: 12 → 3 → 6 → 9 → 12(+360) …
   const seqHours = [12, 3, 6, 9];
   let introAlive = true;
   let introTimer = null;
 
   function runIntro() {
-    let stepIndex = 0; // 0,1,2,3,4,...  → alle 4 Schritte +360°
+    let stepIndex = 0;
     const tick = () => {
       if (!introAlive) return;
       const h = seqHours[stepIndex % seqHours.length];
       const turns = Math.floor(stepIndex / seqHours.length);
       setHour(hourHandIntro, h, turns);
-
       label.textContent = `${h} Uhr`;
       label.style.opacity = 1;
       setTimeout(() => { label.style.opacity = 0; }, 900);
-
       stepIndex++;
       introTimer = setTimeout(tick, 1200);
     };
-    // Start nach 1 s (wirkt smoother) – beginnt bei 12 Uhr
+    // 1 s warten → wirkt smoother
     introTimer = setTimeout(tick, 1000);
   }
-
   runIntro();
-  
-  
 
   // ---------- Spielzustand ----------
   const ROUNDS = 6;
@@ -772,7 +761,7 @@ function finish() {
     return shuffle([...opts]);
   }
 
-  // ---------- Rundenanzeige ----------
+  // ---------- Runden ----------
   let roundIndex = 0;
 
   function renderRound() {
@@ -794,11 +783,11 @@ function finish() {
     setHour(hourHand, h, 0);
     if (minuteHand) {
       minuteHand.style.transformOrigin = "50% 50%";
-      minuteHand.style.transform = "rotate(0deg)"; // :00
+      minuteHand.style.transform = "rotate(0deg)";
     }
     block.appendChild(clock);
 
-    // Antwort-Buttons
+    // Antworten
     const grid = document.createElement("div");
     grid.className = "options-grid";
     options.forEach(opt => {
@@ -821,7 +810,7 @@ function finish() {
 
     function handleAnswer(ok, btn) {
       block.querySelectorAll(".option-btn").forEach(b => (b.disabled = true));
-      if (ok) { btn.classList.add("correct"); reportAnswer(true);  }
+      if (ok) { btn.classList.add("correct"); reportAnswer(true); }
       else    { btn.classList.add("wrong");   reportAnswer(false); }
       setTimeout(() => {
         roundIndex++;
@@ -832,20 +821,8 @@ function finish() {
   }
 
   function finish() {
-    if (typeof onComplete === "function") {
-      onComplete(6); // weiter zu Level 6
-    } else {
-      const done = document.createElement("div");
-      done.className = "task-block";
-      done.innerHTML = `<h2>🎉 Super gemacht!</h2><p>Du kannst Uhrzeiten auch ohne Ziffern erkennen.</p>`;
-      const btn = document.createElement("button");
-      btn.className = "next-level-btn";
-      btn.textContent = "➡️ Weiter zu Level 6";
-      btn.addEventListener("click", () => window.__startLevel?.(6));
-      done.appendChild(btn);
-      container.innerHTML = "";
-      container.appendChild(done);
-    }
+    // Einheitlich über Router weiter
+    showLevelComplete({ title: "Volle Stunden 2", id: 5 });
   }
 
   // ---------- Los geht’s ----------
@@ -857,93 +834,6 @@ function finish() {
   });
 }
 
-/* ===========================
-   Universeller Level-Router + Baustellen-Seite
-   (Drop-in in js/levels.js; ersetzt showLevelComplete)
-   =========================== */
-
-// Ein Hauch Styles für die Baustellen-Karte
-(() => {
-  if (!document.getElementById('wip-style')) {
-    const st = document.createElement('style');
-    st.id = 'wip-style';
-    st.textContent = `
-      .wip-card { background:#fff; border-radius:16px; padding:24px; 
-                  box-shadow:0 8px 24px rgba(0,0,0,.12); text-align:center; }
-      .wip-emoji { font-size:48px; line-height:1; margin-bottom:8px; }
-      .wip-actions { margin-top:16px; display:flex; gap:12px; justify-content:center; }
-      .btn-outline { background:transparent; border:2px solid #90a4ae; color:#37474f;
-                     border-radius:12px; padding:10px 16px; font-weight:700; cursor:pointer; }
-    `;
-    document.head.appendChild(st);
-  }
-})();
-
-// Hilfsfunktion: nächstes Level starten oder Baustelle zeigen
-window.__startLevel = function(nextId) {
-  const container = document.getElementById('gameContainer');
-  const candNames = [`initLevel${nextId}`, `startLevel${nextId}`];
-  let launcher = null;
-  for (const n of candNames) {
-    if (typeof window[n] === 'function') { launcher = window[n]; break; }
-  }
-  if (launcher) {
-    // Einheitlicher Callback: nach Abschluss wieder hierher zurück
-    launcher(showLevelComplete);
-  } else {
-    showComingSoon(nextId);
-  }
-};
-
-// Baustellen-Seite
-function showComingSoon(nextId) {
-  const c = document.getElementById('gameContainer');
-  c.innerHTML = `
-    <div class="wip-card">
-      <div class="wip-emoji">🚧</div>
-      <h2>Hier wird noch gebaut …</h2>
-      <p>Level ${nextId} ist noch nicht fertig. Schau bald wieder vorbei!</p>
-      <div class="wip-actions">
-        <button class="next-level-btn" id="wipBack">Zur Level-Übersicht</button>
-      </div>
-    </div>
-  `;
-  document.getElementById('wipBack').addEventListener('click', () => {
-    // Zeige wieder die Übersicht (einfach neu laden – am iPad am zuverlässigsten)
-    window.location.href = window.location.pathname; // bleibt auf lernspiel.html
-  });
-}
-
-function showLevelComplete(levelObj /* {id, title} | number */, _ignored) {
-  const container = document.getElementById('gameContainer');
-
-  // 🔧 Abwärtskompatibel: Zahl als "nächstes Level" unterstützen
-  let curId, title;
-  if (typeof levelObj === 'number') {
-    curId = Number(levelObj) - 1;             // z.B. onComplete(6) -> wir tun so, als ob Level 5 fertig ist
-    title = `Level ${curId} abgeschlossen`;
-  } else {
-    curId = Number(levelObj?.id || 0);
-    title = levelObj?.title || `Level ${curId}`;
-  }
-
-  const nextId = isFinite(curId) && curId > 0 ? curId + 1 : NaN;
-
-  container.innerHTML = `
-    <div class="task-block" style="text-align:center">
-      <h2>🎉 ${title}</h2>
-      <p>Super gemacht!</p>
-      <button class="next-level-btn" id="btnNext">
-        ➡️ Weiter zu Level ${isFinite(nextId) ? nextId : '…'}
-      </button>
-    </div>
-  `;
-
-  document.getElementById('btnNext').addEventListener('click', () => {
-    if (isFinite(nextId)) window.__startLevel(nextId);
-    else showComingSoon('…');
-  });
-}
 /* =========================================================
    Aliase, damit main.js kompatibel bleibt
    ========================================================= */
