@@ -834,6 +834,67 @@ async function startLevel5(onComplete) {
   });
 }
 
+/* ===========================
+   Einheitlicher Abschluss + Router-Fallback
+   (am Ende von levels.js einfügen)
+   =========================== */
+(function ensureLevelRouter(){
+  // Baustellenkarte, falls sie noch nicht existiert
+  if (typeof window.showComingSoon !== 'function') {
+    window.showComingSoon = function(nextId){
+      const c = document.getElementById('gameContainer');
+      if (!c) return;
+      c.innerHTML = `
+        <div class="task-block" style="text-align:center">
+          <div style="font-size:48px;line-height:1;margin-bottom:8px">🚧</div>
+          <h2>Hier wird noch gebaut …</h2>
+          <p>Level ${nextId ?? '…'} ist noch nicht fertig. Schau bald wieder vorbei!</p>
+          <button class="next-level-btn" id="wipBack">Zur Level-Übersicht</button>
+        </div>`;
+      const back = document.getElementById('wipBack');
+      back?.addEventListener('click', () => {
+        // zurück zur Übersicht (lernspiel.html)
+        window.location.href = window.location.pathname;
+      });
+    };
+  }
+
+  // Abschlusskarte + „Weiter“-Button (unterstützt {id,title} und Zahl)
+  window.showLevelComplete = function(levelOrNext /*, _ignored */){
+    const c = document.getElementById('gameContainer');
+    if (!c) return;
+
+    let title, nextId;
+
+    if (typeof levelOrNext === 'number') {
+      // z.B. showLevelComplete(6) → wir tun so, als ob Level 5 grad fertig wurde
+      nextId = levelOrNext;
+      title  = `Level ${nextId - 1} abgeschlossen!`;
+    } else {
+      const curId = Number(levelOrNext?.id ?? NaN);
+      nextId = Number.isFinite(curId) ? (curId + 1) : NaN;
+      title  = levelOrNext?.title || (Number.isFinite(curId) ? `Level ${curId} abgeschlossen!` : `Geschafft!`);
+    }
+
+    c.innerHTML = `
+      <div class="task-block" style="text-align:center">
+        <h2>🎉 ${title}</h2>
+        <p>Super gemacht!</p>
+        <button class="next-level-btn" id="btnNext">
+          ➡️ Weiter zu Level ${Number.isFinite(nextId) ? nextId : '…'}
+        </button>
+      </div>`;
+
+    document.getElementById('btnNext')?.addEventListener('click', () => {
+      if (Number.isFinite(nextId) && typeof window.__startLevel === 'function') {
+        window.__startLevel(nextId);
+      } else {
+        window.showComingSoon?.(nextId);
+      }
+    });
+  };
+})();
+
 /* =========================================================
    Aliase, damit main.js kompatibel bleibt
    ========================================================= */
