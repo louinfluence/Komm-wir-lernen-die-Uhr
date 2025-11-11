@@ -243,29 +243,6 @@ function animateClockToTime(oldTime, newTime, baseDuration = 1800) {
 }
 
 /* =========================================================
-   Einheitlicher Abschluss-Bildschirm
-   ========================================================= */
-function showLevelComplete(level, onComplete) {
-  const container = document.getElementById("gameContainer");
-  container.innerHTML = `<h2>🎉 ${level.title} abgeschlossen!</h2>`;
-
-  const btn = document.createElement("button");
-  btn.className = "next-level-btn";
-  btn.textContent = `➡️ Weiter zu Level ${level.id + 1}`;
-
-  btn.addEventListener("click", () => {
-    container.innerHTML = "";
-
-    if (typeof initLevel1 === "function" && level.id + 1 === 1) initLevel1(showLevelComplete);
-    else if (typeof startLevel2 === "function" && level.id + 1 === 2) startLevel2(showLevelComplete);
-    else if (typeof initLevel3 === "function" && level.id + 1 === 3) initLevel3(showLevelComplete);
-    else container.innerHTML = `<h2>🎉 Alle Level abgeschlossen!</h2>`;
-  });
-
-  container.appendChild(btn);
-}
-
-/* =========================================================
    🕓 Level 2 – Tageszeit anhand eines Bildes erkennen
    ========================================================= */
 async function startLevel2(onComplete) {
@@ -873,6 +850,91 @@ async function startLevel5(onComplete) {
     if (introTimer) clearTimeout(introTimer);
     roundIndex = 0;
     setTimeout(renderRound, 150);
+  });
+}
+
+/* ===========================
+   Universeller Level-Router + Baustellen-Seite
+   (Drop-in in js/levels.js; ersetzt showLevelComplete)
+   =========================== */
+
+// Ein Hauch Styles für die Baustellen-Karte
+(() => {
+  if (!document.getElementById('wip-style')) {
+    const st = document.createElement('style');
+    st.id = 'wip-style';
+    st.textContent = `
+      .wip-card { background:#fff; border-radius:16px; padding:24px; 
+                  box-shadow:0 8px 24px rgba(0,0,0,.12); text-align:center; }
+      .wip-emoji { font-size:48px; line-height:1; margin-bottom:8px; }
+      .wip-actions { margin-top:16px; display:flex; gap:12px; justify-content:center; }
+      .btn-outline { background:transparent; border:2px solid #90a4ae; color:#37474f;
+                     border-radius:12px; padding:10px 16px; font-weight:700; cursor:pointer; }
+    `;
+    document.head.appendChild(st);
+  }
+})();
+
+// Hilfsfunktion: nächstes Level starten oder Baustelle zeigen
+window.__startLevel = function(nextId) {
+  const container = document.getElementById('gameContainer');
+  const candNames = [`initLevel${nextId}`, `startLevel${nextId}`];
+  let launcher = null;
+  for (const n of candNames) {
+    if (typeof window[n] === 'function') { launcher = window[n]; break; }
+  }
+  if (launcher) {
+    // Einheitlicher Callback: nach Abschluss wieder hierher zurück
+    launcher(showLevelComplete);
+  } else {
+    showComingSoon(nextId);
+  }
+};
+
+// Baustellen-Seite
+function showComingSoon(nextId) {
+  const c = document.getElementById('gameContainer');
+  c.innerHTML = `
+    <div class="wip-card">
+      <div class="wip-emoji">🚧</div>
+      <h2>Hier wird noch gebaut …</h2>
+      <p>Level ${nextId} ist noch nicht fertig. Schau bald wieder vorbei!</p>
+      <div class="wip-actions">
+        <button class="next-level-btn" id="wipBack">Zur Level-Übersicht</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('wipBack').addEventListener('click', () => {
+    // Zeige wieder die Übersicht (einfach neu laden – am iPad am zuverlässigsten)
+    window.location.href = window.location.pathname; // bleibt auf lernspiel.html
+  });
+}
+
+// **Ersetzt die alte Variante**:
+// zeigt Abschluss + „Weiter“-Button → versucht Level (id+1) zu starten,
+// andernfalls kommt automatisch die Baustellen-Seite.
+function showLevelComplete(levelObj /* {id, title} */, _ignored) {
+  const container = document.getElementById('gameContainer');
+  const curId  = Number(levelObj?.id || 0);
+  const title  = levelObj?.title || `Level ${curId}`;
+  const nextId = curId > 0 ? curId + 1 : NaN;
+
+  container.innerHTML = `
+    <div class="task-block" style="text-align:center">
+      <h2>🎉 ${title} abgeschlossen!</h2>
+      <p>Super gemacht!</p>
+      <button class="next-level-btn" id="btnNext">
+        ➡️ Weiter zu Level ${isFinite(nextId) ? nextId : '…'}
+      </button>
+    </div>
+  `;
+
+  document.getElementById('btnNext').addEventListener('click', () => {
+    if (isFinite(nextId)) {
+      window.__startLevel(nextId);
+    } else {
+      showComingSoon('…');
+    }
   });
 }
 
