@@ -571,6 +571,19 @@ function startLevel4(onComplete) {
   const TOTAL = 6;
   let step = 0;
 
+  // ✨ NEU: innerhalb einer Runde keine doppelte Stunde
+  const usedHours = new Set();
+
+  function pickHourUnique() {
+    let h, guard = 0;
+    do {
+      h = rnd(1,12);
+      guard++;
+      if (guard > 50) break; // Fallback-Schutz
+    } while (usedHours.has(h));
+    usedHours.add(h);
+    return h;
+  }
   function buildRound() {
     container.innerHTML = "";
     const block = document.createElement("div");
@@ -585,7 +598,7 @@ function startLevel4(onComplete) {
     const clock = buildClock({showMinute:true});
     const hEl = clock.querySelector("#l4Hour");
     const mEl = clock.querySelector("#l4Min");
-    const hour = rnd(1,12);
+    const hour = pickHourUnique();
     setHour(hEl, hour, 0);
     setMinute(mEl, 0);
     block.appendChild(clock);
@@ -624,14 +637,16 @@ function startLevel4(onComplete) {
   function next(){
     step++;
     if (step < TOTAL) buildRound();
-    else {
+        else {
+      usedHours.clear();        // ✨ optionaler Reset für spätere Replays
       showLevelComplete({ title:"Volle Stunden 1", id:4 }, onComplete);
     }
   }
 
   // Start-Button: Intro → Quiz
-  startBtn.addEventListener("click", ()=>{
+    startBtn.addEventListener("click", ()=>{
     hourIntro.classList.remove("l4-blink");
+    usedHours.clear();          // ✨ NEU: neue Spielrunde -> Reset
     step = 0;
     buildRound();
   });
