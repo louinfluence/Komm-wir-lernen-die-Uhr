@@ -645,9 +645,13 @@ function startLevel4(onComplete) {
 
 function initLevel5(cb) { startLevel5(cb); }
 
-async function startLevel5(onComplete) {
-  const container = document.getElementById("gameContainer");
-  if (!container) return;
+function finish() {
+  // Einheitlich über unseren Router weiter
+  showLevelComplete({ title: "Volle Stunden 2", id: 5 });
+}
+// async function startLevel5(onComplete) {
+ // const container = document.getElementById("gameContainer");
+  //if (!container) return;
 
   // ---------- Helpers ----------
   const rnd     = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -910,18 +914,24 @@ function showComingSoon(nextId) {
   });
 }
 
-// **Ersetzt die alte Variante**:
-// zeigt Abschluss + „Weiter“-Button → versucht Level (id+1) zu starten,
-// andernfalls kommt automatisch die Baustellen-Seite.
-function showLevelComplete(levelObj /* {id, title} */, _ignored) {
+function showLevelComplete(levelObj /* {id, title} | number */, _ignored) {
   const container = document.getElementById('gameContainer');
-  const curId  = Number(levelObj?.id || 0);
-  const title  = levelObj?.title || `Level ${curId}`;
-  const nextId = curId > 0 ? curId + 1 : NaN;
+
+  // 🔧 Abwärtskompatibel: Zahl als "nächstes Level" unterstützen
+  let curId, title;
+  if (typeof levelObj === 'number') {
+    curId = Number(levelObj) - 1;             // z.B. onComplete(6) -> wir tun so, als ob Level 5 fertig ist
+    title = `Level ${curId} abgeschlossen`;
+  } else {
+    curId = Number(levelObj?.id || 0);
+    title = levelObj?.title || `Level ${curId}`;
+  }
+
+  const nextId = isFinite(curId) && curId > 0 ? curId + 1 : NaN;
 
   container.innerHTML = `
     <div class="task-block" style="text-align:center">
-      <h2>🎉 ${title} abgeschlossen!</h2>
+      <h2>🎉 ${title}</h2>
       <p>Super gemacht!</p>
       <button class="next-level-btn" id="btnNext">
         ➡️ Weiter zu Level ${isFinite(nextId) ? nextId : '…'}
@@ -930,14 +940,10 @@ function showLevelComplete(levelObj /* {id, title} */, _ignored) {
   `;
 
   document.getElementById('btnNext').addEventListener('click', () => {
-    if (isFinite(nextId)) {
-      window.__startLevel(nextId);
-    } else {
-      showComingSoon('…');
-    }
+    if (isFinite(nextId)) window.__startLevel(nextId);
+    else showComingSoon('…');
   });
 }
-
 /* =========================================================
    Aliase, damit main.js kompatibel bleibt
    ========================================================= */
