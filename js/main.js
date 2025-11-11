@@ -17,6 +17,32 @@ window.addEventListener("DOMContentLoaded", () => {
     return a;
   };
 
+/* ===========================
+   🔗 Globaler Level-Launcher
+   (einmalig, außerhalb des if(levelSelect)-Blocks)
+   =========================== */
+(function ensureGlobalLauncher(){
+  const prev = window.__startLevel;
+
+  function launcher(n){
+    console.log("⏭️ __startLevel →", n);
+    if (typeof window.__realStartLevel === "function") {
+      window.__realStartLevel(n);
+    } else {
+      console.warn("startLevel() noch nicht bereit – zeige Baustelle:", n);
+      if (typeof window.showComingSoon === "function") {
+        window.showComingSoon(n);
+      }
+    }
+  }
+  launcher.__isLauncher = true;
+
+  // Nur ersetzen, wenn kein kompatibler Launcher existiert
+  if (typeof prev !== "function" || !prev.__isLauncher) {
+    window.__startLevel = launcher;
+  }
+})();
+
   const success = makeAudio('assets/sounds/erfolg.mp3');
   const wrong   = makeAudio('assets/sounds/wrong.mp3'); // Platzhalter-Datei, kann leer sein
 
@@ -84,69 +110,93 @@ window.addEventListener("DOMContentLoaded", () => {
   };
 
   /* ---------------------------------------------------------
-     🔹 Lernspiel: Levelsteuerung
+   🔹 Lernspiel: Levelsteuerung (in main.js innerhalb deines
+      if (levelSelect) { ... }-Blocks einfügen/ersetzen)
   --------------------------------------------------------- */
-  if (levelSelect) {
-    console.log("🎮 Lernspiel: Levelauswahl aktiv");
+if (levelSelect) {
+  console.log("🎮 Lernspiel: Levelauswahl aktiv");
 
-   const delegate = (e) => {
-  const card = e.target.closest(".level-card");
-  if (!card || !container.contains(card)) return;
-  const raw = card.dataset.level;
-  if (!raw || isNaN(parseInt(raw, 10))) return; // ← ignoriert Video-Karte
-  e.preventDefault();
-  startLevel(parseInt(raw, 10));
-};
+  // ——— delegierter Handler für Klick/Tap auf Level-Karten ———
+  const delegate = (e) => {
+    const card = e.target.closest(".level-card");
+    if (!card || !container.contains(card)) return;
 
+    const raw = card.dataset.level;
+    // Karten ohne gültiges data-level (z. B. Video-Karte) ignorieren
+    if (!raw || isNaN(parseInt(raw, 10))) return;
 
-    // Events für Klick oder Touch
-    document.addEventListener("pointerup", delegate, { passive: false });
-    document.addEventListener("click", delegate);
+    e.preventDefault();
+    startLevel(parseInt(raw, 10));
+  };
 
-    function startLevel(level) {
-      console.log("▶️ Starte Level:", level);
-      if (levelSelect) levelSelect.style.display = "none";
-
-      // 🟢 Level-Aufrufe nach Nummer
-      if (level === 1 && typeof initLevel1 === "function") {
-        initLevel1(showNextButton);
-      } 
-      else if (level === 2 && typeof startLevel2 === "function") {
-        startLevel2(showNextButton);
-      } 
-      else if (level === 3 && typeof initLevel3 === "function") {
-        initLevel3(showNextButton);
-      }
-      else if (level === 4 && typeof initLevel4 === "function") {
- 			 initLevel4(showNextButton);
-			}
-      else if (level === 5 && typeof startLevel5 === "function") {
- 			 startLevel5(showNextButton);
-			} 
-      else {
-        console.warn("⚠️ Level-Funktion fehlt oder wurde nicht geladen:", level);
-      }
-    }
-
-    // 🟣 Wird nur genutzt, falls Level explizit einen Weiter-Button anzeigen will
-    function showNextButton(nextLevel) {
-      const btn = document.createElement("button");
-      btn.className = "next-level-btn";
-
-      if (nextLevel) {
-        btn.textContent = `➡️ Weiter zu Level ${nextLevel}`;
-        btn.addEventListener("click", () => __startLevel(nextLevel));
-      } else {
-        btn.textContent = "🎉 Alle Level geschafft!";
-        btn.disabled = true;
-      }
-
-      container.appendChild(btn);
-    }
-
-    // Ermöglicht globalen Zugriff auf Levelstart (z. B. von Level.js aus)
-    window.__startLevel = (n) => startLevel(n);
+  // Events (Debounce gegen Doppelfeuer)
+  let _lastStartAt = 0;
+  function maybeStart(evt) {
+    const now = performance.now();
+    if (now - _lastStartAt < 200) return;
+    _lastStartAt = now;
+    delegate(evt);
   }
+
+  document.addEventListener("pointerup", maybeStart, { passive: false });
+  document.addEventListener("click",     maybeStart);
+
+  // ——— optional: Übersicht ausblenden, wenn ein Level läuft ———
+  function hideOverview() {
+    if (levelSelect) levelSelect.style.display = "none";
+  }
+
+  // ——— „Weiter“-Button für Level, die explizit einen Callback nutzen ———
+  function showNextButton(nextLevel) {
+    const btn = document.createElement("button");
+    btn.className = "next-level-btn";
+
+    if (nextLevel) {
+      btn.textContent = `➡️ Weiter zu Level ${nextLevel}`;
+      btn.addEventListener("click", () => window.__startLevel(nextLevel));
+    } else {
+      btn.textContent = "🎉 Alle Level geschafft!";
+      btn.disabled = true;
+    }
+
+    container.appendChild(btn);
+  }
+
+  // ——— zentrale Startfunktion für nummerierte Level ———
+  function startLevel(n) {
+    console.log("▶️ Starte Level:", n);
+    hideOverview();
+
+    // Mapping: hier trägst du neue Level-Funktionen einfach nach
+    if (n === 1 && typeof window.initLevel1 === "function") {
+      window.initLevel1(showNextButton);
+    }
+    else if (n === 2 && typeof window.startLevel2 === "function") {
+      window.startLevel2(showNextButton);
+    }
+    else if (n === 3 && typeof window.initLevel3 === "function") {
+      window.initLevel3(showNextButton);
+    }
+    else if (n === 4 && typeof window.initLevel4 === "function") {
+      window.initLevel4(showNextButton);
+    }
+    else if (n === 5 && typeof window.startLevel5 === "function") {
+      window.startLevel5(showNextButton);
+    }
+    // Platz für weitere:
+    // else if (n === 6 && typeof window.startLevel6 === "function") { ... }
+
+    else {
+      console.warn("⚠️ Level-Funktion fehlt oder wurde nicht geladen:", n);
+      if (typeof window.showComingSoon === "function") {
+        window.showComingSoon(n);
+      }
+    }
+  }
+
+  // Stelle die Startfunktion dem globalen Launcher zur Verfügung
+  window.__realStartLevel = startLevel;
+}
 
   /* ---------------------------------------------------------
      🔹 Uhr-Seite: Interaktive Uhrsteuerung (wenn vorhanden)
