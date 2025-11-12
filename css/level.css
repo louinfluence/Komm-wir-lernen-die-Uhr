@@ -772,7 +772,13 @@ body.night-mode {
   .section-row .video-card,
   .section-row .level-card--video{ order: 2; }
 }
-
+@media (max-width: 900px) {
+  .section-row { grid-template-columns: 1fr; }
+  .section-row--video-left  .section-col--video   { order: 1; }
+  .section-row--video-left  .section-col--content { order: 2; }
+  .section-row--video-right .section-col--video   { order: 2; }
+  .section-row--video-right .section-col--content { order: 1; }
+}
 
 
 
