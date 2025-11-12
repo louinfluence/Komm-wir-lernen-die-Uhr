@@ -337,59 +337,53 @@ function initClock() {
     });
   }
 }
+/* Lernvideos neben Kapitel-Boxen anordnen (mehrere Paare, links ODER rechts) */
+(function arrangeVideosBesideChapters(){
+  // ➜ Hier deine Paare eintragen: videoId, chapterId, side: 'left' | 'right'
+  const pairs = [
+    { videoId: 'learnVideoCard',   chapterId: 'chapter2', side: 'left'  }, // schon vorhanden
+    { videoId: 'quarterVideoCard', chapterId: 'chapter3', side: 'right' }, // Beispiel
+    { videoId: 'minutesVideoCard', chapterId: 'chapter4', side: 'right' }  // Beispiel
+  ];
 
-/* Lernvideo links neben Kapitel 2 anordnen (iPad-sicher & robust) */
-(function arrangeLearnVideoNextToChapter2(){
-  const $ = (s) => document.querySelector(s);
+  function mountPair({ videoId, chapterId, side = 'left' }) {
+    const video = document.getElementById(videoId);
+    const chap  = document.getElementById(chapterId);
+    if (!video || !chap) return;
 
-  function findVideo() {
-    return $('#learnVideoCard')                // bevorzugte ID
-        || $('.level-card--video')             // alternative Klasse
-        || $('[data-type="learnvideo"]');      // Fallback-Attribut
-  }
-  function findChapter2() {
-    return $('#chapter2')                      // bevorzugte ID
-        || document.querySelector('.chapter-container.chapter-hours') // Kap.2-Box
-        || $('[data-chapter="2"]');            // Fallback-Attribut
-  }
+    // Schon in einer section-row gruppiert?
+    let row = chap.previousElementSibling;
+    const alreadyGrouped = row && row.classList?.contains('section-row') && row.contains(video);
+    if (alreadyGrouped) return;
 
-  function alreadyMounted(video, kap2){
-    const p = kap2.parentElement;
-    return p && p.classList.contains('section-row--kap2') && p.contains(video);
-  }
+    // Wrapper vor das Kapitel setzen
+    row = document.createElement('div');
+    row.className = `section-row section-row--video-${side}`;
+    chap.parentNode.insertBefore(row, chap);
 
-  function mount(){
-    const video = findVideo();
-    const kap2  = findChapter2();
-    if (!video || !kap2) return false;
-    if (alreadyMounted(video, kap2)) return true;
+    // Reihenfolge je nach Seite
+    if (side === 'right') {
+      row.appendChild(chap);
+      row.appendChild(video);
+    } else {
+      row.appendChild(video);
+      row.appendChild(chap);
+    }
 
-    const row = document.createElement('div');
-    row.className = 'section-row section-row--kap2';
-    row.style.width = '100%';       // gegen Body-Zentrierung
-    row.style.alignSelf = 'stretch';
-
-    // Wrapper direkt VOR Kapitel 2 einfügen und beide hinein schieben
-    kap2.parentNode.insertBefore(row, kap2);
-    row.appendChild(video);         // links
-    row.appendChild(kap2);          // rechts
-
-    // angleichen, falls Videokarte kein Card-Look hat
-    video.classList.add('video-card');
-    return true;
+    // optionale Marker-Klassen (falls du später stylen willst)
+    video.classList.add('section-col','section-col--video');
+    chap.classList.add('section-col','section-col--content');
   }
 
-  // Safari/iPad: mehrfach versuchen, bis DOM stabil ist
-  function tryMount(tries=0){
-    if (mount()) return;
-    if (tries < 25) setTimeout(() => tryMount(tries+1), 120);
-  }
+  function mountAll(){ pairs.forEach(mountPair); }
+
+  // iPad-sicher: wiederholt versuchen und auf DOM-Änderungen hören
+  function tryMount(){ mountAll(); }
   tryMount();
-
-  // Reagieren auf nachträgliche DOM-Änderungen
-  const mo = new MutationObserver(() => mount());
+  const mo = new MutationObserver(tryMount);
   mo.observe(document.body, { childList: true, subtree: true });
 })();
+
 
 /* -----------------------------------------------------------
    Dark Mode Umschalter (global)
