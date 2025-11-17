@@ -110,36 +110,38 @@ window.addEventListener("DOMContentLoaded", () => {
   };
 
   /* ---------------------------------------------------------
-   🔹 Lernspiel: Levelsteuerung (in main.js innerhalb deines
-      if (levelSelect) { ... }-Blocks einfügen/ersetzen)
-  --------------------------------------------------------- */
+   🔹 Lernspiel: Levelsteuerung
+   (robuster Delegator – hört direkt auf #levelSelect, kein contains()-Filter)
+--------------------------------------------------------- */
 if (levelSelect) {
   console.log("🎮 Lernspiel: Levelauswahl aktiv");
 
-  // ——— delegierter Handler für Klick/Tap auf Level-Karten ———
-  const delegate = (e) => {
-    const card = e.target.closest(".level-card");
-    if (!card || !container.contains(card)) return;
-
-    const raw = card.dataset.level;
-    // Karten ohne gültiges data-level (z. B. Video-Karte) ignorieren
-    if (!raw || isNaN(parseInt(raw, 10))) return;
-
+  // ——— Klick/Tap direkt auf dem Level-Container ———
+  function onCardActivate(e) {
+    const card = e.target.closest('.level-card[data-level]');
+    if (!card) return;                  // Klick nicht auf einer Level-Karte
     e.preventDefault();
-    startLevel(parseInt(raw, 10));
-  };
 
-  // Events (Debounce gegen Doppelfeuer)
-  let _lastStartAt = 0;
-  function maybeStart(evt) {
-    const now = performance.now();
-    if (now - _lastStartAt < 200) return;
-    _lastStartAt = now;
-    delegate(evt);
+    const n = parseInt(card.dataset.level, 10);
+    if (!Number.isFinite(n)) return;
+
+    console.log("▶️ Level-Karte geklickt:", n);
+    startLevel(n);
   }
 
-  document.addEventListener("pointerup", maybeStart, { passive: false });
-  document.addEventListener("click",     maybeStart);
+  // iPad-sicher: sowohl click als auch pointerup (mit kleinem Debounce)
+  let _last = 0;
+  function debounced(handler) {
+    return (ev) => {
+      const now = performance.now();
+      if (now - _last < 160) return;
+      _last = now;
+      handler(ev);
+    };
+  }
+
+  levelSelect.addEventListener('click',     debounced(onCardActivate));
+  levelSelect.addEventListener('pointerup', debounced(onCardActivate), { passive: false });
 
   // ——— optional: Übersicht ausblenden, wenn ein Level läuft ———
   function hideOverview() {
@@ -167,7 +169,6 @@ if (levelSelect) {
     console.log("▶️ Starte Level:", n);
     hideOverview();
 
-    // Mapping: hier trägst du neue Level-Funktionen einfach nach
     if (n === 1 && typeof window.initLevel1 === "function") {
       window.initLevel1(showNextButton);
     }
