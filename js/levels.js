@@ -34,7 +34,13 @@ async function startGameLevel(levelId, onComplete) {
   level = levels.find(l => l.id === levelId);
   if (!level) return console.error("Level nicht gefunden:", levelId);
 
-  // (Hinweis: Titel/Description optional – bewusst weggelassen, da showTask ersetzt)
+  const title = document.createElement("h2");
+  title.textContent = `🎯 ${level.title}`;
+  container.appendChild(title);
+
+  const desc = document.createElement("p");
+  desc.textContent = level.description;
+  container.appendChild(desc);
 
   current = 0;
   showTask(level.tasks[current]);
@@ -121,7 +127,7 @@ function showTask(task) {
         document.removeEventListener("touchmove", touchMoveHandler);
         document.removeEventListener("touchend", touchEndHandler);
         const end = ev.changedTouches[0];
-        const target = ev.changedTouches ? document.elementFromPoint(end.clientX, end.clientY) : null;
+        const target = document.elementFromPoint(end.clientX, end.clientY);
         clone.remove();
 
         const dropZone = document.getElementById("dropZone");
@@ -370,86 +376,108 @@ async function initLevel3(onComplete) {
   const progressEl = document.getElementById("progressInfo");
 
   // ---- Live-Update für iOS/Keyboard ----
-  const pad2 = n => String(n).padStart(2, "0");
+const pad2 = n => String(n).padStart(2, "0");
 
-  function setClock(h, m) {
-    const hourAngle   = (h % 12) * 30 + m * 0.5;
-    const minuteAngle = m * 6;
-    hourHand.style.transform   = `rotate(${hourAngle}deg)`;
-    minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
-    if (level.background === "daynight") {
-      document.body.classList.toggle("night-mode", h < 6 || h >= 20);
-    }
+function setClock(h, m) {
+  const hourAngle   = (h % 12) * 30 + m * 0.5;
+  const minuteAngle = m * 6;
+  hourHand.style.transform   = `rotate(${hourAngle}deg)`;
+  minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
+  if (level.background === "daynight") {
+    document.body.classList.toggle("night-mode", h < 6 || h >= 20);
   }
+}
+function makeEchoSentence(q, hh, mm) {
+  // Basis: Frage aufbereiten
+  let core = q.trim()
+    .replace(/^Wann\s+/i, "")   // "Wann " entfernen
+    .replace(/\?$/, "")         // Fragezeichen weg
+    .replace(/\bdu\b/i, "")     // überflüssiges "du" löschen
+    .replace(/\s{2,}/g, " ")    // doppelte Leerzeichen aufräumen
+    .trim();
 
-  function makeEchoSentence(q, hh, mm) {
-    // Basis: Frage aufbereiten
-    let core = q.trim()
-      .replace(/^Wann\s+/i, "")
-      .replace(/\?$/, "")
-      .replace(/\bdu\b/i, "")
-      .replace(/\s{2,}/g, " ")
-      .trim();
+  // Kleine grammatische Korrekturen
+  core = core
+    .replace(/^isst\s+du/i, "isst")        // "isst du" → "isst"
+    .replace(/^machst\s+du/i, "machst")    // "machst du" → "machst"
+    .replace(/^gehst\s+du/i, "gehst")      // "gehst du" → "gehst"
+    .replace(/^stehst\s+du/i, "stehst")    // "stehst du" → "stehst"
+    .replace(/^spielst\s+du/i, "spielst"); // "spielst du" → "spielst"
 
-    // Kleine grammatische Korrekturen
-    core = core
-      .replace(/^isst\s+du/i, "isst")
-      .replace(/^machst\s+du/i, "machst")
-      .replace(/^gehst\s+du/i, "gehst")
-      .replace(/^stehst\s+du/i, "stehst")
-      .replace(/^spielst\s+du/i, "spielst");
+  return `Du ${core} um ${pad2(hh)}:${pad2(mm)} Uhr.`;
+}
+function makeEchoSentence(q, hh, mm) {
+  // Basis: Frage aufbereiten
+  let core = q.trim()
+    .replace(/^Wann\s+/i, "")   // "Wann " entfernen
+    .replace(/\?$/, "")         // Fragezeichen weg
+    .replace(/\bdu\b/i, "")     // überflüssiges "du" löschen
+    .replace(/\s{2,}/g, " ")    // doppelte Leerzeichen aufräumen
+    .trim();
 
-    return `Du ${core} um ${pad2(hh)}:${pad2(mm)} Uhr.`;
+  // Kleine grammatische Korrekturen
+  core = core
+    .replace(/^isst\s+du/i, "isst")        // "isst du" → "isst"
+    .replace(/^machst\s+du/i, "machst")    // "machst du" → "machst"
+    .replace(/^gehst\s+du/i, "gehst")      // "gehst du" → "gehst"
+    .replace(/^stehst\s+du/i, "stehst")    // "stehst du" → "stehst"
+    .replace(/^spielst\s+du/i, "spielst"); // "spielst du" → "spielst"
+
+  return `Du ${core} um ${pad2(hh)}:${pad2(mm)} Uhr.`;
+}
+function updateFromPicker() {
+  if (!timeInput.value) return;
+  const [hh, mm] = timeInput.value.split(":").map(v => parseInt(v, 10));
+  setClock(hh, mm);
+  echoEl.textContent = makeEchoSentence(questionEl.textContent, hh, mm);
+}
+
+// ► normale Events (reichen oft schon)
+timeInput.addEventListener("input",  updateFromPicker);
+timeInput.addEventListener("change", updateFromPicker);
+timeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") nextBtn.click(); });
+
+// ► Zusatz: Polling, solange der iOS-Picker offen ist
+let _syncTimer = null;
+let _lastVal   = "";
+function _tickSync() {
+  if (timeInput.value && timeInput.value !== _lastVal) {
+    _lastVal = timeInput.value;
+    updateFromPicker();
   }
+}
+function _startSync() {
+  if (_syncTimer) return;
+  _lastVal = timeInput.value || "";
+  _syncTimer = setInterval(_tickSync, 80); // angenehm flüssig, ressourcenschonend
+}
+function _stopSync() {
+  if (_syncTimer) { clearInterval(_syncTimer); _syncTimer = null; }
+}
+timeInput.addEventListener("focus", _startSync);
+timeInput.addEventListener("blur",  _stopSync);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) _stopSync();
+});
 
-  function updateFromPicker() {
-    if (!timeInput.value) return;
-    const [hh, mm] = timeInput.value.split(":").map(v => parseInt(v, 10));
-    setClock(hh, mm);
-    echoEl.textContent = makeEchoSentence(questionEl.textContent, hh, mm);
-  }
+// beim Seiten-/Schritt-Start initial stellen
+function renderStep() {
+  const qIdx = picked[step];
+  questionEl.textContent = level.questions[qIdx];
+  progressEl.textContent = `Frage ${step + 1} / ${picked.length}`;
+  if (step === 0) timeInput.value = "07:00";
+  updateFromPicker();
+}
 
-  // Events (einmalig binden)
+  // Events
   timeInput.addEventListener("input",  updateFromPicker);
   timeInput.addEventListener("change", updateFromPicker);
   timeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") nextBtn.click(); });
 
-  // ► Zusatz: Polling, solange der iOS-Picker offen ist
-  let _syncTimer = null;
-  let _lastVal   = "";
-  function _tickSync() {
-    if (timeInput.value && timeInput.value !== _lastVal) {
-      _lastVal = timeInput.value;
-      updateFromPicker();
-    }
-  }
-  function _startSync() {
-    if (_syncTimer) return;
-    _lastVal = timeInput.value || "";
-    _syncTimer = setInterval(_tickSync, 80);
-  }
-  function _stopSync() {
-    if (_syncTimer) { clearInterval(_syncTimer); _syncTimer = null; }
-  }
-  timeInput.addEventListener("focus", _startSync);
-  timeInput.addEventListener("blur",  _stopSync);
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) _stopSync();
-  });
-
-  // beim Seiten-/Schritt-Start initial stellen
-  function renderStep() {
-    const qIdx = picked[step];
-    questionEl.textContent = level.questions[qIdx];
-    progressEl.textContent = `Frage ${step + 1} / ${picked.length}`;
-    if (step === 0) timeInput.value = "07:00";
-    updateFromPicker();
-  }
-
   nextBtn.addEventListener("click", () => {
     step++;
     if (step < picked.length) renderStep();
-    else showLevelComplete(level /* onComplete wird nicht genutzt */);
+    else showLevelComplete(level, onComplete);
   });
 
   // Init
@@ -465,6 +493,8 @@ async function initLevel3(onComplete) {
     - assets/images/roterzeiger.png     (Stundenzeiger)
     - assets/images/schwarzerzeiger.png (Minutenzeiger)
 ========================================================= */
+function initLevel4(cb){ startLevel4(cb); }
+
 function startLevel4(onComplete) {
   const container = document.getElementById("gameContainer");
   if (!container) return;
@@ -541,7 +571,7 @@ function startLevel4(onComplete) {
   const TOTAL = 6;
   let step = 0;
 
-  // ✨ innerhalb einer Runde keine doppelte Stunde
+  // ✨ NEU: innerhalb einer Runde keine doppelte Stunde
   const usedHours = new Set();
 
   function pickHourUnique() {
@@ -554,7 +584,6 @@ function startLevel4(onComplete) {
     usedHours.add(h);
     return h;
   }
-
   function buildRound() {
     container.innerHTML = "";
     const block = document.createElement("div");
@@ -608,16 +637,16 @@ function startLevel4(onComplete) {
   function next(){
     step++;
     if (step < TOTAL) buildRound();
-    else {
-      usedHours.clear();        // Reset für spätere Replays
+        else {
+      usedHours.clear();        // ✨ optionaler Reset für spätere Replays
       showLevelComplete({ title:"Volle Stunden 1", id:4 }, onComplete);
     }
   }
 
   // Start-Button: Intro → Quiz
-  startBtn.addEventListener("click", ()=>{
+    startBtn.addEventListener("click", ()=>{
     hourIntro.classList.remove("l4-blink");
-    usedHours.clear();          // neue Spielrunde -> Reset
+    usedHours.clear();          // ✨ NEU: neue Spielrunde -> Reset
     step = 0;
     buildRound();
   });
@@ -822,6 +851,7 @@ async function startLevel5(onComplete) {
 
 /* ===========================
    Einheitlicher Abschluss + Router-Fallback
+   (am Ende von levels.js einfügen)
    =========================== */
 (function ensureLevelRouter(){
   // Baustellenkarte, falls sie noch nicht existiert
@@ -885,5 +915,10 @@ async function startLevel5(onComplete) {
    ========================================================= */
 function initLevel1(cb){ startGameLevel(1, cb); }
 function initLevel2(cb){ startLevel2(cb); }
-function initLevel4(cb){ startLevel4(cb); }
-// (Level 3 wird direkt über initLevel3 gestartet, Level 5 via initLevel5)
+function initLevel4(cb) { startLevel4(cb); }
+
+
+
+
+// ⚠️ WICHTIG: KEIN Top-Level-Block für Level 3 hier.
+// initLevel3(cb) wird später implementiert, wenn Level 3 genutzt wird.
