@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Komm, wir lernen die Uhr – Lernspiel</title>
 
+  <!-- kleines leeres Favicon, verhindert unnötige /favicon.ico Requests -->
+  <link rel="icon" href="data:,">
+
   <!-- 🌐 Globale Basis-Styles (Farben, Layout, Menü, Uhr etc.) -->
   <link rel="stylesheet" href="css/style.css">
   <!-- 🎨 Level-spezifisches Design (Aufgaben, Drop-Zonen, Bilder etc.) -->
@@ -12,7 +15,7 @@
   <!-- Optional: Schriftarten -->
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
+<body data-page="lernspiel">
   <main id="gameContainer">
     <h1>Komm wir lernen die Uhr</h1>
 
@@ -61,7 +64,7 @@
           <button class="video-modal__close" data-close aria-label="Schließen">×</button>
 
           <div class="video-frame">
-            <video id="lessonVideo" controls playsinline preload="metadata"
+            <video id="lessonVideo" controls playsinline preload="none"
                    poster="assets/images/video_poster.png" width="960" height="540">
               <source src="assets/videos/volle_stunde.mp4" type="video/mp4">
               Dein Browser unterstützt das Video-Tag nicht.
@@ -74,7 +77,7 @@
         </div>
       </div>
 
-      <!-- 🔵 Volle Stunden -->
+      <!-- 🔵 Volle Stunden (Kapitel 2) -->
       <div class="chapter-container chapter-hours" id="chapter2">
         <h2 class="chapter-header">🔵 Kapitel 2: Volle Stunden</h2>
 
@@ -93,12 +96,19 @@
           </div>
         </div>
       </div>
-      
-    <!--  <div class="chapter-container chapter-quarter" id="chapter3"> … </div> -->
 
+      <!-- 🟣 Viertelstunden – Video-Karte (für Arrangement mit chapter3) -->
+      <div class="level-card level-card--video" id="quarterVideoCard">
+        <div class="video-card-head">
+          <span class="pill pill--new">Neu</span>
+        </div>
+        <h3>🎬 Lernvideo: Viertelstunden</h3>
+        <small>1:10 Min. • Viertel vor/nach</small>
+        <button class="btn-watch" disabled>Demnächst</button>
+      </div>
 
-      <!-- 🟣 Viertelstunden -->
-      <div class="chapter-container chapter-quarter">
+      <!-- 🟣 Viertelstunden (Kapitel 3) -->
+      <div class="chapter-container chapter-quarter" id="chapter3">
         <h2 class="chapter-header">🟣 Kapitel 3: Viertelstunden</h2>
 
         <div class="level-grid">
@@ -116,11 +126,19 @@
           </div>
         </div>
       </div>
-      
-    <!--  <div class="chapter-container chapter-minutes" id="chapter4"> … </div> -->
 
-      <!-- 🟠 Minuten -->
-      <div class="chapter-container chapter-minutes">
+      <!-- 🟠 Minuten – Video-Karte (für Arrangement mit chapter4) -->
+      <div class="level-card level-card--video" id="minutesVideoCard">
+        <div class="video-card-head">
+          <span class="pill pill--new">Neu</span>
+        </div>
+        <h3>🎬 Lernvideo: Minuten</h3>
+        <small>1:20 Min. • Minuten zählen</small>
+        <button class="btn-watch" disabled>Demnächst</button>
+      </div>
+
+      <!-- 🟠 Minuten (Kapitel 4) -->
+      <div class="chapter-container chapter-minutes" id="chapter4">
         <h2 class="chapter-header">🟠 Kapitel 4: Minuten</h2>
 
         <div class="level-grid">
@@ -142,7 +160,7 @@
     </div> <!-- /#levelSelect -->
   </main>
 
-  <!-- Inline-Script nur für das Videomodal (unverändert) -->
+  <!-- Inline-Script nur für das Volle-Stunden-Video-Modal -->
   <script>
     (() => {
       const openBtn  = document.getElementById('openVideo');
@@ -181,25 +199,11 @@
   <!-- Wichtig: Reihenfolge! Erst levels.js, dann main.js -->
   <script src="js/levels.js"></script>
   <script src="js/main.js"></script>
+
+  <!-- (Optional) Platzhalter-Kommentare innerhalb des Body belassen
+       statt hinter </html>, damit Browser sauber abschließen. -->
+  <!--
+  Weitere Video-Karten können hier später ergänzt werden.
+  -->
 </body>
 </html>
-
-<!--
-<div class="level-card level-card--video" id="quarterVideoCard">
-  <div class="video-card-head">
-    <span class="pill pill--new">Neu</span>
-  </div>
-  <h3>🎬 Lernvideo: Viertelstunden</h3>
-  <small>1:10 Min. • Viertel vor/nach</small>
-  <button class="btn-watch">Ansehen</button>
-</div>
-
-<div class="level-card level-card--video" id="minutesVideoCard">
-  <div class="video-card-head">
-    <span class="pill pill--new">Neu</span>
-  </div>
-  <h3>🎬 Lernvideo: Minuten</h3>
-  <small>1:20 Min. • Minuten zählen</small>
-  <button class="btn-watch">Ansehen</button>
-</div> -->
-
