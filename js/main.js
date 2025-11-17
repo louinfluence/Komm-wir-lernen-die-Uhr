@@ -5,82 +5,80 @@
 window.addEventListener("DOMContentLoaded", () => {
   console.log("📋 main.js geladen und bereit.");
 
-   // Audio unlock 
+  // === Zentrale SFX: success + wrong, mit globalem Event-Listener ===
+  (function setupSFX() {
+    if (window.sfx && window.sfx.__ready) return; // already set
 
-// === Zentrale SFX: success + wrong, mit globalem Event-Listener ===
-(function setupSFX() {
-  if (window.sfx && window.sfx.__ready) return; // already set
+    const makeAudio = (src) => {
+      const a = new Audio(src);
+      a.preload = 'auto';
+      return a;
+    };
 
-  const makeAudio = (src) => {
-    const a = new Audio(src);
-    a.preload = 'auto';
-    return a;
-  };
+    /* ===========================
+       🔗 Globaler Level-Launcher
+       (einmalig, außerhalb des if(levelSelect)-Blocks)
+       =========================== */
+    (function ensureGlobalLauncher(){
+      const prev = window.__startLevel;
 
-/* ===========================
-   🔗 Globaler Level-Launcher
-   (einmalig, außerhalb des if(levelSelect)-Blocks)
-   =========================== */
-(function ensureGlobalLauncher(){
-  const prev = window.__startLevel;
-
-  function launcher(n){
-    console.log("⏭️ __startLevel →", n);
-    if (typeof window.__realStartLevel === "function") {
-      window.__realStartLevel(n);
-    } else {
-      console.warn("startLevel() noch nicht bereit – zeige Baustelle:", n);
-      if (typeof window.showComingSoon === "function") {
-        window.showComingSoon(n);
+      function launcher(n){
+        console.log("⏭️ __startLevel →", n);
+        if (typeof window.__realStartLevel === "function") {
+          window.__realStartLevel(n);
+        } else {
+          console.warn("startLevel() noch nicht bereit – zeige Baustelle:", n);
+          if (typeof window.showComingSoon === "function") {
+            window.showComingSoon(n);
+          }
+        }
       }
+      launcher.__isLauncher = true;
+
+      // Nur ersetzen, wenn kein kompatibler Launcher existiert
+      if (typeof prev !== "function" || !prev.__isLauncher) {
+        window.__startLevel = launcher;
+      }
+    })();
+
+    const success = makeAudio('assets/sounds/erfolg.mp3');
+    const wrong   = makeAudio('assets/sounds/wrong.mp3'); // Platzhalter-Datei, kann leer sein
+
+    let unlocked = false;
+    const unlock = () => {
+      // beide einmal „stumm“ unlocken
+      const tryUnlock = (a) => a?.play().then(() => { a.pause(); a.currentTime = 0; }).catch(()=>{});
+      success.muted = true; wrong.muted = true;
+      Promise.all([tryUnlock(success), tryUnlock(wrong)]).finally(() => {
+        success.muted = false; wrong.muted = false;
+        unlocked = true;
+        window.removeEventListener('pointerdown', unlock);
+        window.removeEventListener('keydown', unlock);
+      });
+    };
+    window.addEventListener('pointerdown', unlock, { once: true });
+    window.addEventListener('keydown',   unlock, { once: true });
+
+    // kleine Schutzbremse (Throttling), falls Events doppelt feuern
+    let lastAt = 0;
+    async function play(a) {
+      if (!unlocked || !a) return;
+      const now = performance.now();
+      if (now - lastAt < 120) return; // 120ms debounce
+      lastAt = now;
+      try { a.pause(); a.currentTime = 0; await a.play(); } catch {}
     }
-  }
-  launcher.__isLauncher = true;
 
-  // Nur ersetzen, wenn kein kompatibler Launcher existiert
-  if (typeof prev !== "function" || !prev.__isLauncher) {
-    window.__startLevel = launcher;
-  }
-})();
+    window.sfx = {
+      success: () => play(success),
+      wrong:   () => play(wrong),
+      __ready: true
+    };
 
-  const success = makeAudio('assets/sounds/erfolg.mp3');
-  const wrong   = makeAudio('assets/sounds/wrong.mp3'); // Platzhalter-Datei, kann leer sein
-
-  let unlocked = false;
-  const unlock = () => {
-    // beide einmal „stumm“ unlocken
-    const tryUnlock = (a) => a?.play().then(() => { a.pause(); a.currentTime = 0; }).catch(()=>{});
-    success.muted = true; wrong.muted = true;
-    Promise.all([tryUnlock(success), tryUnlock(wrong)]).finally(() => {
-      success.muted = false; wrong.muted = false;
-      unlocked = true;
-      window.removeEventListener('pointerdown', unlock);
-      window.removeEventListener('keydown', unlock);
-    });
-  };
-  window.addEventListener('pointerdown', unlock, { once: true });
-  window.addEventListener('keydown',   unlock, { once: true });
-
-  // kleine Schutzbremse (Throttling), falls Events doppelt feuern
-  let lastAt = 0;
-  async function play(a) {
-    if (!unlocked || !a) return;
-    const now = performance.now();
-    if (now - lastAt < 120) return; // 120ms debounce
-    lastAt = now;
-    try { a.pause(); a.currentTime = 0; await a.play(); } catch {}
-  }
-
-  window.sfx = {
-    success: () => play(success),
-    wrong:   () => play(wrong),
-    __ready: true
-  };
-
-  // 🔊 Globale Event-Hooks: Alle Level können nur Events dispatchen.
-  document.addEventListener('answer:correct', () => window.sfx.success());
-  document.addEventListener('answer:wrong',   () => window.sfx.wrong());
-})();
+    // 🔊 Globale Event-Hooks: Alle Level können nur Events dispatchen.
+    document.addEventListener('answer:correct', () => window.sfx.success());
+    document.addEventListener('answer:wrong',   () => window.sfx.wrong());
+  })();
 
   /* ---------------------------------------------------------
      🔹 Globale Variablen & Selektoren
@@ -110,94 +108,87 @@ window.addEventListener("DOMContentLoaded", () => {
   };
 
   /* ---------------------------------------------------------
-   🔹 Lernspiel: Levelsteuerung
-   (robuster Delegator – hört direkt auf #levelSelect, kein contains()-Filter)
---------------------------------------------------------- */
-if (levelSelect) {
-  console.log("🎮 Lernspiel: Levelauswahl aktiv");
+     🔹 Lernspiel: Levelsteuerung
+     (robuster Delegator – hört direkt auf #levelSelect)
+  --------------------------------------------------------- */
+  if (levelSelect) {
+    console.log("🎮 Lernspiel: Levelauswahl aktiv");
 
-  // ——— Klick/Tap direkt auf dem Level-Container ———
-  function onCardActivate(e) {
-    const card = e.target.closest('.level-card[data-level]');
-    if (!card) return;                  // Klick nicht auf einer Level-Karte
-    e.preventDefault();
-
-    const n = parseInt(card.dataset.level, 10);
-    if (!Number.isFinite(n)) return;
-
-    console.log("▶️ Level-Karte geklickt:", n);
-    startLevel(n);
-  }
-
-  // iPad-sicher: sowohl click als auch pointerup (mit kleinem Debounce)
-  let _last = 0;
-  function debounced(handler) {
-    return (ev) => {
-      const now = performance.now();
-      if (now - _last < 160) return;
-      _last = now;
-      handler(ev);
-    };
-  }
-
-  levelSelect.addEventListener('click',     debounced(onCardActivate));
-  levelSelect.addEventListener('pointerup', debounced(onCardActivate), { passive: false });
-
-  // ——— optional: Übersicht ausblenden, wenn ein Level läuft ———
-  function hideOverview() {
-    if (levelSelect) levelSelect.style.display = "none";
-  }
-
-  // ——— „Weiter“-Button für Level, die explizit einen Callback nutzen ———
-  function showNextButton(nextLevel) {
-    const btn = document.createElement("button");
-    btn.className = "next-level-btn";
-
-    if (nextLevel) {
-      btn.textContent = `➡️ Weiter zu Level ${nextLevel}`;
-      btn.addEventListener("click", () => window.__startLevel(nextLevel));
-    } else {
-      btn.textContent = "🎉 Alle Level geschafft!";
-      btn.disabled = true;
+    function onCardActivate(e) {
+      const card = e.target.closest('.level-card[data-level]');
+      if (!card) return;
+      e.preventDefault();
+      const n = parseInt(card.dataset.level, 10);
+      if (!Number.isFinite(n)) return;
+      console.log("▶️ Starte Level:", n);
+      startLevel(n);
     }
 
-    container.appendChild(btn);
-  }
+    // iPad-sicher: sowohl click als auch pointerup (mit kleinem Debounce)
+    let _last = 0;
+    function debounced(handler) {
+      return (ev) => {
+        const now = performance.now();
+        if (now - _last < 160) return;
+        _last = now;
+        handler(ev);
+      };
+    }
 
-  // ——— zentrale Startfunktion für nummerierte Level ———
-  function startLevel(n) {
-    console.log("▶️ Starte Level:", n);
-    hideOverview();
+    levelSelect.addEventListener('click',     debounced(onCardActivate));
+    levelSelect.addEventListener('pointerup', debounced(onCardActivate), { passive: false });
 
-    if (n === 1 && typeof window.initLevel1 === "function") {
-      window.initLevel1(showNextButton);
+    function hideOverview() {
+      if (levelSelect) levelSelect.style.display = "none";
     }
-    else if (n === 2 && typeof window.startLevel2 === "function") {
-      window.startLevel2(showNextButton);
-    }
-    else if (n === 3 && typeof window.initLevel3 === "function") {
-      window.initLevel3(showNextButton);
-    }
-    else if (n === 4 && typeof window.initLevel4 === "function") {
-      window.initLevel4(showNextButton);
-    }
-    else if (n === 5 && typeof window.startLevel5 === "function") {
-      window.startLevel5(showNextButton);
-    }
-    // Platz für weitere:
-    // else if (n === 6 && typeof window.startLevel6 === "function") { ... }
 
-    else {
-      console.warn("⚠️ Level-Funktion fehlt oder wurde nicht geladen:", n);
-      if (typeof window.showComingSoon === "function") {
-        window.showComingSoon(n);
+    function showNextButton(nextLevel) {
+      const btn = document.createElement("button");
+      btn.className = "next-level-btn";
+
+      if (nextLevel) {
+        btn.textContent = `➡️ Weiter zu Level ${nextLevel}`;
+        btn.addEventListener("click", () => window.__startLevel(nextLevel));
+      } else {
+        btn.textContent = "🎉 Alle Level geschafft!";
+        btn.disabled = true;
+      }
+
+      container.appendChild(btn);
+    }
+
+    function startLevel(n) {
+      hideOverview();
+
+      if (n === 1 && typeof window.initLevel1 === "function") {
+        window.initLevel1(showNextButton);
+      }
+      else if (n === 2 && typeof window.startLevel2 === "function") {
+        window.startLevel2(showNextButton);
+      }
+      else if (n === 3 && typeof window.initLevel3 === "function") {
+        window.initLevel3(showNextButton);
+      }
+      else if (n === 4 && typeof window.initLevel4 === "function") {
+        window.initLevel4(showNextButton);
+      }
+      else if (n === 5 && typeof window.startLevel5 === "function") {
+        window.startLevel5(showNextButton);
+      }
+      // Platz für weitere:
+      // else if (n === 6 && typeof window.startLevel6 === "function") { ... }
+
+      else {
+        console.warn("⚠️ Level-Funktion fehlt oder wurde nicht geladen:", n);
+        if (typeof window.showComingSoon === "function") {
+          window.showComingSoon(n);
+        }
       }
     }
-  }
 
-  // Stelle die Startfunktion dem globalen Launcher zur Verfügung
-  window.__realStartLevel = startLevel;
-}
+    // Stelle die Startfunktion dem globalen Launcher zur Verfügung
+    window.__realStartLevel = startLevel;
+  }
 
   /* ---------------------------------------------------------
      🔹 Uhr-Seite: Interaktive Uhrsteuerung (wenn vorhanden)
@@ -338,13 +329,14 @@ function initClock() {
     });
   }
 }
+
 /* Lernvideos neben Kapitel-Boxen anordnen (mehrere Paare, links ODER rechts) */
 (function arrangeVideosBesideChapters(){
   // ➜ Hier deine Paare eintragen: videoId, chapterId, side: 'left' | 'right'
   const pairs = [
-    { videoId: 'learnVideoCard',   chapterId: 'chapter2', side: 'left'  }, // schon vorhanden
-    { videoId: 'quarterVideoCard', chapterId: 'chapter3', side: 'right' }, // Beispiel
-    { videoId: 'minutesVideoCard', chapterId: 'chapter4', side: 'right' }  // Beispiel
+    { videoId: 'learnVideoCard',   chapterId: 'chapter2', side: 'left'  },
+    { videoId: 'quarterVideoCard', chapterId: 'chapter3', side: 'right' },
+    { videoId: 'minutesVideoCard', chapterId: 'chapter4', side: 'right' }
   ];
 
   function mountPair({ videoId, chapterId, side = 'left' }) {
@@ -373,7 +365,7 @@ function initClock() {
 
     // optionale Marker-Klassen (falls du später stylen willst)
     video.classList.add('section-col','section-col--video');
-    chap.classList.add('section-col','section-col--content');
+    chap .classList.add('section-col','section-col--content');
   }
 
   function mountAll(){ pairs.forEach(mountPair); }
@@ -384,7 +376,6 @@ function initClock() {
   const mo = new MutationObserver(tryMount);
   mo.observe(document.body, { childList: true, subtree: true });
 })();
-
 
 /* -----------------------------------------------------------
    Dark Mode Umschalter (global)
