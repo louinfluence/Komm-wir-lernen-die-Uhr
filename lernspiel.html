@@ -159,20 +159,8 @@
 
     </div> <!-- /#levelSelect -->
   </main>
-  
-  <!-- Wichtig: Reihenfolge! Erst levels.js, dann main.js -->
-  <script src="js/levels.js"></script>
-  <script src="js/main.js"></script>
 
-  <!-- (Optional) Platzhalter-Kommentare innerhalb des Body belassen
-       statt hinter </html>, damit Browser sauber abschließen. -->
-  <!--
-  Weitere Video-Karten können hier später ergänzt werden.
-  -->
-</body>
-</html>
-
-  <!-- Inline-Script nur für das Volle-Stunden-Video-Modal -->
+  <!-- Inline-Script nur für das Volle-Stunden-Video-Modal (MUSS im Body stehen) -->
   <script>
     (() => {
       const openBtn  = document.getElementById('openVideo');
@@ -183,17 +171,10 @@
       const seenPill = document.getElementById('videoWatched');
       const KEY      = 'volle_stunde_video_seen';
 
-      function show() {
-        modal.hidden = false;
-        document.body.style.overflow = 'hidden';
-      }
-      function hide() {
-        modal.hidden = true;
-        document.body.style.overflow = '';
-        video?.pause();
-      }
+      function show() { if(modal){ modal.hidden = false; document.body.style.overflow = 'hidden'; } }
+      function hide() { if(modal){ modal.hidden = true;  document.body.style.overflow = ''; video?.pause(); } }
       function markSeen() {
-        localStorage.setItem(KEY, '1');
+        try { localStorage.setItem(KEY, '1'); } catch {}
         if (seenPill) seenPill.hidden = false;
         hide();
       }
@@ -204,8 +185,12 @@
       doneBtn?.addEventListener('click', markSeen);
       video?.addEventListener('ended', markSeen);
 
-      if (localStorage.getItem(KEY) === '1') seenPill.hidden = false;
+      try { if (localStorage.getItem(KEY) === '1' && seenPill) seenPill.hidden = false; } catch {}
     })();
   </script>
 
-  
+  <!-- Wichtig: Reihenfolge! Erst levels.js, dann main.js -->
+  <script src="js/levels.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
