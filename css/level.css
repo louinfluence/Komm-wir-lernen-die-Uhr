@@ -780,5 +780,75 @@ body.night-mode {
   .section-row--video-right .section-col--content { order: 1; }
 }
 
+/* ===== Kapitel-Reihen: Video links, Kapitel rechts ===== */
+.chapter-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) 1fr; /* links: Panel, rechts: Kapitel */
+  gap: 16px;
+  align-items: start;
+  margin: 20px 0;
+}
 
+/* linke Spalte: allgemeines Video-Panel */
+.video-panel {
+  background: #fff;
+  border: 2px solid #bbdefb;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  padding: 14px 16px;
+}
+
+.video-panel h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  color: #0d47a1;
+}
+
+.video-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.video-thumb {
+  width: 100%;
+  text-align: left;
+  padding: .6rem .8rem;
+  border: 2px solid #90caf9;
+  background: #e3f2fd;
+  color: #0d47a1;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .12s ease, background .2s, border .2s;
+}
+.video-thumb:hover { transform: scale(1.02); }
+
+/* Kleinere Displays: untereinander, Kapitel bewusst VOR Video (Video nicht „darüber“) */
+@media (max-width: 850px) {
+  .chapter-row { grid-template-columns: 1fr; }
+  .chapter-row .chapter-container { order: 1; }
+  .chapter-row .video-panel       { order: 2; }
+}
+
+/* Video-Modal (falls noch nicht im CSS): kleine sichere Defaults */
+.video-modal[hidden] { display: none; }
+.video-modal {
+  position: fixed; inset: 0; z-index: 1000;
+}
+.video-modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+.video-modal__dialog {
+  position: relative; max-width: min(960px, 92vw);
+  margin: 6vh auto; background: #fff; border-radius: 18px;
+  padding: 1rem; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.video-modal__close {
+  position: absolute; top: .5rem; right: .6rem;
+  width: 36px; height: 36px; border: none; border-radius: 50%;
+  background: #e3f2fd; color: #0d47a1; font-size: 1.2rem; cursor: pointer;
+}
+.video-frame { aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background:#000; }
+.video-frame video { width: 100%; height: 100%; object-fit: contain; }
 
