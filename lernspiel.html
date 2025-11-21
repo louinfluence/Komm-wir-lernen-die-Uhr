@@ -42,47 +42,35 @@
   <div class="chapter-container chapter-hours">
   <h2 class="chapter-header">🔵 Kapitel 2: Volle Stunden</h2>
 
-  <div class="chapter-flex-row">
-    <!-- Linke Spalte: Video IMMER sichtbar -->
-    <aside class="chapter-flex-video">
-      <div class="level-card level-card--video" id="introVideoCard">
-        <div class="video-card-head">
-          <span class="pill pill--new">Neu</span>
-        </div>
-        <h3>🎬 Lernvideo: Volle Stunden</h3>
-        <small>45 Sek. • Einstieg</small>
-
-        <div class="video-frame">
-          <video
-            src="assets/videos/volle-stunden-intro.mp4"
-            poster="assets/images/video_poster.png"
-            controls
-            playsinline
-          ></video>
-        </div>
+  <!-- NEU: gemeinsame Zeile -->
+  <div class="chapter-row">
+    <!-- Linke Spalte: Video-Karte -->
+    <div class="level-card level-card--video" id="introVideoCard">
+      <div class="video-card-head">
+        <span class="pill pill--new">Neu</span>
+        <span class="pill pill--seen" id="videoWatched" hidden>✓ angesehen</span>
       </div>
-    </aside>
+      <h3>🎬 Lernvideo: Volle Stunden</h3>
+      <small>45 Sek. • Einstieg</small>
 
-    <!-- Rechte Spalte: Level-Karten -->
-    <section class="chapter-flex-content">
+      <!-- reines Inline-Video, kein Modal -->
+      <video id="lessonVideo" controls playsinline
+             poster="assets/images/video_poster.png">
+        <source src="assets/videos/volle-stunden-intro.mp4" type="video/mp4">
+        Dein Browser unterstützt das Video-Tag nicht.
+      </video>
+    </div>
+
+    <!-- Rechte Spalte: Level -->
+    <div class="levels-col">
       <div class="level-grid">
-        <div class="level-card hours-level" data-level="4">
-          🕓 Level 4
-          <small>Volle Stunden 1</small>
-        </div>
-        <div class="level-card hours-level" data-level="5">
-          🕓 Level 5
-          <small>Volle Stunden 2</small>
-        </div>
-        <div class="level-card hours-level" data-level="6">
-          🕓 Level 6
-          <small>Volle Stunden 3</small>
-        </div>
+        <div class="level-card hours-level" data-level="4">🕓 Level 4<small>Volle Stunden 1</small></div>
+        <div class="level-card hours-level" data-level="5">🕓 Level 5<small>Volle Stunden 2</small></div>
+        <div class="level-card hours-level" data-level="6">🕓 Level 6<small>Volle Stunden 3</small></div>
       </div>
-    </section>
+    </div>
   </div>
 </div>
-
   <!-- 🟣 Viertelstunden -->
   <div class="chapter-container chapter-quarter">
     <h2 class="chapter-header">🟣 Kapitel 3: Viertelstunden</h2>
