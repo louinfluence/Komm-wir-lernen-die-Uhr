@@ -546,57 +546,48 @@ body.night-mode { background-color: #001a33; color: #fff; transition: background
 /* Levelraster rechts nicht künstlich verengen */
 .chapter-flex-content .level-grid { max-width: none; margin: 0; justify-content: flex-start; }
 
-/* Mobil untereinander stapeln */
-@media (max-width: 900px) {
-  .chapter-flex-row { flex-direction: column; }
-  .chapter-flex-video, .chapter-flex-content { flex: 1 1 100%; max-width: 100%; }
-  .level-card--video { max-width: 100%; }
-}
-
-/* Kapitel 2: zweispaltig – Video links, Levels rechts */
+/* ——— Kapitel 2: Video links, Level rechts (Flex statt Grid) ——— */
 .chapter-hours{
-  display:grid;
-  grid-template-columns: minmax(260px, 360px) 1fr;
-  grid-template-areas:
-    "header header"
-    "video  grid";
-  gap:16px;
-  align-items:start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
 }
 
-.chapter-hours > h2{ grid-area: header; }
+/* Überschrift immer über beide Spalten */
+.chapter-hours > .chapter-header{
+  flex: 0 0 100%;
+}
 
-/* Video-Karte links: volle Spaltenbreite, keine geerbte 180px */
+/* Videokarte: feste Spaltenbreite links, NICHT die 180px von .level-card erben */
 .chapter-hours > .level-card--video{
-  grid-area: video;
-  width: 100%;
-  max-width: 360px;   /* optisch wie in deiner Skizze */
+  flex: 0 0 340px;     /* sichtbare Breite links */
+  max-width: 360px;
+  width: auto;
   margin: 0;
 }
 
-/* Level-Grid rechts: ohne zusätzlichen Außenabstand oben */
+/* Level-Grid rechts: füllt die restliche Breite, ohne den großen Außenabstand */
 .chapter-hours > .level-grid{
-  grid-area: grid;
-  margin: 0;
-  align-self: start;
+  flex: 1 1 0;
+  margin: 0;           /* überschreibt margin:40px auto aus .level-grid */
+  max-width: none;     /* nicht auf 800px begrenzen */
+  justify-content: flex-start;
 }
 
-/* Video selbst füllt die Karte */
+/* Video selbst immer kartenbreit */
 .level-card--video video{
-  display:block;
-  width:100%;
-  height:auto;
-  border-radius:12px;
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
 }
 
 /* Mobil: untereinander stapeln */
 @media (max-width: 900px){
-  .chapter-hours{
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "header"
-      "video"
-      "grid";
+  .chapter-hours > .level-card--video,
+  .chapter-hours > .level-grid{
+    flex: 0 0 100%;
+    max-width: 100%;
   }
-  .chapter-hours > .level-card--video{ max-width: 100%; }
 }
