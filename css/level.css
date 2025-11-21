@@ -552,3 +552,51 @@ body.night-mode { background-color: #001a33; color: #fff; transition: background
   .chapter-flex-video, .chapter-flex-content { flex: 1 1 100%; max-width: 100%; }
   .level-card--video { max-width: 100%; }
 }
+
+/* Kapitel 2: zweispaltig – Video links, Levels rechts */
+.chapter-hours{
+  display:grid;
+  grid-template-columns: minmax(260px, 360px) 1fr;
+  grid-template-areas:
+    "header header"
+    "video  grid";
+  gap:16px;
+  align-items:start;
+}
+
+.chapter-hours > h2{ grid-area: header; }
+
+/* Video-Karte links: volle Spaltenbreite, keine geerbte 180px */
+.chapter-hours > .level-card--video{
+  grid-area: video;
+  width: 100%;
+  max-width: 360px;   /* optisch wie in deiner Skizze */
+  margin: 0;
+}
+
+/* Level-Grid rechts: ohne zusätzlichen Außenabstand oben */
+.chapter-hours > .level-grid{
+  grid-area: grid;
+  margin: 0;
+  align-self: start;
+}
+
+/* Video selbst füllt die Karte */
+.level-card--video video{
+  display:block;
+  width:100%;
+  height:auto;
+  border-radius:12px;
+}
+
+/* Mobil: untereinander stapeln */
+@media (max-width: 900px){
+  .chapter-hours{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "video"
+      "grid";
+  }
+  .chapter-hours > .level-card--video{ max-width: 100%; }
+}
