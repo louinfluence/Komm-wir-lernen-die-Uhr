@@ -571,7 +571,7 @@ body.night-mode { background-color: #001a33; color: #fff; transition: background
 /* Level-Grid rechts: füllt die restliche Breite, ohne den großen Außenabstand */
 .chapter-hours > .level-grid{
   flex: 1 1 0;
-  margin: 0;           /* überschreibt margin:40px auto aus .level-grid */
+  margin: -12px;           /* überschreibt margin:40px auto aus .level-grid */
   max-width: none;     /* nicht auf 800px begrenzen */
   justify-content: flex-start;
 }
