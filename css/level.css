@@ -521,3 +521,34 @@ body.night-mode { background-color: #001a33; color: #fff; transition: background
   transition: opacity .4s ease;
   opacity: 0;
 }
+
+/* Kapitel 2 etwas breiter, damit 2 Spalten gut passen */
+.chapter-container.chapter-hours { max-width: 1100px; }
+
+/* 2-Spalten-Layout: Video links, Level rechts */
+.chapter-flex-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1.2rem;
+}
+
+.chapter-flex-video { flex: 0 0 340px; max-width: 360px; }
+.chapter-flex-content { flex: 1 1 0; min-width: 320px; }
+
+/* Wichtig: Videokarte darf NICHT von der generischen 180px-Regel begrenzt werden */
+.level-card--video { width: 100%; max-width: 360px; }
+
+/* Video sauber einpassen */
+.video-frame { aspect-ratio: 16 / 9; border: 6px solid #64b5f6; border-radius: 16px; background:#000; overflow: hidden; }
+.video-frame video { width: 100%; height: 100%; display: block; object-fit: contain; }
+
+/* Levelraster rechts nicht künstlich verengen */
+.chapter-flex-content .level-grid { max-width: none; margin: 0; justify-content: flex-start; }
+
+/* Mobil untereinander stapeln */
+@media (max-width: 900px) {
+  .chapter-flex-row { flex-direction: column; }
+  .chapter-flex-video, .chapter-flex-content { flex: 1 1 100%; max-width: 100%; }
+  .level-card--video { max-width: 100%; }
+}
