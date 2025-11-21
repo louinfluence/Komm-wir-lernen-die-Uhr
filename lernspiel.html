@@ -4,187 +4,133 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Komm, wir lernen die Uhr – Lernspiel</title>
-  <link rel="icon" href="data:,">
-  <!-- Globale & Level-Styles -->
+  <!-- 🌐 Globale Basis-Styles (Farben, Layout, Menü, Uhr etc.) -->
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/levels.css"> <!-- <— korrigiert -->
+  <!-- 🎨 Level-spezifisches Design (Aufgaben, Drop-Zonen, Bilder etc.) -->
+  <link rel="stylesheet" href="css/level.css">
+  <!-- Optional: Schriftart für moderne, kindgerechte Optik -->
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body data-page="lernspiel">
+<body>
   <main id="gameContainer">
-    <h1>Komm wir lernen die Uhr</h1>
+ <h1>Komm wir lernen die Uhr</h1>
 
-    <div id="levelSelect" class="level-overview">
+<div id="levelSelect" class="level-overview">
 
-      <!-- =======================
-           Reihe 1: Einstieg
-      ======================== -->
-      <div class="chapter-row">
-        <!-- Video links -->
-        <aside class="video-card video-card--intro" id="introVideoCard">
-          <div>
-            <div class="video-card-head">
-              <span class="pill pill--new">Neu</span>
-              <span class="pill pill--seen" id="videoWatched" hidden>✓ angesehen</span>
-            </div>
-            <h3>🎬 Lernvideo: Volle Stunde</h3>
-            <small>45 Sek. • Einstieg in die Uhr</small>
-          </div>
-          <button class="btn-watch" id="openVideo">Ansehen</button>
-        </aside>
+  <!-- 🟢 Einstieg -->
+  <div class="chapter-container chapter-intro">
+    <h2 class="chapter-header">🟢 Einstieg: Erste Schritte mit der Uhr</h2>
 
-        <!-- Kapitel rechts -->
-        <section class="chapter-container chapter-intro" id="chapter1">
-          <h2 class="chapter-header">🟢 Einstieg: Erste Schritte mit der Uhr</h2>
-          <div class="level-grid">
-            <div class="level-card intro-level" data-level="1">
-              🕓 Level 1
-              <small>Tageszeiten zuordnen</small>
-            </div>
-            <div class="level-card intro-level" data-level="2">
-              🕓 Level 2
-              <small>Tageszeiten erkennen</small>
-            </div>
-            <div class="level-card intro-level" data-level="3">
-              🕓 Level 3
-              <small>Um wie viel Uhr?</small>
-            </div>
-          </div>
-        </section>
+    <div class="level-grid">
+      <div class="level-card intro-level" data-level="1">
+        🕓 Level 1
+        <small>Tageszeiten zuordnen</small>
       </div>
 
-      <!-- 🎥 Modal nur für das erste Video -->
-      <div id="videoModal" class="video-modal" hidden>
-        <div class="video-modal__backdrop" data-close></div>
-        <div class="video-modal__dialog" role="dialog" aria-modal="true" aria-label="Lernvideo: Volle Stunde">
-          <button class="video-modal__close" data-close aria-label="Schließen">×</button>
-          <div class="video-frame">
-            <video id="lessonVideo" controls playsinline preload="none"
-                   poster="assets/images/video_poster.png" width="960" height="540">
-              <source src="assets/videos/volle_stunde.mp4" type="video/mp4">
-              Dein Browser unterstützt das Video-Tag nicht.
-            </video>
-          </div>
-          <div class="video-modal__actions">
-            <button id="markWatched" class="btn-done">Als gesehen markieren</button>
-          </div>
-        </div>
+      <div class="level-card intro-level" data-level="2">
+        🕓 Level 2
+        <small>Tageszeiten erkennen</small>
       </div>
 
-      <!-- =======================
-           Reihe 2: Kapitel 2 – Volle Stunden
-      ======================== -->
-      <div class="chapter-row">
-        <aside class="video-card video-card--hours" id="hoursVideoCard">
-          <h3>🎬 Tutorial: Volle Stunden</h3>
-          <small>1:05 Min. • Stunden ablesen</small>
-          <button class="btn-watch" disabled>Demnächst</button>
-        </aside>
-
-        <section class="chapter-container chapter-hours" id="chapter2">
-          <h2 class="chapter-header">🔵 Kapitel 2: Volle Stunden</h2>
-          <div class="level-grid">
-            <div class="level-card hours-level" data-level="4">
-              🕓 Level 4
-              <small>Volle Stunden 1</small>
-            </div>
-            <div class="level-card hours-level" data-level="5">
-              🕓 Level 5
-              <small>Volle Stunden 2</small>
-            </div>
-            <div class="level-card hours-level" data-level="6">
-              🕓 Level 6
-              <small>Volle Stunden 3</small>
-            </div>
-          </div>
-        </section>
+      <div class="level-card intro-level" data-level="3">
+        🕓 Level 3
+        <small>Um wie viel Uhr?</small>
       </div>
+    </div>
+  </div>
 
-      <!-- =======================
-           Reihe 3: Kapitel 3 – Viertelstunden
-      ======================== -->
-      <div class="chapter-row">
-        <aside class="video-card video-card--quarter" id="quarterVideoCard">
-          <h3>🎬 Tutorial: Viertelstunden</h3>
-          <small>1:10 Min. • Viertel vor / nach</small>
-          <button class="btn-watch" disabled>Demnächst</button>
-        </aside>
+  <!-- 🔵 Volle Stunden -->
+  <div class="chapter-container chapter-hours">
+    <h2 class="chapter-header">🔵 Kapitel 2: Volle Stunden</h2>
 
-        <section class="chapter-container chapter-quarter" id="chapter3">
-          <h2 class="chapter-header">🟣 Kapitel 3: Viertelstunden</h2>
-          <div class="level-grid">
-            <div class="level-card quarter-level" data-level="7">
-              🕓 Level 7
-              <small>Viertelstunden 1</small>
-            </div>
-            <div class="level-card quarter-level" data-level="8">
-              🕓 Level 8
-              <small>Viertelstunden 2</small>
-            </div>
-            <div class="level-card quarter-level" data-level="9">
-              🕓 Level 9
-              <small>Viertelstunden 3</small>
-            </div>
-          </div>
-        </section>
+    <!-- 🎬 Lernvideo: Volle Stunden -->
+<div class="level-card level-card--video" id="introVideoCard">
+  <div class="video-card-head">
+    <span class="pill pill--new">Neu</span>
+    <span class="pill pill--seen" id="videoWatched" hidden>✓ angesehen</span>
+  </div>
+  <h3>🎬 Lernvideo: Volle Stunden</h3>
+  <small>45 Sek. • Einstieg</small>
+  <button class="btn-watch" id="openVideo">Ansehen</button>
+</div>
+
+<!-- Modal -->
+<div id="videoModal" class="video-modal" hidden>
+  <div class="video-modal__backdrop" data-close></div>
+  <div class="video-modal__dialog" role="dialog" aria-modal="true" aria-label="Lernvideo: Volle Stunden">
+    <button class="video-modal__close" data-close aria-label="Schließen">×</button>
+
+    <video id="lessonVideo" controls playsinline preload="metadata"
+           poster="assets/images/video_poster.png" width="960" height="540">
+      <source src="assets/videos/volle-stunden-intro.mp4" type="video/mp4">
+      <!-- optional: <source src="assets/videos/volle-stunden-intro.webm" type="video/webm"> -->
+      Dein Browser unterstützt das Video-Tag nicht.
+    </video>
+
+    <div class="video-modal__actions">
+      <button id="markWatched" class="btn-done">Als gesehen markieren</button>
+    </div>
+  </div>
+</div>
+
+    <div class="level-grid">
+      <div class="level-card hours-level" data-level="4">
+        🕓 Level 4
+        <small>Volle Stunden 1</small>
       </div>
-
-      <!-- =======================
-           Reihe 4: Kapitel 4 – Minuten
-      ======================== -->
-      <div class="chapter-row">
-        <aside class="video-card video-card--minutes" id="minutesVideoCard">
-          <h3>🎬 Tutorial: Minuten</h3>
-          <small>1:20 Min. • Minuten zählen</small>
-          <button class="btn-watch" disabled>Demnächst</button>
-        </aside>
-
-        <section class="chapter-container chapter-minutes" id="chapter4">
-          <h2 class="chapter-header">🟠 Kapitel 4: Minuten</h2>
-          <div class="level-grid">
-            <div class="level-card minutes-level" data-level="10">
-              🕓 Level 10
-              <small>Minuten 1</small>
-            </div>
-            <div class="level-card minutes-level" data-level="11">
-              🕓 Level 11
-              <small>Minuten 2</small>
-            </div>
-            <div class="level-card minutes-level" data-level="12">
-              🕓 Level 12
-              <small>Minuten 3</small>
-            </div>
-          </div>
-        </section>
+      <div class="level-card hours-level" data-level="5">
+        🕓 Level 5
+        <small>Volle Stunden 2</small>
       </div>
+      <div class="level-card hours-level" data-level="6">
+        🕓 Level 6
+        <small>Volle Stunden 3</small>
+      </div>
+    </div>
+  </div>
 
-    </div> <!-- /#levelSelect -->
+  <!-- 🟣 Viertelstunden -->
+  <div class="chapter-container chapter-quarter">
+    <h2 class="chapter-header">🟣 Kapitel 3: Viertelstunden</h2>
+
+    <div class="level-grid">
+      <div class="level-card quarter-level" data-level="7">
+        🕓 Level 7
+        <small>Viertelstunden 1</small>
+      </div>
+      <div class="level-card quarter-level" data-level="8">
+        🕓 Level 8
+        <small>Viertelstunden 2</small>
+      </div>
+      <div class="level-card quarter-level" data-level="9">
+        🕓 Level 9
+        <small>Viertelstunden 3</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🟠 Minuten -->
+  <div class="chapter-container chapter-minutes">
+    <h2 class="chapter-header">🟠 Kapitel 4: Minuten</h2>
+
+    <div class="level-grid">
+      <div class="level-card minutes-level" data-level="10">
+        🕓 Level 10
+        <small>Minuten 1</small>
+      </div>
+      <div class="level-card minutes-level" data-level="11">
+        🕓 Level 11
+        <small>Minuten 2</small>
+      </div>
+      <div class="level-card minutes-level" data-level="12">
+        🕓 Level 12
+        <small>Minuten 3</small>
+      </div>
+    </div>
+  </div>
+
+</div>    
   </main>
-
-  <!-- Nur das kleine Modal-Script (kein Umsortieren per JS) -->
-  <script>
-    (() => {
-      const openBtn  = document.getElementById('openVideo');
-      const modal    = document.getElementById('videoModal');
-      const closeEls = modal ? modal.querySelectorAll('[data-close]') : [];
-      const video    = document.getElementById('lessonVideo');
-      const doneBtn  = document.getElementById('markWatched');
-      const seenPill = document.getElementById('videoWatched');
-      const KEY      = 'volle_stunde_video_seen';
-
-      function show(){ modal.hidden = false; document.body.style.overflow = 'hidden'; }
-      function hide(){ modal.hidden = true;  document.body.style.overflow = ''; video?.pause(); }
-      function markSeen(){ localStorage.setItem(KEY,'1'); seenPill.hidden = false; hide(); }
-
-      openBtn?.addEventListener('click', show);
-      closeEls.forEach(el => el.addEventListener('click', hide));
-      modal?.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
-      doneBtn?.addEventListener('click', markSeen);
-      video?.addEventListener('ended', markSeen);
-
-      if (localStorage.getItem(KEY) === '1') seenPill.hidden = false;
-    })();
-  </script>
 
   <!-- Wichtig: Reihenfolge! Erst levels.js, dann main.js -->
   <script src="js/levels.js"></script>
