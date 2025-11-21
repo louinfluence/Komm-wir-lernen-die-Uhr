@@ -543,52 +543,40 @@ body.night-mode { background-color: #001a33; color: #fff; transition: background
 .video-frame { aspect-ratio: 16 / 9; border: 6px solid #64b5f6; border-radius: 16px; background:#000; overflow: hidden; }
 .video-frame video { width: 100%; height: 100%; display: block; object-fit: contain; }
 
-/* Levelraster rechts nicht künstlich verengen */
-.chapter-flex-content .level-grid { max-width: none; margin: 0; justify-content: flex-start; }
-
-/* ——— Kapitel 2: Video links, Level rechts (Flex statt Grid) ——— */
-.chapter-hours{
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 16px;
+/* Zwei Spalten: links Video, rechts Level */
+.chapter-row{
+  display:grid;
+  grid-template-columns: 340px 1fr; /* Video-Breite hier anpassen */
+  gap:16px;
+  align-items:start;
 }
 
-/* Überschrift immer über beide Spalten */
-.chapter-hours > .chapter-header{
-  flex: 0 0 100%;
+/* Video-Kachel sauber begrenzen und klickbar halten */
+.level-card--video{
+  margin:0;              /* nimmt keine Extra-Höhe ein */
+  width:100%;
+  max-width:340px;       /* passt zur Spaltenbreite */
 }
-
-/* Videokarte: feste Spaltenbreite links, NICHT die 180px von .level-card erben */
-.chapter-hours > .level-card--video{
-  flex: 0 0 340px;     /* sichtbare Breite links */
-  max-width: 360px;
-  width: auto;
-  transform: translateX(-12px);  /* verschiebt optisch, Layout bleibt gleich */
-}
-
-
-/* Level-Grid rechts: füllt die restliche Breite, ohne den großen Außenabstand */
-.chapter-hours > .level-grid{
-  flex: 1 1 0;
-  margin: -12px;           /* überschreibt margin:40px auto aus .level-grid */
-  max-width: none;     /* nicht auf 800px begrenzen */
-  justify-content: flex-start;
-}
-
-/* Video selbst immer kartenbreit */
 .level-card--video video{
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
+  display:block;
+  width:100%;
+  height:auto;
+  border-radius:12px;
 }
 
-/* Mobil: untereinander stapeln */
+/* Level-Gruppe rechts ohne großen Außenabstand */
+.chapter-row .level-grid{ 
+  margin:0;
+}
+
+/* Falls Kacheln je überlappen: Video sicher über/unter anderen */
+.level-card--video{ position:relative; z-index:1; }
+.chapter-row .level-grid{ position:relative; z-index:0; }
+
+/* Auf schmalen Screens untereinander stapeln */
 @media (max-width: 900px){
-  .chapter-hours > .level-card--video,
-  .chapter-hours > .level-grid{
-    flex: 0 0 100%;
-    max-width: 100%;
+  .chapter-row{
+    grid-template-columns: 1fr;
   }
+  .level-card--video{ max-width: 100%; }
 }
