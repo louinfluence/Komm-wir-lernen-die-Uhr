@@ -39,55 +39,49 @@
     </div>
   </div>
 
-  <!-- 🔵 Volle Stunden -->
   <div class="chapter-container chapter-hours">
-    <h2 class="chapter-header">🔵 Kapitel 2: Volle Stunden</h2>
+  <h2 class="chapter-header">🔵 Kapitel 2: Volle Stunden</h2>
 
-    <!-- 🎬 Lernvideo: Volle Stunden -->
-<div class="level-card level-card--video" id="introVideoCard">
-  <div class="video-card-head">
-    <span class="pill pill--new">Neu</span>
-    <span class="pill pill--seen" id="videoWatched" hidden>✓ angesehen</span>
+  <div class="chapter-flex-row">
+    <!-- Linke Spalte: Video IMMER sichtbar -->
+    <aside class="chapter-flex-video">
+      <div class="level-card level-card--video" id="introVideoCard">
+        <div class="video-card-head">
+          <span class="pill pill--new">Neu</span>
+        </div>
+        <h3>🎬 Lernvideo: Volle Stunden</h3>
+        <small>45 Sek. • Einstieg</small>
+
+        <div class="video-frame">
+          <video
+            src="assets/videos/volle-stunden-intro.mp4"
+            poster="assets/images/video_poster.png"
+            controls
+            playsinline
+          ></video>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Rechte Spalte: Level-Karten -->
+    <section class="chapter-flex-content">
+      <div class="level-grid">
+        <div class="level-card hours-level" data-level="4">
+          🕓 Level 4
+          <small>Volle Stunden 1</small>
+        </div>
+        <div class="level-card hours-level" data-level="5">
+          🕓 Level 5
+          <small>Volle Stunden 2</small>
+        </div>
+        <div class="level-card hours-level" data-level="6">
+          🕓 Level 6
+          <small>Volle Stunden 3</small>
+        </div>
+      </div>
+    </section>
   </div>
-  <h3>🎬 Lernvideo: Volle Stunden</h3>
-  <small>45 Sek. • Einstieg</small>
-  <button class="btn-watch" id="openVideo">Ansehen</button>
 </div>
-
-<!-- Modal -->
-<div id="videoModal" class="video-modal" hidden>
-  <div class="video-modal__backdrop" data-close></div>
-  <div class="video-modal__dialog" role="dialog" aria-modal="true" aria-label="Lernvideo: Volle Stunden">
-    <button class="video-modal__close" data-close aria-label="Schließen">×</button>
-
-    <video id="lessonVideo" controls playsinline preload="metadata"
-           poster="assets/images/video_poster.png" width="960" height="540">
-      <source src="assets/videos/volle-stunden-intro.mp4" type="video/mp4">
-      <!-- optional: <source src="assets/videos/volle-stunden-intro.webm" type="video/webm"> -->
-      Dein Browser unterstützt das Video-Tag nicht.
-    </video>
-
-    <div class="video-modal__actions">
-      <button id="markWatched" class="btn-done">Als gesehen markieren</button>
-    </div>
-  </div>
-</div>
-
-    <div class="level-grid">
-      <div class="level-card hours-level" data-level="4">
-        🕓 Level 4
-        <small>Volle Stunden 1</small>
-      </div>
-      <div class="level-card hours-level" data-level="5">
-        🕓 Level 5
-        <small>Volle Stunden 2</small>
-      </div>
-      <div class="level-card hours-level" data-level="6">
-        🕓 Level 6
-        <small>Volle Stunden 3</small>
-      </div>
-    </div>
-  </div>
 
   <!-- 🟣 Viertelstunden -->
   <div class="chapter-container chapter-quarter">
