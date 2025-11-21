@@ -581,45 +581,47 @@ body.night-mode { background-color: #001a33; color: #fff; transition: background
   .level-card--video{ max-width: 100%; }
 }
 
-/* === Kapitel-Layout: links Video, rechts Levels ===================== */
-.chapter-container {
-  /* zweispaltig: 340px Video + rest für Level */
+/* Farb-Variablen je Kapitel */
+.chapter-intro   { --chapter-bg1:#e8f5e9; --chapter-bg2:#c8e6c9; --chapter-border:#66bb6a; }
+.chapter-hours   { --chapter-bg1:#e3f2fd; --chapter-bg2:#bbdefb; --chapter-border:#64b5f6; }
+.chapter-quarter { --chapter-bg1:#f3e5f5; --chapter-bg2:#e1bee7; --chapter-border:#ba68c8; }
+.chapter-minutes { --chapter-bg1:#fff3e0; --chapter-bg2:#ffe0b2; --chapter-border:#ffb74d; }
+
+/* Video + Level nebeneinander, ohne Überlappung */
+.chapter-row{
   display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: 20px 24px;
+  grid-template-columns: minmax(280px, 360px) 1fr; /* links Video, rechts Levels */
+  gap: 20px;
   align-items: start;
-  position: relative;
 }
 
-/* Kapitel-Titel über beide Spalten */
-.chapter-container .chapter-header {
-  grid-column: 1 / -1;
-  margin-bottom: .75rem;
+/* Video-Kachel erbt Kapitel-Farben */
+.chapter-container .level-card--video{
+  background: linear-gradient(135deg, var(--chapter-bg1), var(--chapter-bg2));
+  border: 3px solid var(--chapter-border);
+  color: #0d47a1;
 }
 
-/* Platzierung: Video links, Level rechts */
-.chapter-container .level-card--video { grid-column: 1; }
-.chapter-container .level-grid { grid-column: 2; margin: 0; max-width: none; justify-content: flex-start; }
-
-/* Mobil: untereinander stapeln */
-@media (max-width: 900px) {
-  .chapter-container { display: block; }
-  .chapter-container .level-card--video { margin: 0 1rem; }
-  .chapter-container .level-grid { margin-top: 1rem; }
+/* optische Karte für Video */
+.video-card{
+  border-radius: 18px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.12);
+  padding: 14px;
 }
 
-/* === Kapitel-Farbvariablen ========================================= */
-.chapter-intro   { --chap-bg1:#e8f5e9; --chap-bg2:#c8e6c9; --chap-border:#66bb6a; }
-.chapter-hours   { --chap-bg1:#e3f2fd; --chap-bg2:#bbdefb; --chap-border:#64b5f6; }
-.chapter-quarter { --chap-bg1:#f3e5f5; --chap-bg2:#e1bee7; --chap-border:#ba68c8; }
-.chapter-minutes { --chap-bg1:#fff3e0; --chap-bg2:#ffe0b2; --chap-border:#ffb74d; }
-
-/* Videokarten färben sich wie das Kapitel */
-.chapter-container .level-card--video {
-  background: linear-gradient(135deg, var(--chap-bg1), var(--chap-bg2));
-  border: 3px solid var(--chap-border);
-  color: #0d47a1;          /* Lesbarkeit */
+/* Level-Grid rechts: bündig, keine Auto-Margins die es nach rechts schieben */
+.chapter-container .level-grid{
+  margin: 0;                 /* statt 40px auto */
+  max-width: none;           /* volle Breite der rechten Spalte */
+  justify-content: flex-start;
+  gap: 22px;                 /* etwas Luft zwischen Level-Karten */
 }
 
-/* kleine Optikangleichung – optional */
-.chapter-container .level-card--video .video-card-head { margin-bottom: .4rem; }
+/* Video-Frame füllt die Breite der Kachel sauber aus */
+.video-frame{ aspect-ratio:16/9; border-radius:16px; overflow:hidden; background:#000; }
+.video-frame video{ width:100%; height:100%; display:block; }
+
+/* Mobile: untereinander stapeln */
+@media (max-width: 900px){
+  .chapter-row{ grid-template-columns: 1fr; }
+}
