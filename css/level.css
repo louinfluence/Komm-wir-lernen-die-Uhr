@@ -580,48 +580,87 @@ body.night-mode { background-color: #001a33; color: #fff; transition: background
   }
   .level-card--video{ max-width: 100%; }
 }
+/* =========================================================
+   🌟 Kapitel-Layout (vereinheitlicht für alle Kapitel)
+   ========================================================= */
 
-/* Farb-Variablen je Kapitel */
+/* Farb-Variablen je Kapitel (werden von der Videokarte geerbt) */
 .chapter-intro   { --chapter-bg1:#e8f5e9; --chapter-bg2:#c8e6c9; --chapter-border:#66bb6a; }
 .chapter-hours   { --chapter-bg1:#e3f2fd; --chapter-bg2:#bbdefb; --chapter-border:#64b5f6; }
 .chapter-quarter { --chapter-bg1:#f3e5f5; --chapter-bg2:#e1bee7; --chapter-border:#ba68c8; }
 .chapter-minutes { --chapter-bg1:#fff3e0; --chapter-bg2:#ffe0b2; --chapter-border:#ffb74d; }
 
-/* Video + Level nebeneinander, ohne Überlappung */
-.chapter-row{
+/* Containerbreite: EINHEITLICH für alle Kapitel */
+.chapter-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem 1rem;
+  border-radius: 20px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.chapter-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+/* Falls noch irgendwo eine alte Sonderregel steht, neutralisieren: */
+.chapter-container.chapter-hours { max-width: 900px !important; }
+
+/* Titel */
+.chapter-header {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+/* Farbige Themenhintergründe (wie gehabt) */
+.chapter-intro   { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border: 3px solid var(--chapter-border); }
+.chapter-hours   { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border: 3px solid var(--chapter-border); }
+.chapter-quarter { background: linear-gradient(135deg, #f3e5f5, #e1bee7); border: 3px solid var(--chapter-border); }
+.chapter-minutes { background: linear-gradient(135deg, #fff3e0, #ffe0b2); border: 3px solid var(--chapter-border); }
+
+/* Zwei Spalten: links Video, rechts Level (für ALLE Kapitel gleich) */
+.chapter-row {
   display: grid;
-  grid-template-columns: minmax(280px, 360px) 1fr; /* links Video, rechts Levels */
-  gap: 20px;
+  grid-template-columns: minmax(300px, 360px) 1fr;
+  gap: 22px;
   align-items: start;
 }
 
-/* Video-Kachel erbt Kapitel-Farben */
-.chapter-container .level-card--video{
+/* Videokarte – erbt Kapitel-Farben, feste Breite links */
+.chapter-container .level-card--video {
+  width: 100%;
+  max-width: 360px;
+  margin: 0;
   background: linear-gradient(135deg, var(--chapter-bg1), var(--chapter-bg2));
   border: 3px solid var(--chapter-border);
   color: #0d47a1;
-}
-
-/* optische Karte für Video */
-.video-card{
   border-radius: 18px;
-  box-shadow: 0 6px 16px rgba(0,0,0,.12);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
   padding: 14px;
 }
 
-/* Level-Grid rechts: bündig, keine Auto-Margins die es nach rechts schieben */
-.chapter-container .level-grid{
-  margin: 0;                 /* statt 40px auto */
-  max-width: none;           /* volle Breite der rechten Spalte */
-  justify-content: flex-start;
-  gap: 22px;                 /* etwas Luft zwischen Level-Karten */
+/* Video im Card-Inhalt */
+.chapter-container .level-card--video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
 }
 
-/* Video-Frame füllt die Breite der Kachel sauber aus */
-.video-frame{ aspect-ratio:16/9; border-radius:16px; overflow:hidden; background:#000; }
-.video-frame video{ width:100%; height:100%; display:block; }
+/* Level-Grid rechts: bündig, ohne autom. Außenabstände */
+.chapter-container .levels-col .level-grid {
+  margin: 0;
+  max-width: none;
+  justify-content: flex-start;
+  gap: 22px;
+}
 
 /* Mobile: untereinander stapeln */
-@media (max-width: 900px){
-  .chapter-row{ grid-template-columns: 1fr; }
+@media (max-width: 900px) {
+  .chapter-row { grid-template-columns: 1fr; }
+  .chapter-container .level-card--video { max-width: 100%; }
 }
